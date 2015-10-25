@@ -88,10 +88,10 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                 }
             }
             messageHelper.setSubject(ofNullable(email.getSubject()).orElse(""));
-            messageHelper.setText(ofNullable(email.getBody()).orElse(""), email.isHtmlRequested());
+            messageHelper.setText(ofNullable(email.getBody()).orElse(""));
 
             if (nonNull(email.getSentAt())) {
-                messageHelper.setSentDate(Date.from(email.getSentAt().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                messageHelper.setSentDate(email.getSentAt());
             }
         } catch (MessagingException e) {
             log.error("Error while converting Email to MimeMessage");

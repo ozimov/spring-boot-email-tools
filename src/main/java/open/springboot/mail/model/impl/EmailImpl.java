@@ -23,8 +23,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import open.springboot.mail.model.Email;
 
 import javax.mail.internet.InternetAddress;
@@ -32,10 +30,10 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Locale;
 
 import static java.nio.charset.Charset.forName;
-import static java.util.Objects.nonNull;
 
 /**
  * Mime email.
@@ -45,7 +43,6 @@ import static java.util.Objects.nonNull;
 @AllArgsConstructor
 @Data
 @Builder
-@Slf4j
 public class EmailImpl implements Email, Serializable {
 
     private static final long serialVersionUID = 634175529482595823L;
@@ -71,14 +68,8 @@ public class EmailImpl implements Email, Serializable {
 
     private Locale locale;
 
-    private LocalDate sentAt;
+    private Date sentAt;
 
-    private boolean htmlRequested;
-
-    @Override
-    public void setHtmlRequested() {
-        setHtmlRequested(true);
-    }
 }
 
 

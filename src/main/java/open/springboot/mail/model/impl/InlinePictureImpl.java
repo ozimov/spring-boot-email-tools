@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-package open.springboot.mail.model;
+package open.springboot.mail.model.impl;
 
-import org.springframework.http.MediaType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import open.springboot.mail.model.ImageType;
+import open.springboot.mail.model.InlinePicture;
 
-import java.io.IOException;
+import java.io.File;
 
-public interface EmailAttachment {
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
+public class InlinePictureImpl implements InlinePicture {
 
-    String getAttachmentName();
+    private @NonNull ImageType imageType;
 
-    byte[] getAttachmentData();
+    private @NonNull File file;
 
-    MediaType getContentType() throws IOException;
-
+    private @NonNull String templateName;
 
 }

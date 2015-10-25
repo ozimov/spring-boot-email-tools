@@ -74,33 +74,52 @@ public class EmailToMimeMessageTest {
         final MimeMessage sentMessage = emailToMimeMessage.apply(email);
 
         // Assert
-        assertMimeMessageHasProperValues(email, sentMessage);
+        validateFrom(email, sentMessage);
+        validateReplyTo(email, sentMessage);
+        validateTo(email, sentMessage);
+        validateCc(email, sentMessage);
+        validateBcc(email, sentMessage);
+        validateSubject(email, sentMessage);
+        validateBody(email, sentMessage);
 
         verify(javaMailSender, times(1)).createMimeMessage();
     }
 
-    public static void assertMimeMessageHasProperValues(final Email email, final MimeMessage sentMessage)
+    public static void validateFrom(final Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         final List<Address> froms = asList(sentMessage.getFrom());
         assertThat(froms, hasSize(1)); // redundant with contains
         assertThat(froms, contains((Address) email.getFrom()));
-
+    }
+    public static void validateReplyTo(final Email email, final MimeMessage sentMessage)
+            throws MessagingException, IOException {
         final List<Address> replyTos = asList(sentMessage.getReplyTo());
         assertThat(replyTos, hasSize(1)); // redundant with contains
         assertThat(replyTos, contains((Address) email.getReplyTo()));
-
+    }
+    public static void validateTo(final Email email, final MimeMessage sentMessage)
+            throws MessagingException, IOException {
         final List<Address> tos = asList(sentMessage.getRecipients(TO));
-
         assertThat(tos.get(0), is((Address) (new ArrayList<>(email.getTo()).get(0))));
         assertThat(tos, everyItem(isIn(toAddress(email.getTo()))));
-
+    }
+    public static void validateCc(final Email email, final MimeMessage sentMessage)
+            throws MessagingException, IOException {
         final List<Address> ccs = asList(sentMessage.getRecipients(CC));
         assertThat(ccs, everyItem(isIn(toAddress(email.getCc()))));
-
+    }
+    public static void validateBcc(final Email email, final MimeMessage sentMessage)
+            throws MessagingException, IOException {
         final List<Address> bccs = asList(sentMessage.getRecipients(BCC));
         assertThat(bccs, everyItem(isIn(toAddress(email.getBcc()))));
-
+    }
+    public static void validateSubject(final Email email, final MimeMessage sentMessage)
+            throws MessagingException, IOException {
         assertThat(sentMessage.getSubject(), is(email.getSubject()));
+    }
+
+    public static void validateBody(final Email email, final MimeMessage sentMessage)
+            throws MessagingException, IOException {
         assertThat(sentMessage.getContent(), is(email.getBody()));
     }
 

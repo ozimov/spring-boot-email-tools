@@ -20,9 +20,10 @@ package open.springboot.mail.service.impl;
 import com.google.common.collect.Maps;
 import freemarker.template.TemplateException;
 import open.springboot.mail.model.Email;
+import open.springboot.mail.model.ImageType;
+import open.springboot.mail.model.impl.InlinePictureImpl;
 import open.springboot.mail.service.Exception.CannotSendEmailException;
 import open.springboot.mail.service.TemplateService;
-import open.springboot.mail.service.impl.EmailServiceImpl;
 import open.springboot.mail.utils.EmailToMimeMessage;
 import org.junit.After;
 import org.junit.Before;
@@ -34,13 +35,21 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
-import static open.springboot.mail.utils.EmailToMimeMessageTest.assertMimeMessageHasProperValues;
 import static open.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMail;
+import static open.springboot.mail.utils.EmailToMimeMessageTest.validateBcc;
+import static open.springboot.mail.utils.EmailToMimeMessageTest.validateBody;
+import static open.springboot.mail.utils.EmailToMimeMessageTest.validateCc;
+import static open.springboot.mail.utils.EmailToMimeMessageTest.validateFrom;
+import static open.springboot.mail.utils.EmailToMimeMessageTest.validateReplyTo;
+import static open.springboot.mail.utils.EmailToMimeMessageTest.validateSubject;
+import static open.springboot.mail.utils.EmailToMimeMessageTest.validateTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
@@ -91,7 +100,13 @@ public class EmailServiceTest {
 
         //Assert
         assertThat(email.getSentAt(), not(is(nullValue())));
-        assertMimeMessageHasProperValues(email, sentMessage);
+        validateFrom(email, sentMessage);
+        validateReplyTo(email, sentMessage);
+        validateTo(email, sentMessage);
+        validateCc(email, sentMessage);
+        validateBcc(email, sentMessage);
+        validateSubject(email, sentMessage);
+        validateBody(email, sentMessage);
     }
 
     @Test
@@ -108,8 +123,54 @@ public class EmailServiceTest {
 
         //Assert
         assertThat(email.getSentAt(), not(is(nullValue())));
-        assertThat(email.getBody(), allOf(not(is(toBeOverriddenBody)), is(bodyToBeReturned)));
-        assertMimeMessageHasProperValues(email, sentMessage);
+        validateFrom(email, sentMessage);
+        validateReplyTo(email, sentMessage);
+        validateTo(email, sentMessage);
+        validateCc(email, sentMessage);
+        validateBcc(email, sentMessage);
+        validateSubject(email, sentMessage);
+        assertThat(((MimeMultipart) sentMessage.getContent()).getBodyPart(0).getContent(),
+                allOf(not(is(toBeOverriddenBody)), is(bodyToBeReturned)));
+
+        verify(templateService, times(1)).mergeTemplateIntoString(any(String.class), any(Map.class));
+    }
+
+    @Test
+    public void sendMailWithTemplateAndInlinePicture() throws MessagingException, IOException, TemplateException, CannotSendEmailException {
+        //Arrange
+        final Email email = getSimpleMail();
+        assertThat(email.getSentAt(), is(nullValue()));
+        final String toBeOverriddenBody = email.getBody();
+        final String bodyToBeReturned = "<img src=\"100_percent_free.jpg\" />";
+        final String imageName = "100_percent_free.jpg";
+
+        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenReturn(bodyToBeReturned);
+
+        final File inlineImageFile = new File(getClass().getClassLoader()
+                .getResource("images" + File.separator + imageName).getFile());
+
+        //Act
+        final MimeMessage sentMessage = mailService.send(email, "never_called.ftl", Maps.newHashMap(),
+                InlinePictureImpl.builder()
+                        .file(inlineImageFile)
+                        .imageType(ImageType.JPG)
+                        .templateName(imageName).build());
+
+        //Assert
+        assertThat(email.getSentAt(), not(is(nullValue())));
+        validateFrom(email, sentMessage);
+        validateReplyTo(email, sentMessage);
+        validateTo(email, sentMessage);
+        validateCc(email, sentMessage);
+        validateBcc(email, sentMessage);
+        validateSubject(email, sentMessage);
+
+        final String imageId = ((MimeBodyPart) (((MimeMultipart) sentMessage.getContent()).getBodyPart(0))).getContentID();
+        assertThat(((MimeMultipart) sentMessage.getContent()).getBodyPart(1).getContent(),
+                allOf(not(is(toBeOverriddenBody)), not(is(bodyToBeReturned)),
+                        is("<img src=\"cid:" +
+                                imageId.substring(1, imageId.length() - 1)
+                                + "\" />")));
 
         verify(templateService, times(1)).mergeTemplateIntoString(any(String.class), any(Map.class));
     }

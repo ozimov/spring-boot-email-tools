@@ -20,19 +20,25 @@ import freemarker.template.TemplateException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import open.springboot.mail.model.Email;
-import open.springboot.mail.service.*;
+import open.springboot.mail.model.InlinePicture;
+import open.springboot.mail.service.EmailService;
 import open.springboot.mail.service.Exception.CannotSendEmailException;
+import open.springboot.mail.service.TemplateService;
 import open.springboot.mail.utils.EmailToMimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author rtrunfio
@@ -41,7 +47,6 @@ import java.util.Map;
 @Slf4j
 public class EmailServiceImpl implements EmailService {
 
-//    @Resource(name="mailSender")
     private JavaMailSender javaMailSender;
 
     private TemplateService templateService;
@@ -59,7 +64,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public MimeMessage send(final @NonNull Email email) {
-        email.setSentAt(LocalDate.now());
+        email.setSentAt(new Date());
         final MimeMessage mimeMessage = toMimeMessage(email);
         javaMailSender.send(mimeMessage);
         return mimeMessage;
@@ -67,28 +72,51 @@ public class EmailServiceImpl implements EmailService {
 
     public MimeMessage send(final @NonNull Email email,
                             final @NonNull String template,
-                            final @NonNull Map<String, Object> modelObject) throws CannotSendEmailException {
+                            final @NonNull Map<String, Object> modelObject,
+                            final @NonNull InlinePicture... inlinePictures) throws CannotSendEmailException {
+        email.setSentAt(new Date());
+        final MimeMessage mimeMessage = toMimeMessage(email);
         try {
-            setBodyFromTemplate(email, template, modelObject);
-            email.setHtmlRequested();
+            final MimeMultipart content = new MimeMultipart("related");
+
+            String text = templateService.mergeTemplateIntoString(template, modelObject);
+            for (final InlinePicture inlinePicture : inlinePictures) {
+                final String cid = UUID.randomUUID().toString();
+
+                //Set the cid in the template
+                text = text.replace(inlinePicture.getTemplateName(), "cid:" + cid);
+
+                //Set the image part
+                final MimeBodyPart imagePart = new MimeBodyPart();
+                imagePart.attachFile(inlinePicture.getFile());
+                imagePart.setContentID('<' + cid + '>');
+                imagePart.setDisposition(MimeBodyPart.INLINE);
+                imagePart.setHeader("Content-Type", inlinePicture.getImageType().getContentType());
+                content.addBodyPart(imagePart);
+            }
+
+            //Set the HTML text part
+            MimeBodyPart textPart = new MimeBodyPart();
+            textPart.setText(text, email.getEncoding().displayName(), "html");
+            content.addBodyPart(textPart);
+
+            mimeMessage.setContent(content);
+            javaMailSender.send(mimeMessage);
         } catch (IOException e) {
             log.error("The template file cannot be read", e);
             throw new CannotSendEmailException("Error while sending the email due to problems with the template file", e);
         } catch (TemplateException e) {
             log.error("The template file cannot be processed", e);
             throw new CannotSendEmailException("Error while processing the template file with the given model object", e);
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
-        return send(email);
-    }
-
-    private void setBodyFromTemplate(final Email email,
-                                     final String template,
-                                     final Map<String, Object> modelObject) throws IOException, TemplateException {
-        email.setBody(templateService.mergeTemplateIntoString(template, modelObject));
+        return mimeMessage;
     }
 
     private MimeMessage toMimeMessage(@NotNull Email email) {
         return emailToMimeMessage.apply(email);
     }
+
 
 }

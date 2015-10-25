@@ -47,25 +47,31 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!-- Templating engine -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
-        <!--&lt;!&ndash; Jackson Databinding &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-            <!--<artifactId>jackson-databind</artifactId>-->
-        <!--</dependency>-->
 
+        <!-- Content ID Generator -->
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>5.2.2.Final</version>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-api</artifactId>
+            <version>1.2.15</version>
         </dependency>
+
+        <!-- Guess Content Type -->
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>1.10</version>
+        </dependency>
+
+        <!-- Validation -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.2.2.Final</version>
         </dependency>
 
         <!--  Misc  -->
@@ -89,12 +95,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.6.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -126,32 +126,17 @@
     </build>
 
     <repositories>
-    <repository>
-    <id>spring-releases</id>
-    <url>https://repo.spring.io/libs-release</url>
-    </repository>
+        <repository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
-    <pluginRepository>
-    <id>spring-releases</id>
-    <url>https://repo.spring.io/libs-release</url>
-    </pluginRepository>
+        <pluginRepository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </pluginRepository>
     </pluginRepositories>
-
-    <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>spring-libs-snapshot</id>-->
-            <!--<url>http://repo.spring.io/libs-snapshot</url>-->
-        <!--</repository>-->
-    <!--</repositories>-->
-
-    <!--<pluginRepositories>-->
-        <!--<pluginRepository>-->
-            <!--<id>spring-libs-snapshot</id>-->
-            <!--<url>http://repo.spring.io/libs-snapshot</url>-->
-        <!--</pluginRepository>-->
-    <!--</pluginRepositories>-->
-
 
 </project>

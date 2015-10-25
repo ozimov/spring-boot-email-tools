@@ -16,17 +16,21 @@
 
 package open.springboot.mail.model;
 
-import org.springframework.http.MediaType;
+import lombok.Getter;
 
-import java.io.IOException;
-
-public interface EmailAttachment {
-
-    String getAttachmentName();
-
-    byte[] getAttachmentData();
-
-    MediaType getContentType() throws IOException;
+@Getter
+public enum ImageType {
+    GIF("gif", "image/gif"),
+    JPG("jpg", "image/jpeg"),
+    JPEG("jpeg", "image/jpeg"),
+    PNG("png", "image/png");
 
 
+    private final String extension;
+    private final String contentType;
+
+    ImageType(final String extension, final String contentType){
+        this.extension = extension;
+        this.contentType = contentType;
+    }
 }

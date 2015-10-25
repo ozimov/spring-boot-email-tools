@@ -16,17 +16,21 @@
 
 package open.springboot.mail.model;
 
-import org.springframework.http.MediaType;
+import java.io.File;
 
-import java.io.IOException;
+public interface InlinePicture {
 
-public interface EmailAttachment {
+    ImageType getImageType();
 
-    String getAttachmentName();
+    File getFile();
 
-    byte[] getAttachmentData();
-
-    MediaType getContentType() throws IOException;
-
+    /**
+     * Return the name used in the template with the path to the resource.
+     * <p>
+     * The name has to be replaced by a proper cid.
+     *
+     * @return the name used in the template, included any path to folders.
+     */
+    String getTemplateName();
 
 }

@@ -17,34 +17,36 @@
 package open.springboot.mail.service;
 
 import open.springboot.mail.model.Email;
+import open.springboot.mail.model.InlinePicture;
 import open.springboot.mail.service.Exception.CannotSendEmailException;
 
 import javax.mail.internet.MimeMessage;
-import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 public interface EmailService {
 
     /**
      * Send an email message.
-     *
+     * <p>
      * The send date is set or overridden if any is present.
      *
      * @param mimeEmail an email to be send
      */
-    MimeMessage send(@NotNull Email mimeEmail);
+    MimeMessage send(Email mimeEmail);
 
     /**
      * Send an email message.
-     *
+     * <p>
      * The body is ignored if present.
      * The send date is set or overridden if any is present.
      *
-     * @param mimeEmail an email to be send
-     * @param template the reference to the template file
-     * @param modelObject the model object to be used for the template engine
+     * @param mimeEmail      an email to be send
+     * @param template       the reference to the template file
+     * @param modelObject    the model object to be used for the template engine
+     * @param inlinePictures list of pictures to be rendered inline in the template
      */
-    MimeMessage send(@NotNull Email mimeEmail,
-                     @NotNull String template, @NotNull Map<String, Object> modelObject) throws CannotSendEmailException;
+    MimeMessage send(Email mimeEmail,
+                     String template, Map<String, Object> modelObject,
+                     InlinePicture ... inlinePictures) throws CannotSendEmailException;
 
 }

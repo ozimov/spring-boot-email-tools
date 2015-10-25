@@ -21,13 +21,13 @@ import open.springboot.mail.model.impl.EmailAttachmentImpl;
 
 import javax.mail.internet.InternetAddress;
 import java.nio.charset.Charset;
-import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Locale;
 
 public interface Email {
 
-    @NonNull InternetAddress getFrom();
+    InternetAddress getFrom();
 
     InternetAddress getReplyTo();
 
@@ -37,34 +37,22 @@ public interface Email {
 
     Collection<InternetAddress> getBcc();
 
-    default
-    @NonNull
-    String getSubject() {
+    default String getSubject() {
         return "";
     }
 
-    default
-    @NonNull
-    String getBody() {
+    default String getBody() {
         return "";
     }
 
-    void setBody(@NonNull String body);
-
-    @NonNull
     Collection<EmailAttachmentImpl> getAttachments();
 
     Charset getEncoding();
 
     Locale getLocale();
 
-    LocalDate getSentAt();
+    Date getSentAt();
 
-    void setSentAt(@NonNull LocalDate sentAt);
+    void setSentAt(Date sentAt);
 
-    default boolean isHtmlRequested() {
-        return false;
-    }
-
-    void setHtmlRequested();
 }

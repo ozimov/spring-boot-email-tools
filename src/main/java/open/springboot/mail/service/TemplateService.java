@@ -18,13 +18,12 @@ package open.springboot.mail.service;
 
 import freemarker.template.TemplateException;
 
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Map;
 
 public interface TemplateService {
 
-    @NotNull String mergeTemplateIntoString(@NotNull String template, @NotNull Map<String, Object> model)
+    String mergeTemplateIntoString(String template, Map<String, Object> model)
             throws IOException, TemplateException;
 
 }
