@@ -1,5 +1,5 @@
 # SpringBootEmailTools
-A set of  (rest) services and tools for sending emails in a Spring Boot application using templating
+A set of services and tools for sending emails in a Spring Boot application using Freemarker template engine.
 
 
 ## Dependency
@@ -8,7 +8,7 @@ A set of  (rest) services and tools for sending emails in a Spring Boot applicat
 <dependency>
     <groupId>spring-boot-utils</groupId>
     <artifactId>spring-boot-email</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${release-version}</version>
 </dependency>
 ```
 
@@ -30,7 +30,6 @@ public class MainApplication  {
 }
 ```
 
-
 in you application.yml set the configuration needed to send the emails, e.g. if you want to send
 the emails using a Gmail account you can set:
 
@@ -43,6 +42,3 @@ spring.mail.properties.mail.smtp.auth: true
 spring.mail.properties.mail.smtp.starttls.enable: true
 spring.mail.properties.mail.smtp.starttls.required: true
 ```
-
-If you don't like the default path for the controllers, you can easily replace
-them in the application.yml. Otherwise, the default path is used
