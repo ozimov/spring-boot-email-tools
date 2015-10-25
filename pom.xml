@@ -53,13 +53,6 @@
             <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
 
-        <!-- Content ID Generator -->
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-api</artifactId>
-            <version>1.2.15</version>
-        </dependency>
-
         <!-- Guess Content Type -->
         <dependency>
             <groupId>org.apache.tika</groupId>
