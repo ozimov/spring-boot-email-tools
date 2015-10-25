@@ -72,7 +72,7 @@ The previous code will send a plain text message. To obtain some more dynamic fa
 public EmailService emailService;
 
 public void sendEmailWithTemplating(){
-   Arrays.asList(new Cospirator("cassius@sic-semper.tyrannis", "Gaius Cassius Longinus"), 
+   Arrays.asList(new Cospirator("cassius@sic-semper.tyrannis", "Gaius Cassius Longinus"),
             new Cospirator("brutus@sic-semper.tyrannis", "Marcus Iunius Brutus Caepio"))
         .stream.forEach(tyrannicida -> {
        final Email email = EmailImpl.builder()
@@ -80,10 +80,10 @@ public void sendEmailWithTemplating(){
             .to(Lists.newArrayList(new InternetAddress(tyrannicida.getEmail(), tyrannicida.getName())))
             .subject("Idus Martii")
             .encoding(Charset.forName("UTF-8")).build();
-        //Defining the model object for the given Freemarker template    
+        //Defining the model object for the given Freemarker template
         final Map<String, Object> modelObject = new HashMap<>();
         modelObject.put("tyrannicida", tyrannicida.getName());
-    
+
        emailService.send(email, "idus_martii.ftl", modelObject);
    };
 }
@@ -95,7 +95,7 @@ private static class Cospirator {
     this.email = email;
     this.name = name;
   }
-  
+
   //getters
 }
 ```
@@ -112,3 +112,60 @@ where the template ``idus_martii.ftl`` is a Freemarker file like:
 	</body>
 </html>
 ```
+
+
+The following example shows how to send emails that include an inline image.
+
+
+```java
+@Autowired
+public EmailService emailService;
+
+public void sendEmailWithTemplatingAndInlineImage(){
+       final Email email = EmailImpl.builder()
+            .from(new InternetAddress("divus.iulius@mala-tempora.currunt", "Gaius Iulius Caesar"))
+            .to(Lists.newArrayList(new InternetAddress("brutus@sic-semper.tyrannis", "Marcus Iunius Brutus Caepio")))
+            .subject("Idus Martii")
+            .encoding(Charset.forName("UTF-8")).build();
+       //Defining the model object for the given Freemarker template
+       final Map<String, Object> modelObject = new HashMap<>();
+       final File imageFile = //load your picture here, e.g. "my_image.jpg"
+       modelObject.put("tyrannicida", tyrannicida.getName());
+
+       final InlinePicture inlinePicture = InlinePictureImpl.builder()
+                               .file(imageFile)
+                               .imageType(ImageType.JPG)
+                               .templateName("my_image.jpg").build());
+
+       emailService.send(email, "idus_martii.ftl", modelObject, inlinePicture);
+}
+
+  //getters
+}
+```
+
+where the template ``idus_martii.ftl`` is a Freemarker file like:
+
+```html
+<!doctype html>
+<html>
+	<body>
+		<p>
+			<img src="my_image.jpg" />
+		</p>
+	</body>
+</html>
+```
+
+be sure that the name provided in the ``InlinePicture`` matches with the one used in the template file path included, if
+any was set. This means that if in the template you have ``<img src="images/my_image.jpg" />`` then the definition has to be
+changed as follows:
+
+```java
+       final InlinePicture inlinePicture = InlinePictureImpl.builder()
+                               .file(imageFile)
+                               .imageType(ImageType.JPG)
+                               .templateName("images/my_image.jpg").build());
+```
+
+This is required to set the a proper content-id.
