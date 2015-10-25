@@ -70,6 +70,7 @@ public class EmailServiceImpl implements EmailService {
                             final @NonNull Map<String, Object> modelObject) throws CannotSendEmailException {
         try {
             setBodyFromTemplate(email, template, modelObject);
+            email.setHtmlRequested();
         } catch (IOException e) {
             log.error("The template file cannot be read", e);
             throw new CannotSendEmailException("Error while sending the email due to problems with the template file", e);

@@ -61,4 +61,10 @@ public interface Email {
     LocalDate getSentAt();
 
     void setSentAt(@NonNull LocalDate sentAt);
+
+    default boolean isHtmlRequested() {
+        return false;
+    }
+
+    void setHtmlRequested();
 }

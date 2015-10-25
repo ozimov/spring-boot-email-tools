@@ -88,7 +88,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                 }
             }
             messageHelper.setSubject(ofNullable(email.getSubject()).orElse(""));
-            messageHelper.setText(ofNullable(email.getBody()).orElse(""));
+            messageHelper.setText(ofNullable(email.getBody()).orElse(""), email.isHtmlRequested());
 
             if (nonNull(email.getSentAt())) {
                 messageHelper.setSentDate(Date.from(email.getSentAt().atStartOfDay(ZoneId.systemDefault()).toInstant()));

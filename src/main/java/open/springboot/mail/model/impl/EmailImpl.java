@@ -72,6 +72,13 @@ public class EmailImpl implements Email, Serializable {
     private Locale locale;
 
     private LocalDate sentAt;
+
+    private boolean htmlRequested;
+
+    @Override
+    public void setHtmlRequested() {
+        setHtmlRequested(true);
+    }
 }
 
 
