@@ -46,7 +46,7 @@ import static java.util.Objects.nonNull;
 @Data
 @Builder
 @Slf4j
-public class MimeEmail implements Email, Serializable {
+public class EmailImpl implements Email, Serializable {
 
     private static final long serialVersionUID = 634175529482595823L;
 

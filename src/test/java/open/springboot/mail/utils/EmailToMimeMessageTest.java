@@ -18,7 +18,7 @@ package open.springboot.mail.utils;
 
 import com.google.common.collect.Lists;
 import open.springboot.mail.model.Email;
-import open.springboot.mail.model.impl.MimeEmail;
+import open.springboot.mail.model.impl.EmailImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -105,7 +105,7 @@ public class EmailToMimeMessageTest {
     }
 
     public static Email getSimpleMail() throws UnsupportedEncodingException {
-        return MimeEmail.builder().from(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone "))
+        return EmailImpl.builder().from(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone "))
                 .replyTo(new InternetAddress("tullius.cicero@urbs.aeterna", "Marcus Tullius Cicero"))
                 .to(Lists.newArrayList(new InternetAddress("titus@de-rerum.natura", "Pomponius Attĭcus")))
                 .cc(Lists.newArrayList(new InternetAddress("tito55@de-rerum.natura", "Titus Lucretius Carus"),
