@@ -1,5 +1,5 @@
 # spring-boot-email-tools
-A set of services and tools for sending emails in a *Spring Boot* application using *Freemarker* template engine.
+A set of services and tools for sending emails in a **Spring Boot** application using *Freemarker* template engine.
 
 
 ## Dependency
@@ -180,6 +180,14 @@ public class ExceptionHandling implements EmailConversionAdviceTrait {
 
 }
 ```
+
+## Future plans
+
+Here are listed the backlog for the features to be added to the library in the near future:
+* Quartz scheduler for handling newsletter
+* Email queuing using asyncronous services
+
+Any contribution is welcome.
 
 
 ## License
