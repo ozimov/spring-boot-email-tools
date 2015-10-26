@@ -96,7 +96,7 @@ public class EmailServiceImpl implements EmailService {
             }
 
             //Set the HTML text part
-            MimeBodyPart textPart = new MimeBodyPart();
+            final MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(text, email.getEncoding().displayName(), "html");
             content.addBodyPart(textPart);
 
@@ -109,7 +109,8 @@ public class EmailServiceImpl implements EmailService {
             log.error("The template file cannot be processed", e);
             throw new CannotSendEmailException("Error while processing the template file with the given model object", e);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            log.error("The mime message cannot be created", e);
+            throw new CannotSendEmailException("Error while sending the email due to problems with the mime content", e);
         }
         return mimeMessage;
     }
