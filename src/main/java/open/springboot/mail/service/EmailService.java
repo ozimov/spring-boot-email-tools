@@ -42,7 +42,7 @@ public interface EmailService {
      *
      * @param mimeEmail      an email to be send
      * @param template       the reference to the template file
-     * @param modelObject    the model object to be used for the template engine
+     * @param modelObject    the model object to be used for the template engine, it may be null
      * @param inlinePictures list of pictures to be rendered inline in the template
      */
     MimeMessage send(Email mimeEmail,

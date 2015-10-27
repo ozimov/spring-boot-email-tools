@@ -21,6 +21,7 @@ import com.google.common.collect.Maps;
 import freemarker.template.TemplateException;
 import open.springboot.mail.model.Email;
 import open.springboot.mail.model.ImageType;
+import open.springboot.mail.model.InlinePicture;
 import open.springboot.mail.model.impl.InlinePictureImpl;
 import open.springboot.mail.service.Exception.CannotSendEmailException;
 import open.springboot.mail.service.TemplateService;
@@ -40,6 +41,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import static open.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMail;
@@ -83,12 +85,6 @@ public class EmailServiceTest {
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
     }
 
-    @After
-    public void setDown() {
-        verify(javaMailSender, times(1)).createMimeMessage();
-        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
-    }
-
     @Test
     public void sendMailWithoutTemplate() throws MessagingException, IOException {
         //Arrange
@@ -107,6 +103,9 @@ public class EmailServiceTest {
         validateBcc(email, sentMessage);
         validateSubject(email, sentMessage);
         validateBody(email, sentMessage);
+
+        verify(javaMailSender, times(1)).createMimeMessage();
+        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
     }
 
     @Test
@@ -133,6 +132,9 @@ public class EmailServiceTest {
                 allOf(not(is(toBeOverriddenBody)), is(bodyToBeReturned)));
 
         verify(templateService, times(1)).mergeTemplateIntoString(any(String.class), any(Map.class));
+
+        verify(javaMailSender, times(1)).createMimeMessage();
+        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
     }
 
     @Test
@@ -151,10 +153,7 @@ public class EmailServiceTest {
 
         //Act
         final MimeMessage sentMessage = mailService.send(email, "never_called.ftl", Maps.newHashMap(),
-                InlinePictureImpl.builder()
-                        .file(inlineImageFile)
-                        .imageType(ImageType.JPG)
-                        .templateName(imageName).build());
+                getInlinePicture(inlineImageFile, imageName));
 
         //Assert
         assertThat(email.getSentAt(), not(is(nullValue())));
@@ -175,5 +174,59 @@ public class EmailServiceTest {
         verify(templateService, times(1)).mergeTemplateIntoString(any(String.class), any(Map.class));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void sendMailWithoutTemplateShouldThrowWhenEmailIsNull() {
+        //Act
+        mailService.send(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void sendMailWithTemplateShouldThrowWhenEmailIsNull() throws CannotSendEmailException {
+        //Arrange
+        final String imageName = "100_percent_free.jpg";
+
+        final File inlineImageFile = new File(getClass().getClassLoader()
+                .getResource("images" + File.separator + imageName).getFile());
+
+        //Act
+        mailService.send(null,"never_called.ftl", Maps.newHashMap(),
+                getInlinePicture(inlineImageFile, imageName));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void sendMailWithTemplateShouldThrowWhenTemplateIsNull()
+            throws CannotSendEmailException, UnsupportedEncodingException {
+        //Arrange
+        final Email email = getSimpleMail();
+        final String imageName = "100_percent_free.jpg";
+
+        final File inlineImageFile = new File(getClass().getClassLoader()
+                .getResource("images" + File.separator + imageName).getFile());
+
+        //Act
+        mailService.send(email, null, Maps.newHashMap(),
+                getInlinePicture(inlineImageFile, imageName));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void sendMailWithTemplateAndInlinePictureThrowWhenPictureIsNull() throws IOException, CannotSendEmailException, TemplateException {
+        //Arrange
+        final Email email = getSimpleMail();
+        assertThat(email.getSentAt(), is(nullValue()));
+
+        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenReturn("doesn't matter");
+
+        //Act
+        mailService.send(email, "never_called.ftl", Maps.newHashMap(), null);
+    }
+
+
+
+    private InlinePicture getInlinePicture(final File inlineImageFile, final String imageName){
+        return InlinePictureImpl.builder()
+                .file(inlineImageFile)
+                .imageType(ImageType.JPG)
+                .templateName(imageName).build();
+    }
 
 }

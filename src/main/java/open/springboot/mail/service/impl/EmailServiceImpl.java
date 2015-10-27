@@ -16,6 +16,8 @@
 
 package open.springboot.mail.service.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 import freemarker.template.TemplateException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,8 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.google.common.base.Optional.fromNullable;
 
 /**
  * @author rtrunfio
@@ -72,14 +76,16 @@ public class EmailServiceImpl implements EmailService {
 
     public MimeMessage send(final @NonNull Email email,
                             final @NonNull String template,
-                            final @NonNull Map<String, Object> modelObject,
+                            final Map<String, Object> modelObject,
                             final @NonNull InlinePicture... inlinePictures) throws CannotSendEmailException {
         email.setSentAt(new Date());
         final MimeMessage mimeMessage = toMimeMessage(email);
         try {
             final MimeMultipart content = new MimeMultipart("related");
 
-            String text = templateService.mergeTemplateIntoString(template, modelObject);
+            String text = templateService.mergeTemplateIntoString(template,
+                    fromNullable(modelObject).or(ImmutableMap.of()));
+
             for (final InlinePicture inlinePicture : inlinePictures) {
                 final String cid = UUID.randomUUID().toString();
 
