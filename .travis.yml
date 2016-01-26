@@ -1,0 +1,26 @@
+language: java
+
+sudo: false # faster builds
+
+jdk:
+  - oraclejdk8
+
+install:
+    true
+
+before_script:
+  - pip install --user codecov
+  - curl http://www.jpm4j.org/install/script | sh
+
+script:
+  - jdk_switcher use oraclejdk8
+    - mvn -U -B -V test --fail-at-end -Dsource.skip=true -Dmaven.javadoc.skip=true
+
+after_success:
+  - jdk_switcher use oraclejdk8
+  - mvn clean test jacoco:report coveralls:report
+  - codecov --build "$TRAVIS_JOB_NUMBER-jdk8"
+
+notifications:
+    email:
+      on_failure: change

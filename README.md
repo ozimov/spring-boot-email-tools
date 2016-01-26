@@ -1,14 +1,29 @@
 # spring-boot-email-tools
 A set of services and tools for sending emails in a **Spring Boot** application using *Freemarker* template engine.
 
+**Source Website:** *[github.com/robertotru/spring-boot-email-tools](http://github.com/robertotru/spring-boot-email-tools/)*<br />
+
+**Latest Release:** *0.1.0*<br />
+**Latest Artifacts:** * com.github.robertotru:/spring-boot-email-tools* <br />
+**Continuous Integration:**<br />
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/ com.github.robertotru/spring-boot-email-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.robertotru/spring-boot-email-tools)
+<br />
+[![Build Status](https://travis-ci.org/robertotru/spring-boot-email-tools.svg?branch=master)](https://travis-ci.org/robertotru/spring-boot-email-tools)
+[![Coverage Status](https://coveralls.io/repos/robertotru/spring-boot-email-tools/badge.svg?branch=master&service=github)](https://coveralls.io/github/robertotru/spring-boot-email-tools?branch=master)
+[![codecov.io](https://codecov.io/github/robertotru/spring-boot-email-tools/coverage.svg?branch=master)](https://codecov.io/github/robertotru/spring-boot-email-tools?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/7a4364b93df6473fb18a597e900edceb)](https://www.codacy.com/app/roberto-trunfio/spring-boot-email-tools)
+
+![codecov.io](https://codecov.io/github/robertotru/spring-boot-email-tools/branch.svg?branch=master)
+
 
 ## Dependency
+Latest release is:
 
 ```xml
 <dependency>
-    <groupId>spring-boot-utils</groupId>
-    <artifactId>spring-boot-email</artifactId>
-    <version>${release-version}</version>
+    <groupId>com.github.robertotru</groupId>
+    <artifactId>spring-boot-email-tools</artifactId>
+    <version>0.1.0</version>
 </dependency>
 ```
 
@@ -172,7 +187,7 @@ This is required to set the a proper content-id.
 
 ## Exception handling
 
-This library uses Zalando's [Problems for Spring Web MVC library](https://github.com/zalando/problem-spring-web). To have an explicit handling of library specificy exceptions thrown by spring-boot-email-tools, just define your controller advice as follows. 
+This library uses Zalando's [Problems for Spring Web MVC library](https://github.com/zalando/problem-spring-web). To have an explicit handling of library specificy exceptions thrown by spring-boot-email-tools, just define your controller advice as follows.
 
 ```java
 @ControllerAdvice
