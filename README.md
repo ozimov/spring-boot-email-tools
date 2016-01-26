@@ -6,7 +6,7 @@ A set of services and tools for sending emails in a **Spring Boot** application 
 **Latest Release:** *0.1.0*<br />
 **Latest Artifacts:** * com.github.robertotru:/spring-boot-email-tools* <br />
 **Continuous Integration:**<br />
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/ com.github.robertotru/spring-boot-email-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.robertotru/spring-boot-email-tools)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.robertotru/spring-boot-email-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.robertotru/spring-boot-email-tools)
 <br />
 [![Build Status](https://travis-ci.org/robertotru/spring-boot-email-tools.svg?branch=master)](https://travis-ci.org/robertotru/spring-boot-email-tools)
 [![Coverage Status](https://coveralls.io/repos/robertotru/spring-boot-email-tools/badge.svg?branch=master&service=github)](https://coveralls.io/github/robertotru/spring-boot-email-tools?branch=master)
