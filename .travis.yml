@@ -17,9 +17,8 @@ script:
     - mvn -U -B -V test --fail-at-end -Dsource.skip=true -Dmaven.javadoc.skip=true
 
 after_success:
-  - jdk_switcher use oraclejdk8
   - mvn clean test jacoco:report coveralls:report
-  - codecov --build "$TRAVIS_JOB_NUMBER-jdk8"
+  - codecov
 
 notifications:
     email:
