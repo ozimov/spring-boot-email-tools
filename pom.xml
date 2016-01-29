@@ -126,8 +126,14 @@
         </dependency>
         <dependency>
             <groupId>it.ozimov</groupId>
+            <artifactId>guava-hamcrest-matchers</artifactId>
+            <version>0.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.ozimov</groupId>
             <artifactId>java8-hamcrest-matchers</artifactId>
-            <version>0.3.0</version>
+            <version>0.4.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
