@@ -26,6 +26,7 @@ import open.springboot.mail.model.impl.InlinePictureImpl;
 import open.springboot.mail.service.Exception.CannotSendEmailException;
 import open.springboot.mail.service.TemplateService;
 import open.springboot.mail.utils.EmailToMimeMessage;
+import org.junit.Rule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
