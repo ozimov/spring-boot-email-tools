@@ -200,7 +200,7 @@ public class ExceptionHandling implements EmailConversionAdviceTrait {
 
 Here are listed the backlog for the features to be added to the library in the near future:
 * Quartz scheduler for handling newsletter
-* Email queuing using asyncronous services
+* Email queuing using priorities
 
 Any contribution is welcome.
 
