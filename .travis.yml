@@ -13,12 +13,11 @@ before_script:
   - curl http://www.jpm4j.org/install/script | sh
 
 script:
-  - jdk_switcher use oraclejdk8
-    - mvn -U -B -V test --fail-at-end -Dsource.skip=true -Dmaven.javadoc.skip=true
+  - mvn -U -B -V test --fail-at-end -Dsource.skip=true -Dmaven.javadoc.skip=true
 
 after_success:
-  - mvn clean test jacoco:report coveralls:report
-  - codecov
+  - mvn clean test jacoco:report
+  - codecov --build "$TRAVIS_JOB_NUMBER-jdk8"
 
 notifications:
     email:
