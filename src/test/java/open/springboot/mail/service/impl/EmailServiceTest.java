@@ -30,6 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -65,6 +66,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EmailServiceTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Mock
     private JavaMailSender javaMailSender;
@@ -174,15 +178,19 @@ public class EmailServiceTest {
         verify(templateService, times(1)).mergeTemplateIntoString(any(String.class), any(Map.class));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void sendMailWithoutTemplateShouldThrowWhenEmailIsNull() {
+        //Arrange
+        thrown.expect(NullPointerException.class);
+
         //Act
         mailService.send(null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void sendMailWithTemplateShouldThrowWhenEmailIsNull() throws CannotSendEmailException {
         //Arrange
+        thrown.expect(NullPointerException.class);
         final String imageName = "100_percent_free.jpg";
 
         final File inlineImageFile = new File(getClass().getClassLoader()
@@ -193,10 +201,11 @@ public class EmailServiceTest {
                 getInlinePicture(inlineImageFile, imageName));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void sendMailWithTemplateShouldThrowWhenTemplateIsNull()
             throws CannotSendEmailException, UnsupportedEncodingException {
         //Arrange
+        thrown.expect(NullPointerException.class);
         final Email email = getSimpleMail();
         final String imageName = "100_percent_free.jpg";
 
@@ -208,9 +217,10 @@ public class EmailServiceTest {
                 getInlinePicture(inlineImageFile, imageName));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void sendMailWithTemplateAndInlinePictureThrowWhenPictureIsNull() throws IOException, CannotSendEmailException, TemplateException {
         //Arrange
+        thrown.expect(NullPointerException.class);
         final Email email = getSimpleMail();
         assertThat(email.getSentAt(), is(nullValue()));
 
@@ -219,8 +229,6 @@ public class EmailServiceTest {
         //Act
         mailService.send(email, "never_called.ftl", Maps.newHashMap(), null);
     }
-
-
 
     private InlinePicture getInlinePicture(final File inlineImageFile, final String imageName){
         return InlinePictureImpl.builder()
