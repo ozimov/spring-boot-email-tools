@@ -31,10 +31,12 @@ import java.util.TreeSet;
 
 public class PriorityQueueSchedulerService implements SchedulerService {
 
-    private long DELTA = 1000; //millisecs elapsed form the call of the send method and the actual sending by SMTP server
+    private static final long DELTA = 1000; //millisecs elapsed form the call of the send method and the actual sending by SMTP server
     private static final int DEFAULT_N_OF_PRIORITY_LEVELS = 10;
 
     private static final PriorityQueueSchedulerService singleton;
+
+    private Long timeOfNextScheduledMessage;
 
     static {
         Integer numberOfPriorirtyLevels;
@@ -68,7 +70,9 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         priorityLevel = Math.max(0, Math.min(priorityLevel, queues.length - 1)); //the priority level must be between 0 and numberOfPriorirtyLevels-1
         EmailSchedulingWrapper esw = new EmailSchedulingWrapper(mimeEmail, scheduledDate, priorityLevel);
         queues[priorityLevel].add(esw);
-        notify();
+        if (timeOfNextScheduledMessage==null || scheduledDate.getTime()<timeOfNextScheduledMessage) {
+            notify();
+        }
     }
 
     @Override
@@ -76,12 +80,14 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         priorityLevel = Math.max(0, Math.min(priorityLevel, queues.length - 1));
         EmailTemplateSchedulingWrapper esw = new EmailTemplateSchedulingWrapper(mimeEmail, scheduledDate, priorityLevel, template, modelObject, inlinePictures);
         queues[priorityLevel].add(esw);
-        notify();
+        if (timeOfNextScheduledMessage==null || scheduledDate.getTime()<timeOfNextScheduledMessage) {
+            notify();
+        }
     }
 
     private synchronized EmailSchedulingWrapper dequeue() throws InterruptedException {
         EmailSchedulingWrapper esw = null;
-        Long nextMessageTime = null;
+        timeOfNextScheduledMessage = null;
         while (esw == null) {
             //try to find a message in queue
             long now = System.currentTimeMillis();
@@ -93,18 +99,18 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                         esw = q.pollFirst();
                         break;
                     } else {
-                        if (nextMessageTime == null || time < nextMessageTime) {
-                            nextMessageTime = time;
+                        if (timeOfNextScheduledMessage == null || time < timeOfNextScheduledMessage) {
+                            timeOfNextScheduledMessage = time;
                         }
                     }
                 }
             }
             if (esw == null) {
                 //no message was found, let's sleep, some message may arrive in the meanwhile
-                if (nextMessageTime==null) { //all the queues are empty
+                if (timeOfNextScheduledMessage==null) { //all the queues are empty
                     wait(); //wait for a new email to be scheduled
                 } else {
-                    long waitTime=nextMessageTime-System.currentTimeMillis()-DELTA;
+                    long waitTime=timeOfNextScheduledMessage-System.currentTimeMillis()-DELTA;
                     if (waitTime>0) {
                         wait(waitTime); //wait before sending the most imminent scheduled email
                     }
