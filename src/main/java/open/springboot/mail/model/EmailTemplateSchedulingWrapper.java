@@ -16,11 +16,15 @@
 
 package open.springboot.mail.model;
 
+import lombok.Getter;
 import lombok.NonNull;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 
+
+@Getter
 public class EmailTemplateSchedulingWrapper extends EmailSchedulingWrapper {
 
     private final String template;
@@ -39,15 +43,4 @@ public class EmailTemplateSchedulingWrapper extends EmailSchedulingWrapper {
         this.inlinePictures = inlinePictures;
     }
 
-    public String getTemplate() {
-        return template;
-    }
-
-    public Map<String, Object> getModelObject() {
-        return modelObject;
-    }
-
-    public InlinePicture[] getInlinePictures() {
-        return inlinePictures;
-    }
 }

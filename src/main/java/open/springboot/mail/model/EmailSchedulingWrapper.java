@@ -16,15 +16,19 @@
 
 package open.springboot.mail.model;
 
+import lombok.Getter;
 import lombok.NonNull;
 import open.springboot.mail.model.impl.EmailAttachmentImpl;
 
+import javax.annotation.Generated;
 import javax.mail.internet.InternetAddress;
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
+@Getter
 public class EmailSchedulingWrapper implements Comparable<EmailSchedulingWrapper> {
 
     private final Email email;
@@ -35,18 +39,6 @@ public class EmailSchedulingWrapper implements Comparable<EmailSchedulingWrapper
         this.email = email;
         this.scheduledDate = scheduledDate;
         this.priority = priority;
-    }
-
-    public Email getEmail() {
-        return email;
-    }
-
-    public Date getScheduledDate() {
-        return scheduledDate;
-    }
-
-    public int getPriority() {
-        return priority;
     }
 
     @Override

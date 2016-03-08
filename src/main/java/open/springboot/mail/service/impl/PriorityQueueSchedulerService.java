@@ -56,12 +56,12 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     private Consumer consumer;
 
     @Autowired
-    private PriorityQueueSchedulerService(
+    public PriorityQueueSchedulerService(
             final EmailService emailService,
-            @Value("${spring.mail.scheduler.priorityLevels ?: 10}") final int numberOfPriorirtyLevels) {
+            @Value("${spring.mail.scheduler.priorityLevels ?: 10}") final int numberOfPriorityLevels) {
         this.emailService = emailService;
-        queues = new TreeSet[numberOfPriorirtyLevels];
-        for (int i = 0; i < numberOfPriorirtyLevels; i++) {
+        queues = new TreeSet[numberOfPriorityLevels];
+        for (int i = 0; i < numberOfPriorityLevels; i++) {
             queues[i] = new TreeSet<>();
         }
         consumer = new Consumer();
@@ -135,7 +135,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     class Consumer extends Thread {
 
-        private boolean canRun;
+        private boolean canRun=true;
 
         public void run() {
             log.info("Email scheduler consumer started");

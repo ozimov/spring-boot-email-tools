@@ -28,6 +28,7 @@ import open.springboot.mail.service.TemplateService;
 import open.springboot.mail.utils.EmailToMimeMessage;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.rules.ExpectedException;
