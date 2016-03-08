@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.2.RELEASE</version>
+        <version>1.3.3.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -50,9 +50,20 @@
 
     <developers>
         <developer>
+            <id>gmmazzeo</id>
+            <name>Massimiliano Giuseppem Mazzeo</name>
+            <email>gmmazzeo@gmail.com</email>
+            <organization>University of California, Los Angeles</organization>
+            <organizationUrl>http://www.ucla.edu</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
             <id>rtrunfio</id>
             <name>Roberto Trunfio</name>
-            <email>roberto.trunfio@zalando.de</email>
+            <email>roberto.trunfio@gmail.com</email>
             <organization>Zalando SE</organization>
             <organizationUrl>http://www.zalando.de</organizationUrl>
             <roles>

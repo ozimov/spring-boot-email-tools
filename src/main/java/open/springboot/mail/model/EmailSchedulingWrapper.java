@@ -16,6 +16,7 @@
 
 package open.springboot.mail.model;
 
+import lombok.NonNull;
 import open.springboot.mail.model.impl.EmailAttachmentImpl;
 
 import javax.mail.internet.InternetAddress;
@@ -26,11 +27,11 @@ import java.util.Locale;
 
 public class EmailSchedulingWrapper implements Comparable<EmailSchedulingWrapper> {
 
-    Email email;
-    Date scheduledDate;
-    int priority;
+    private final Email email;
+    private final Date scheduledDate;
+    private final int priority;
 
-    public EmailSchedulingWrapper(Email email, Date scheduledDate, int priority) {
+    public EmailSchedulingWrapper(@NonNull final Email email, @NonNull final Date scheduledDate, @NonNull final int priority) {
         this.email = email;
         this.scheduledDate = scheduledDate;
         this.priority = priority;

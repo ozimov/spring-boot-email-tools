@@ -17,6 +17,7 @@
 package open.springboot.mail.model;
 
 import lombok.Getter;
+import lombok.NonNull;
 
 @Getter
 public enum ImageType {
@@ -25,11 +26,10 @@ public enum ImageType {
     JPEG("jpeg", "image/jpeg"),
     PNG("png", "image/png");
 
-
     private final String extension;
     private final String contentType;
 
-    ImageType(final String extension, final String contentType){
+    ImageType(@NonNull final String extension, @NonNull final String contentType){
         this.extension = extension;
         this.contentType = contentType;
     }

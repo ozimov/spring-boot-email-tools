@@ -19,6 +19,7 @@ package open.springboot.mail.service;
 import open.springboot.mail.model.Email;
 import open.springboot.mail.model.InlinePicture;
 import open.springboot.mail.service.Exception.CannotSendEmailException;
+import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Date;

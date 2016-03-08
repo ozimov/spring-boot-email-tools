@@ -16,16 +16,23 @@
 
 package open.springboot.mail.model;
 
+import lombok.NonNull;
+
 import java.util.Date;
 import java.util.Map;
 
 public class EmailTemplateSchedulingWrapper extends EmailSchedulingWrapper {
 
-    String template;
-    Map<String, Object> modelObject;
-    InlinePicture[] inlinePictures;
+    private final String template;
+    private final Map<String, Object> modelObject;
+    private final InlinePicture[] inlinePictures;
 
-    public EmailTemplateSchedulingWrapper(Email email, Date scheduledDate, int priority, String template, Map<String, Object> modelObject, InlinePicture[] inlinePictures) {
+    public EmailTemplateSchedulingWrapper(@NonNull final Email email,
+                                          @NonNull final Date scheduledDate,
+                                          @NonNull final int priority,
+                                          @NonNull final String template,
+                                          @NonNull final Map<String, Object> modelObject,
+                                          @NonNull final InlinePicture[] inlinePictures) {
         super(email, scheduledDate, priority);
         this.template = template;
         this.modelObject = modelObject;
