@@ -7,7 +7,7 @@
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-tools</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.1</version>
+    <version>0.2.0-SNAPSHOT</version>
 
     <name>SpringBootEmail</name>
     <description>Utilities to deal with emails in Spring Boot using Freemarker templating</description>
