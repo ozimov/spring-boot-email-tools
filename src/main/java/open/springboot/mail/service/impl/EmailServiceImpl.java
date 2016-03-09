@@ -16,7 +16,6 @@
 
 package open.springboot.mail.service.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import freemarker.template.TemplateException;
 import lombok.NonNull;
@@ -37,7 +36,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;

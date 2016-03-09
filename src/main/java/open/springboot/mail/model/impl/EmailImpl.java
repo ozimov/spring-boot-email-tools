@@ -28,7 +28,6 @@ import open.springboot.mail.model.Email;
 import javax.mail.internet.InternetAddress;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
@@ -58,9 +57,13 @@ public class EmailImpl implements Email, Serializable {
 
     private Collection<InternetAddress> bcc;
 
-    private @NonNull String subject;
+    private
+    @NonNull
+    String subject;
 
-    private @NonNull String body;
+    private
+    @NonNull
+    String body;
 
     private Collection<EmailAttachmentImpl> attachments;
 

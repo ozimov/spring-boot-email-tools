@@ -16,7 +16,6 @@
 
 package open.springboot.mail.model;
 
-import lombok.NonNull;
 import open.springboot.mail.model.impl.EmailAttachmentImpl;
 
 import javax.mail.internet.InternetAddress;

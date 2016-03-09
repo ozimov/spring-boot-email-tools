@@ -16,6 +16,7 @@
 
 package open.springboot.mail.service.impl;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import open.springboot.mail.model.Email;
 import open.springboot.mail.model.EmailSchedulingWrapper;
@@ -28,11 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeSet;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Objects.isNull;
@@ -69,7 +72,10 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     }
 
     @Override
-    public synchronized void schedule(final Email mimeEmail, final Date scheduledDate, final int priorityLevel) {
+    public synchronized void schedule(@NonNull final Email mimeEmail, @NonNull final Date scheduledDate,
+                                      @Nonnegative final int priorityLevel) {
+        checkArgument(priorityLevel>=0, "The priority level cannot be negative");
+
         //the priority level must be between 0 and numberOfPriorirtyLevels-1
         final int realPriorityLevel = max(0, min(priorityLevel, queues.length - 1));
         final EmailSchedulingWrapper esw = new EmailSchedulingWrapper(mimeEmail, scheduledDate, realPriorityLevel);
@@ -80,9 +86,12 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     }
 
     @Override
-    public synchronized void schedule(final Email mimeEmail, final String template, final Map<String, Object> modelObject,
-                                      final Date scheduledDate, final int priorityLevel,
+    public synchronized void schedule(@NonNull final Email mimeEmail, @NonNull final String template,
+                                      @NonNull final Map<String, Object> modelObject,
+                                      @NonNull final Date scheduledDate, @Nonnegative final int priorityLevel,
                                       final InlinePicture... inlinePictures) throws CannotSendEmailException {
+        checkArgument(priorityLevel>=0, "The priority level cannot be negative");
+
         final int realPriorityLevel = max(0, min(priorityLevel, queues.length - 1));
         final EmailTemplateSchedulingWrapper esw = new EmailTemplateSchedulingWrapper(mimeEmail, scheduledDate, realPriorityLevel,
                 template, modelObject, inlinePictures);
@@ -98,12 +107,12 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         while (isNull(esw)) {
             //try to find a message in queue
             final long now = System.currentTimeMillis();
-            for (TreeSet<EmailSchedulingWrapper> q : queues) {
-                if (!q.isEmpty()) {
-                    long time = q.first().getScheduledDate().getTime();
+            for (final TreeSet<EmailSchedulingWrapper> queue : queues) {
+                if (!queue.isEmpty()) {
+                    long time = queue.first().getScheduledDate().getTime();
                     if (time - now <= DELTA) {
                         //message found!
-                        esw = q.pollFirst();
+                        esw = queue.pollFirst();
                         break;
                     } else {
                         if (isNull(timeOfNextScheduledMessage) || time < timeOfNextScheduledMessage) {
@@ -114,7 +123,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
             }
             if (isNull(esw)) {
                 //no message was found, let's sleep, some message may arrive in the meanwhile
-                if (timeOfNextScheduledMessage==null) { //all the queues are empty
+                if (isNull(timeOfNextScheduledMessage)) { //all the queues are empty
                     wait(); //wait for a new email to be scheduled
                 } else {
                     final long waitTime=timeOfNextScheduledMessage - System.currentTimeMillis()-DELTA;
