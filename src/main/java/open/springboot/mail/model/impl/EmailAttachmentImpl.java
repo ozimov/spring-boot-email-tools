@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 /**
  * Plain text email.
  *
@@ -48,19 +50,23 @@ import java.util.Optional;
 @ToString(exclude = "attachmentData")
 @EqualsAndHashCode
 @Slf4j
-public class EmailAttachmentImpl implements EmailAttachment{
+public class EmailAttachmentImpl implements EmailAttachment {
 
     private static final long serialVersionUID = -3307831714212032363L;
 
     @Getter
-    private @NonNull String attachmentName;
+    private
+    @NonNull
+    String attachmentName;
 
     @Getter
-    private @NonNull byte[] attachmentData;
+    private
+    @NonNull
+    byte[] attachmentData;
 
     private MediaType mediaType;
 
-    public ByteArrayResource getInputStream(){
+    public ByteArrayResource getInputStream() {
         return new ByteArrayResource(attachmentData);
     }
 
@@ -69,7 +75,7 @@ public class EmailAttachmentImpl implements EmailAttachment{
 
         final MediaType mediaType;
         try {
-            mediaType = Optional.ofNullable(this.mediaType)
+            mediaType = ofNullable(this.mediaType)
                     .orElse(TikaDetector.tikaDetector().detect(attachmentDataStream, attachmentName));
         } catch (IOException e) {
             log.error("The MimeType is not set. Tried to guess it but something went wrong.", e);
@@ -77,7 +83,6 @@ public class EmailAttachmentImpl implements EmailAttachment{
         }
         return mediaType;
     }
-
 
 
 }

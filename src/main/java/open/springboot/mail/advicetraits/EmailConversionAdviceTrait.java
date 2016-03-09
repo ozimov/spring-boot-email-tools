@@ -30,17 +30,15 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
  * Definition of the advice trait for the {@linkplain EmailConversionException}.
  * It must be used in combination with a class annotated with
  * {@linkplain org.springframework.web.bind.annotation.ControllerAdvice}, e.g.
- *
+ * <p/>
  * <code>
- *     @ControllerAdvice
- *      class ExceptionHandling implements EmailConversionAdviceTrait {
  *
- *      }
+ * @ControllerAdvice class ExceptionHandling implements EmailConversionAdviceTrait {
+ * <p/>
+ * }
  * </code>
- *
  * @see <a href="https://github.com/zalando/problem-spring-web/blob/master/README.md">problem-spring-web</a>
  * official page on <em>GitHub</em>.
- *
  */
 public interface EmailConversionAdviceTrait extends AdviceTrait {
 

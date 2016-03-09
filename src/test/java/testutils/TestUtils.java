@@ -14,34 +14,29 @@
  * limitations under the License.
  */
 
-package open.springboot.mail.model.impl;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import open.springboot.mail.model.ImageType;
-import open.springboot.mail.model.InlinePicture;
+package testutils;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-@Builder
-public class InlinePictureImpl implements InlinePicture {
+public class TestUtils {
 
-    private
-    @NonNull
-    ImageType imageType;
+    private TestUtils() {
+    }
 
-    private
-    @NonNull
-    File file;
+    public static File loadFile(final String path) {
+        return new File(TestUtils.class.getClassLoader()
+                .getResource(path).getFile());
+    }
 
-    private
-    @NonNull
-    String templateName;
+    public static byte[] loadFileIntoByte(final String path) throws IOException {
+        return Files.readAllBytes(loadFile(path).toPath());
+    }
+
+    public static String readFile(final String path) throws IOException {
+        return new String(loadFileIntoByte(path), Charset.forName("UTF-8"));
+    }
 
 }
