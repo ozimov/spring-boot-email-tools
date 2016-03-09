@@ -27,7 +27,7 @@ public interface EmailService {
 
     /**
      * Send an email message.
-     * <p>
+     * <p/>
      * The send date is set or overridden if any is present.
      *
      * @param mimeEmail an email to be send
@@ -36,7 +36,7 @@ public interface EmailService {
 
     /**
      * Send an email message.
-     * <p>
+     * <p/>
      * The body is ignored if present.
      * The send date is set or overridden if any is present.
      *
@@ -47,6 +47,6 @@ public interface EmailService {
      */
     MimeMessage send(Email mimeEmail,
                      String template, Map<String, Object> modelObject,
-                     InlinePicture ... inlinePictures) throws CannotSendEmailException;
+                     InlinePicture... inlinePictures) throws CannotSendEmailException;
 
 }

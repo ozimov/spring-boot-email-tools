@@ -31,8 +31,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.function.Function;
 
 import static com.google.common.base.Optional.fromNullable;

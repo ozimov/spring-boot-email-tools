@@ -39,19 +39,17 @@ public class TikaDetector {
 
     private Detector detector;
 
-    private enum Singleton {
-        INSTANCE;
-
-        final TikaDetector singleton = new TikaDetector();
+    public TikaDetector() {
+        final TikaConfig config = TikaConfig.getDefaultConfig();
+        detector = config.getDetector();
     }
 
     public static TikaDetector tikaDetector() {
         return Singleton.INSTANCE.singleton;
     }
 
-    public TikaDetector() {
-        final TikaConfig config = TikaConfig.getDefaultConfig();
-        detector = config.getDetector();
+    private static org.springframework.http.MediaType toSpringMediaType(final MediaType mediaType) {
+        return org.springframework.http.MediaType.valueOf(mediaType.toString());
     }
 
     /**
@@ -88,8 +86,10 @@ public class TikaDetector {
         return toSpringMediaType(mediaType);
     }
 
-    private static org.springframework.http.MediaType toSpringMediaType(final MediaType mediaType) {
-        return org.springframework.http.MediaType.valueOf(mediaType.getType());
+    private enum Singleton {
+        INSTANCE;
+
+        final TikaDetector singleton = new TikaDetector();
     }
 
 }

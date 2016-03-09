@@ -19,7 +19,8 @@ package open.springboot.mail.service.Exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value= HttpStatus.FAILED_DEPENDENCY, reason="Something went wrong when processing the email template")  // 424
+@ResponseStatus(value = HttpStatus.FAILED_DEPENDENCY, reason = "Something went wrong when processing the email template")
+// 424
 public class CannotSendEmailException extends Exception {
 
     private static final long serialVersionUID = -4063622108151903645L;

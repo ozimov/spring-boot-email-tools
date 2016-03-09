@@ -26,12 +26,11 @@ import open.springboot.mail.model.impl.InlinePictureImpl;
 import open.springboot.mail.service.Exception.CannotSendEmailException;
 import open.springboot.mail.service.TemplateService;
 import open.springboot.mail.utils.EmailToMimeMessage;
-import org.junit.Rule;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -198,7 +197,7 @@ public class EmailServiceTest {
                 .getResource("images" + File.separator + imageName).getFile());
 
         //Act
-        mailService.send(null,"never_called.ftl", Maps.newHashMap(),
+        mailService.send(null, "never_called.ftl", Maps.newHashMap(),
                 getInlinePicture(inlineImageFile, imageName));
     }
 
@@ -231,7 +230,7 @@ public class EmailServiceTest {
         mailService.send(email, "never_called.ftl", Maps.newHashMap(), null);
     }
 
-    private InlinePicture getInlinePicture(final File inlineImageFile, final String imageName){
+    private InlinePicture getInlinePicture(final File inlineImageFile, final String imageName) {
         return InlinePictureImpl.builder()
                 .file(inlineImageFile)
                 .imageType(ImageType.JPG)

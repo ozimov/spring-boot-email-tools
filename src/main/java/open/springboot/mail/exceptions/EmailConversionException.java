@@ -18,7 +18,9 @@ package open.springboot.mail.exceptions;
 
 public class EmailConversionException extends RuntimeException {
 
-    public EmailConversionException() { super(); }
+    public EmailConversionException() {
+        super();
+    }
 
     public EmailConversionException(final String message) {
         super(message);
@@ -33,7 +35,7 @@ public class EmailConversionException extends RuntimeException {
     }
 
     public EmailConversionException(final String message, final Throwable cause,
-                                             final boolean enableSuppression, final boolean writableStackTrace) {
+                                    final boolean enableSuppression, final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }
