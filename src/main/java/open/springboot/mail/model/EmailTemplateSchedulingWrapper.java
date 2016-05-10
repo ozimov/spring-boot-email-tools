@@ -19,8 +19,7 @@ package open.springboot.mail.model;
 import lombok.Getter;
 import lombok.NonNull;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.Map;
 
 
@@ -32,12 +31,12 @@ public class EmailTemplateSchedulingWrapper extends EmailSchedulingWrapper {
     private final InlinePicture[] inlinePictures;
 
     public EmailTemplateSchedulingWrapper(@NonNull final Email email,
-                                          @NonNull final Date scheduledDate,
-                                          @NonNull final int priority,
+                                          @NonNull final OffsetDateTime scheduledDateTime,
+                                          final int priority,
                                           @NonNull final String template,
                                           @NonNull final Map<String, Object> modelObject,
                                           @NonNull final InlinePicture[] inlinePictures) {
-        super(email, scheduledDate, priority);
+        super(email, scheduledDateTime, priority);
         this.template = template;
         this.modelObject = modelObject;
         this.inlinePictures = inlinePictures;

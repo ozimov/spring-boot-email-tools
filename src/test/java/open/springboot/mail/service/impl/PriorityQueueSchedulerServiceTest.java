@@ -1,51 +1,40 @@
 package open.springboot.mail.service.impl;
 
-import com.google.common.collect.ImmutableMap;
 import open.springboot.mail.model.Email;
 import open.springboot.mail.service.EmailService;
-import open.springboot.mail.service.TemplateService;
-import org.junit.Before;
+import open.springboot.mail.utils.TimeUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import testutils.TestApplication;
 
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.time.Instant;
-import java.util.Date;
-import java.util.Map;
+import java.time.OffsetDateTime;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static junit.framework.TestCase.fail;
 import static open.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMail;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringApplicationConfiguration(classes = TestApplication.class)
 @WebIntegrationTest("server.port=0")
 public class PriorityQueueSchedulerServiceTest {
 
-    private static final long TIMEOUT = 10000L;
-    private static final long SUFFICIENT_WAIT = 2000L;
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
-    private static final int NUMBER_OF_PRIORITY_LEVELS = 10;
+    @Rule
+    public Timeout globalTimeout= new Timeout(10, TimeUnit.SECONDS);
 
     @Mock
     private EmailService emailService;
@@ -53,27 +42,61 @@ public class PriorityQueueSchedulerServiceTest {
     @Mock
     private MimeMessage mimeMessage;
 
-    private PriorityQueueSchedulerService priorityQueueSchedulerService;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() throws Exception {
-        priorityQueueSchedulerService = new PriorityQueueSchedulerService(emailService, NUMBER_OF_PRIORITY_LEVELS);
-    }
-
-    @Test(timeout = TIMEOUT)
+    @Test
     public void testAnEmailIsScheduled() throws Exception {
         //Arrange
+        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
         final Email email = getSimpleMail();
-        when(emailService.send(email)).thenReturn(mimeMessage);
 
         //Act
-        priorityQueueSchedulerService.schedule(email, new Date(), 0);
-        Thread.sleep(SUFFICIENT_WAIT);
+        priorityQueueSchedulerService.schedule(email, TimeUtils.offsetDateTimeNow(), 1);
+        Thread.sleep(oneSecondInMillis());
+
         //Assert
-        verify(emailService, times(1)).send(email);
+        verify(emailService).send(email);
     }
 
+    @Test
+    public void testPriorityIsRespected() throws Exception {
+        //Arrange
+        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(2);
+        final Email emailLowPriority = getSimpleMail(new InternetAddress("virgilio@marone.roma", "Publio Virgilio Marone"));
+        final Email emailHighPriority = getSimpleMail(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone"));
+
+        final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow();
+
+        //Act
+        priorityQueueSchedulerService.schedule(emailLowPriority, dateTime.plusSeconds(twoSeconds()), 1);
+        priorityQueueSchedulerService.schedule(emailHighPriority, dateTime.plusSeconds(twoSeconds()), 2);
+        Thread.sleep(fiveSecondsInMillis());
+
+        //Assert
+        final InOrder inOrder = inOrder(emailService);
+        inOrder.verify(emailService).send(emailHighPriority);
+        inOrder.verify(emailService).send(emailLowPriority);
+    }
+
+    private PriorityQueueSchedulerService scheduler(int numPriorityLevels){
+        return new PriorityQueueSchedulerService(emailService, numPriorityLevels);
+    }
+
+    private static long twoSeconds() {
+        return SECONDS.toSeconds(2);
+    }
+
+    private static long oneSecondInMillis() {
+        return SECONDS.toMillis(1);
+    }
+
+    private static long twoSecondsInMillis() {
+        return twoSeconds();
+    }
+
+    private static long threeSecondsInMillis() {
+        return SECONDS.toMillis(3);
+    }
+
+    private static long fiveSecondsInMillis() {
+        return SECONDS.toMillis(5);
+    }
 }

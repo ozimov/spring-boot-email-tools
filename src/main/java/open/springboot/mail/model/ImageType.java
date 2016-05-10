@@ -29,7 +29,7 @@ public enum ImageType {
     private final String extension;
     private final String contentType;
 
-    ImageType(@NonNull final String extension, @NonNull final String contentType){
+    ImageType(@NonNull final String extension, @NonNull final String contentType) {
         this.extension = extension;
         this.contentType = contentType;
     }

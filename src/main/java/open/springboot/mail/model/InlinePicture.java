@@ -26,7 +26,6 @@ public interface InlinePicture {
 
     /**
      * Return the name used in the template with the path to the resource.
-     * <p/>
      * The name has to be replaced by a proper cid.
      *
      * @return the name used in the template, included any path to folders.

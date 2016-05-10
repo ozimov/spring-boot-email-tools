@@ -186,16 +186,39 @@ final InlinePicture inlinePicture = InlinePictureImpl.builder()
 
 This is required to set the a proper content-id.
 
-## Exception handling
+## Email scheduling
 
-This library uses Zalando's [Problems for Spring Web MVC library](https://github.com/zalando/problem-spring-web). To have an explicit handling of library specificy exceptions thrown by spring-boot-email-tools, just define your controller advice as follows.
+The library supports email scheduling. Email can be set in different queues, from the one with
+ highest priority to the least important. Priority 1 is the highest.
+
+To define the number of priority levels, just add in the `application.properties` the following line:
+
+```properties
+spring.mail.scheduler.priorityLevels=10
+```
+
+Scheduling an email is actually easy. To schedule an email, just resort to the service
+`PriorityQueueSchedulerService`. The service allows to schedule an email with or without
+the use of a template engine...
 
 ```java
-@ControllerAdvice
-public class ExceptionHandling implements EmailConversionAdviceTrait {
+@Autowired
+private PriorityQueueSchedulerService scheduler;
 
+
+public void schedule (final Email mimeEmail, final OffsetDateTime scheduledDateTime, final int priorityLevel){
+  scheduler.schedule(mimeEmail, scheduledDateTime, priorityLevel);
 }
 ```
+
+Observe that `OffsetDateTime` must be used with UTC.
+
+
+Here we go, an email has been scheduled.
+
+To schedule an
+
+
 
 ## Future plans
 

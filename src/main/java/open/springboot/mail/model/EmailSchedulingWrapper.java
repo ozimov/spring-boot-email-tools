@@ -18,37 +18,37 @@ package open.springboot.mail.model;
 
 import lombok.Getter;
 import lombok.NonNull;
-import open.springboot.mail.model.impl.EmailAttachmentImpl;
 
-import javax.annotation.Generated;
-import javax.mail.internet.InternetAddress;
-import java.nio.charset.Charset;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Getter
 public class EmailSchedulingWrapper implements Comparable<EmailSchedulingWrapper> {
 
+    private UUID id = UUID.randomUUID();
     private final Email email;
-    private final Date scheduledDate;
+    private final OffsetDateTime scheduledDateTime;
     private final int priority;
 
-    public EmailSchedulingWrapper(@NonNull final Email email, @NonNull final Date scheduledDate, @NonNull final int priority) {
+    public EmailSchedulingWrapper(@NonNull final Email email, @NonNull final OffsetDateTime scheduledDateTime, final int priority) {
+        checkArgument(priority > 0, "Priority cannot be less than 1");
+
         this.email = email;
-        this.scheduledDate = scheduledDate;
+        this.scheduledDateTime = scheduledDateTime;
         this.priority = priority;
     }
 
     @Override
     public int compareTo(EmailSchedulingWrapper o) {
-        if (scheduledDate.before(o.getScheduledDate())) {
+        if (scheduledDateTime.isBefore(o.getScheduledDateTime())) {
             return -1;
-        } else if (scheduledDate.after(o.getScheduledDate())) {
+        } else if (scheduledDateTime.isAfter(o.getScheduledDateTime())) {
             return 1;
         } else {
             return Integer.compare(priority, o.getPriority());
         }
     }
+
 }

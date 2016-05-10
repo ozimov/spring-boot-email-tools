@@ -105,8 +105,8 @@ public class EmailToMimeMessageTest {
         assertThat(sentMessage.getContent(), is(email.getBody()));
     }
 
-    public static Email getSimpleMail() throws UnsupportedEncodingException {
-        return EmailImpl.builder().from(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone "))
+    public static Email getSimpleMail(InternetAddress from) throws UnsupportedEncodingException {
+        return EmailImpl.builder().from(from)
                 .replyTo(new InternetAddress("tullius.cicero@urbs.aeterna", "Marcus Tullius Cicero"))
                 .to(Lists.newArrayList(new InternetAddress("titus@de-rerum.natura", "Pomponius Attĭcus")))
                 .cc(Lists.newArrayList(new InternetAddress("tito55@de-rerum.natura", "Titus Lucretius Carus"),
@@ -116,6 +116,10 @@ public class EmailToMimeMessageTest {
                 .body(
                         "Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
                 .encoding(Charset.forName("UTF-8")).build();
+    }
+
+    public static Email getSimpleMail() throws UnsupportedEncodingException {
+        return getSimpleMail(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone"));
     }
 
     private static List<Address> toAddress(final Collection<InternetAddress> internetAddresses) {

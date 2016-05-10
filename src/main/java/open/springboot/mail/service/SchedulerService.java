@@ -19,9 +19,8 @@ package open.springboot.mail.service;
 import open.springboot.mail.model.Email;
 import open.springboot.mail.model.InlinePicture;
 import open.springboot.mail.service.Exception.CannotSendEmailException;
-import org.springframework.stereotype.Service;
 
-import javax.mail.internet.MimeMessage;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -30,14 +29,13 @@ public interface SchedulerService {
     /**
      * Schedules the sending of an email message.
      *
-     * @param mimeEmail an email to be sent
-     * @param scheduledDate the date-time at which the email should be sent
+     * @param mimeEmail     an email to be sent
+     * @param scheduledDateTime the date-time at which the email should be sent
      * @param priorityLevel the priority level for the email:
      *                      the emails with scheduledTime<=now are sent according to an order depending
      *                      on their priority level
      */
-    void schedule(Email mimeEmail,
-                         Date scheduledDate, int priorityLevel);
+    void schedule(Email mimeEmail, OffsetDateTime scheduledDateTime, int priorityLevel);
 
     /**
      * Schedules the sending of an email message.
@@ -45,15 +43,15 @@ public interface SchedulerService {
      * @param mimeEmail      an email to be sent
      * @param template       the reference to the template file
      * @param modelObject    the model object to be used for the template engine, it may be null
-     * @param scheduledDate  the date-time at which the email should be sent
-     * @param priorityLevel the priority level for the email:
-     *                      the emails with scheduledTime<=now are sent according to an order depending
-     *                      on their priority level
+     * @param scheduledDateTime  the date-time at which the email should be sent
+     * @param priorityLevel  the priority level for the email:
+     *                       the emails with scheduledTime<=now are sent according to an order depending
+     *                       on their priority level
      * @param inlinePictures list of pictures to be rendered inline in the template
      */
     void schedule(Email mimeEmail,
-                     String template, Map<String, Object> modelObject,
-                     Date scheduledDate, int priorityLevel,
-                     InlinePicture... inlinePictures) throws CannotSendEmailException;
+                  String template, Map<String, Object> modelObject,
+                  OffsetDateTime scheduledDateTime, int priorityLevel,
+                  InlinePicture... inlinePictures) throws CannotSendEmailException;
 
 }

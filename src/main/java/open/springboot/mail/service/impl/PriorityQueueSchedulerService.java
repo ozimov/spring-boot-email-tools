@@ -25,20 +25,25 @@ import open.springboot.mail.model.InlinePicture;
 import open.springboot.mail.service.EmailService;
 import open.springboot.mail.service.Exception.CannotSendEmailException;
 import open.springboot.mail.service.SchedulerService;
+import open.springboot.mail.utils.TimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static open.springboot.mail.utils.TimeUtils.now;
 
 @Service
 @Slf4j
@@ -61,7 +66,8 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     public PriorityQueueSchedulerService(
             final EmailService emailService,
             @Value("${spring.mail.scheduler.priorityLevels ?: 10}") final int numberOfPriorityLevels) {
-        this.emailService = emailService;
+        checkArgument(numberOfPriorityLevels > 0, "Expected at least one priority level");
+        this.emailService = requireNonNull(emailService);
         queues = new TreeSet[numberOfPriorityLevels];
         for (int i = 0; i < numberOfPriorityLevels; i++) {
             queues[i] = new TreeSet<>();
@@ -71,15 +77,15 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     }
 
     @Override
-    public synchronized void schedule(@NonNull final Email mimeEmail, @NonNull final Date scheduledDate,
+    public synchronized void schedule(@NonNull final Email mimeEmail, @NonNull final OffsetDateTime scheduledDateTime,
                                       final int priorityLevel) {
-        checkArgument(priorityLevel>=0, "The priority level cannot be negative");
+        checkPriorityLevel(priorityLevel);
 
-        //the priority level must be between 0 and numberOfPriorirtyLevels-1
-        final int realPriorityLevel = max(0, min(priorityLevel, queues.length - 1));
-        final EmailSchedulingWrapper esw = new EmailSchedulingWrapper(mimeEmail, scheduledDate, realPriorityLevel);
-        queues[priorityLevel].add(esw);
-        if (isNull(timeOfNextScheduledMessage) || scheduledDate.getTime()<timeOfNextScheduledMessage) {
+        final int realPriorityLevel = normalizePriority(priorityLevel);
+        final EmailSchedulingWrapper emailSchedulingWrapper = new EmailSchedulingWrapper(mimeEmail, scheduledDateTime, realPriorityLevel);
+        queues[priorityLevel - 1].add(emailSchedulingWrapper);
+        log.info("Scheduled email {} at UTC time {} with priority {}",mimeEmail, scheduledDateTime, priorityLevel);
+        if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
             notify();
         }
     }
@@ -87,53 +93,71 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     @Override
     public synchronized void schedule(@NonNull final Email mimeEmail, @NonNull final String template,
                                       @NonNull final Map<String, Object> modelObject,
-                                      @NonNull final Date scheduledDate, final int priorityLevel,
+                                      @NonNull final OffsetDateTime scheduledDateTime, final int priorityLevel,
                                       final InlinePicture... inlinePictures) throws CannotSendEmailException {
-        checkArgument(priorityLevel>=0, "The priority level cannot be negative");
+        checkPriorityLevel(priorityLevel);
 
-        final int realPriorityLevel = max(0, min(priorityLevel, queues.length - 1));
-        final EmailTemplateSchedulingWrapper esw = new EmailTemplateSchedulingWrapper(mimeEmail, scheduledDate, realPriorityLevel,
+        final int realPriorityLevel = normalizePriority(priorityLevel);
+        final EmailTemplateSchedulingWrapper emailTemplateSchedulingWrapper = new EmailTemplateSchedulingWrapper(mimeEmail, scheduledDateTime, realPriorityLevel,
                 template, modelObject, inlinePictures);
-        queues[priorityLevel].add(esw);
-        if (isNull(timeOfNextScheduledMessage) || scheduledDate.getTime()<timeOfNextScheduledMessage) {
+        queues[priorityLevel - 1].add(emailTemplateSchedulingWrapper);
+        log.info("Scheduled email {} at UTC time {} with priority {} with template",mimeEmail, scheduledDateTime, priorityLevel);
+        if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
             notify();
         }
     }
 
+    private int normalizePriority(int priorityLevel) {
+        //the priority level must be between 0 and numberOfPriorityLevels
+        final int maxLevel = queues.length;
+        if (priorityLevel > maxLevel) {
+            log.warn("Scheduled email with priority level {}, while priority level {} was requested. Reason: max level exceeded",
+                    maxLevel, priorityLevel);
+        }
+        return max(1, min(priorityLevel, maxLevel));
+    }
+
     private synchronized EmailSchedulingWrapper dequeue() throws InterruptedException {
-        EmailSchedulingWrapper esw = null;
+        EmailSchedulingWrapper emailSchedulingWrapper = null;
         timeOfNextScheduledMessage = null;
-        while (isNull(esw)) {
+        while (isNull(emailSchedulingWrapper)) {
             //try to find a message in queue
-            final long now = System.currentTimeMillis();
+            final long now = now();
             for (final TreeSet<EmailSchedulingWrapper> queue : queues) {
                 if (!queue.isEmpty()) {
-                    long time = queue.first().getScheduledDate().getTime();
+                    final long time = queue.first().getScheduledDateTime().toInstant().toEpochMilli();
+                    System.out.println(time);
+                    System.out.println(now);
+                    System.out.println(time-now);
                     if (time - now <= DELTA) {
                         //message found!
-                        esw = queue.pollFirst();
+                        emailSchedulingWrapper = queue.pollFirst();
                         break;
-                    } else {
-                        if (isNull(timeOfNextScheduledMessage) || time < timeOfNextScheduledMessage) {
-                            timeOfNextScheduledMessage = time;
-                        }
+                    } else if (isNull(timeOfNextScheduledMessage) || time < timeOfNextScheduledMessage) {
+                        timeOfNextScheduledMessage = time;
                     }
+
                 }
             }
-            if (isNull(esw)) {
+            if (isNull(emailSchedulingWrapper)) {
                 //no message was found, let's sleep, some message may arrive in the meanwhile
                 if (isNull(timeOfNextScheduledMessage)) { //all the queues are empty
                     wait(); //wait for a new email to be scheduled
                 } else {
-                    final long waitTime=timeOfNextScheduledMessage - System.currentTimeMillis()-DELTA;
-                    if (waitTime>0) {
+                    final long waitTime = timeOfNextScheduledMessage - now() - DELTA;
+                    if (waitTime > 0) {
                         wait(waitTime); //wait before sending the most imminent scheduled email
                     }
                 }
             }
         }
-        //here esw is the message to send
-        return esw;
+        System.out.println();
+        //here emailSchedulingWrapper is the message to send
+        return emailSchedulingWrapper;
+    }
+
+    private void checkPriorityLevel(int priorityLevel) {
+        checkArgument(priorityLevel > 0, "The priority level index cannot be negative");
     }
 
     @PreDestroy
@@ -143,22 +167,28 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     class Consumer extends Thread {
 
-        private boolean canRun=true;
+        private boolean canRun = true;
 
         public void run() {
             log.info("Email scheduler consumer started");
             while (canRun) {
                 try {
-                    final EmailSchedulingWrapper esw = dequeue();
-                    if (esw instanceof EmailTemplateSchedulingWrapper) {
-                        final EmailTemplateSchedulingWrapper etsw = (EmailTemplateSchedulingWrapper) esw;
+                    final EmailSchedulingWrapper emailSchedulingWrapper = dequeue();
+                    if (emailSchedulingWrapper instanceof EmailTemplateSchedulingWrapper) {
+                        final EmailTemplateSchedulingWrapper emailTemplateSchedulingWrapper =
+                                (EmailTemplateSchedulingWrapper) emailSchedulingWrapper;
                         try {
-                            emailService.send(etsw.getEmail(), etsw.getTemplate(), etsw.getModelObject(), etsw.getInlinePictures());
-                        } catch (CannotSendEmailException e) {
-                           log.error("An error occurred while sending the email", e);
+                            emailService.send(emailTemplateSchedulingWrapper.getEmail(),
+                                    emailTemplateSchedulingWrapper.getTemplate(),
+                                    emailTemplateSchedulingWrapper.getModelObject(),
+                                    emailTemplateSchedulingWrapper.getInlinePictures());
+                        } catch (final CannotSendEmailException e) {
+                            log.error("An error occurred while sending the email", e);
                         }
                     } else {
-                        emailService.send(esw.getEmail());
+                        System.out.println("SENDING EMAIL");
+                        System.out.println(emailSchedulingWrapper.getEmail());
+                        emailService.send(emailSchedulingWrapper.getEmail());
                     }
                 } catch (final InterruptedException e) {
                     log.error("Email scheduler consumer interrupted", e);
@@ -172,4 +202,5 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         }
 
     }
+
 }
