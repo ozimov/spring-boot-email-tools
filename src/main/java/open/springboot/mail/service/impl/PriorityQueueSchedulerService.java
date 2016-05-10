@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.Map;
@@ -73,7 +72,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     @Override
     public synchronized void schedule(@NonNull final Email mimeEmail, @NonNull final Date scheduledDate,
-                                      @Nonnegative final int priorityLevel) {
+                                      final int priorityLevel) {
         checkArgument(priorityLevel>=0, "The priority level cannot be negative");
 
         //the priority level must be between 0 and numberOfPriorirtyLevels-1
@@ -88,7 +87,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     @Override
     public synchronized void schedule(@NonNull final Email mimeEmail, @NonNull final String template,
                                       @NonNull final Map<String, Object> modelObject,
-                                      @NonNull final Date scheduledDate, @Nonnegative final int priorityLevel,
+                                      @NonNull final Date scheduledDate, final int priorityLevel,
                                       final InlinePicture... inlinePictures) throws CannotSendEmailException {
         checkArgument(priorityLevel>=0, "The priority level cannot be negative");
 

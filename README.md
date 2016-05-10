@@ -1,18 +1,18 @@
 # spring-boot-email-tools
 A set of services and tools for sending emails in a **Spring Boot** application using *Freemarker* template engine.
 
-**Source Website:** *[github.com/robertotru/spring-boot-email-tools](http://github.com/robertotru/spring-boot-email-tools/)*<br />
+**Source Website:** *[github.com/ozimov/spring-boot-email-tools](http://github.com/ozimov/spring-boot-email-tools/)*<br />
 
-**Latest Release:** *0.1.0*<br />
-**Latest Artifacts:** *com.github.robertotru:/spring-boot-email-tools* <br />
+**Latest Release:** *0.2.0*<br />
+**Latest Artifacts:** *it.ozimov:/spring-boot-email-tools* <br />
 **Continuous Integration:**<br />
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.robertotru/spring-boot-email-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.robertotru/spring-boot-email-tools)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/it.ozimov/spring-boot-email-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.ozimov/spring-boot-email-tools)
 <br />
-[![Build Status](https://travis-ci.org/robertotru/spring-boot-email-tools.svg?branch=master)](https://travis-ci.org/robertotru/spring-boot-email-tools)
-[![codecov.io](https://codecov.io/github/robertotru/spring-boot-email-tools/coverage.svg?branch=master)](https://codecov.io/github/robertotru/spring-boot-email-tools?branch=master)
+[![Build Status](https://travis-ci.org/ozimov/spring-boot-email-tools.svg?branch=master)](https://travis-ci.org/ozimov/spring-boot-email-tools)
+[![codecov.io](https://codecov.io/github/ozimov/spring-boot-email-tools/coverage.svg?branch=master)](https://codecov.io/github/ozimov/spring-boot-email-tools?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/7a4364b93df6473fb18a597e900edceb)](https://www.codacy.com/app/roberto-trunfio/spring-boot-email-tools)
 
-![codecov.io](https://codecov.io/github/robertotru/spring-boot-email-tools/branch.svg?branch=master)
+![codecov.io](https://codecov.io/github/ozimov/spring-boot-email-tools/branch.svg?branch=master)
 
 
 ## Dependency
@@ -22,7 +22,7 @@ Latest release is:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-tools</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -93,6 +93,7 @@ public void sendEmailWithTemplating(){
             .from(new InternetAddress("divus.iulius@mala-tempora.currunt", "Gaius Iulius Caesar"))
             .to(Lists.newArrayList(new InternetAddress(tyrannicida.getEmail(), tyrannicida.getName())))
             .subject("Idus Martii")
+            .body("")//Empty body
             .encoding(Charset.forName("UTF-8")).build();
         //Defining the model object for the given Freemarker template
         final Map<String, Object> modelObject = new HashMap<>();
@@ -140,6 +141,7 @@ public void sendEmailWithTemplatingAndInlineImage(){
             .from(new InternetAddress("divus.iulius@mala-tempora.currunt", "Gaius Iulius Caesar"))
             .to(Lists.newArrayList(new InternetAddress("brutus@sic-semper.tyrannis", "Marcus Iunius Brutus Caepio")))
             .subject("Idus Martii")
+            .body("")//Empty body
             .encoding(Charset.forName("UTF-8")).build();
        //Defining the model object for the given Freemarker template
        final Map<String, Object> modelObject = new HashMap<>();
@@ -217,3 +219,10 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+
+==============================================
+[![forthebadge](http://forthebadge.com/images/badges/built-by-developers.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/pretty-risque.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/makes-people-smile.svg)](http://forthebadge.com)
