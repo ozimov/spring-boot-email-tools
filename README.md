@@ -3,7 +3,7 @@ A set of services and tools for sending emails in a **Spring Boot** application 
 
 **Source Website:** *[github.com/robertotru/spring-boot-email-tools](http://github.com/robertotru/spring-boot-email-tools/)*<br />
 
-**Latest Release:** *0.1.0*<br />
+**Latest Release:** *0.1.1*<br />
 **Latest Artifacts:** *com.github.robertotru:/spring-boot-email-tools* <br />
 **Continuous Integration:**<br />
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.robertotru/spring-boot-email-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.robertotru/spring-boot-email-tools)
@@ -93,6 +93,7 @@ public void sendEmailWithTemplating(){
             .from(new InternetAddress("divus.iulius@mala-tempora.currunt", "Gaius Iulius Caesar"))
             .to(Lists.newArrayList(new InternetAddress(tyrannicida.getEmail(), tyrannicida.getName())))
             .subject("Idus Martii")
+            .body("")//Empty body
             .encoding(Charset.forName("UTF-8")).build();
         //Defining the model object for the given Freemarker template
         final Map<String, Object> modelObject = new HashMap<>();
@@ -140,6 +141,7 @@ public void sendEmailWithTemplatingAndInlineImage(){
             .from(new InternetAddress("divus.iulius@mala-tempora.currunt", "Gaius Iulius Caesar"))
             .to(Lists.newArrayList(new InternetAddress("brutus@sic-semper.tyrannis", "Marcus Iunius Brutus Caepio")))
             .subject("Idus Martii")
+            .body("")//Empty body
             .encoding(Charset.forName("UTF-8")).build();
        //Defining the model object for the given Freemarker template
        final Map<String, Object> modelObject = new HashMap<>();
