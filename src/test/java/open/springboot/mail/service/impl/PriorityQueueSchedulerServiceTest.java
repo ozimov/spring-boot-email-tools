@@ -66,8 +66,8 @@ public class PriorityQueueSchedulerServiceTest {
         final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow();
 
         //Act
-        priorityQueueSchedulerService.schedule(emailLowPriority, dateTime.plusSeconds(twoSeconds()), 1);
-        priorityQueueSchedulerService.schedule(emailHighPriority, dateTime.plusSeconds(twoSeconds()), 2);
+        priorityQueueSchedulerService.schedule(emailLowPriority, dateTime.plusSeconds(twoSeconds()), 2);
+        priorityQueueSchedulerService.schedule(emailHighPriority, dateTime.plusSeconds(twoSeconds()), 1);
         Thread.sleep(fiveSecondsInMillis());
 
         //Assert

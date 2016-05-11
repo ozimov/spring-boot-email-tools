@@ -86,7 +86,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         queues[priorityLevel - 1].add(emailSchedulingWrapper);
         log.info("Scheduled email {} at UTC time {} with priority {}",mimeEmail, scheduledDateTime, priorityLevel);
         if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
-            notify();
+            notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
         }
     }
 
@@ -142,7 +142,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
             if (isNull(emailSchedulingWrapper)) {
                 //no message was found, let's sleep, some message may arrive in the meanwhile
                 if (isNull(timeOfNextScheduledMessage)) { //all the queues are empty
-                    wait(); //wait for a new email to be scheduled
+                    wait(); //the consumer starts waiting for a new email to be scheduled
                 } else {
                     final long waitTime = timeOfNextScheduledMessage - now() - DELTA;
                     if (waitTime > 0) {
