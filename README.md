@@ -1,18 +1,18 @@
 # spring-boot-email-tools
 A set of services and tools for sending emails in a **Spring Boot** application using *Freemarker* template engine.
 
-**Source Website:** *[github.com/robertotru/spring-boot-email-tools](http://github.com/robertotru/spring-boot-email-tools/)*<br />
+**Source Website:** *[github.com/ozimov/spring-boot-email-tools](http://github.com/ozimov/spring-boot-email-tools/)*<br />
 
-**Latest Release:** *0.1.1*<br />
-**Latest Artifacts:** *com.github.robertotru:/spring-boot-email-tools* <br />
+**Latest Release:** *0.2.0*<br />
+**Latest Artifacts:** *it.ozimov:/spring-boot-email-tools* <br />
 **Continuous Integration:**<br />
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.robertotru/spring-boot-email-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.robertotru/spring-boot-email-tools)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/it.ozimov/spring-boot-email-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.ozimov/spring-boot-email-tools)
 <br />
-[![Build Status](https://travis-ci.org/robertotru/spring-boot-email-tools.svg?branch=master)](https://travis-ci.org/robertotru/spring-boot-email-tools)
-[![codecov.io](https://codecov.io/github/robertotru/spring-boot-email-tools/coverage.svg?branch=master)](https://codecov.io/github/robertotru/spring-boot-email-tools?branch=master)
+[![Build Status](https://travis-ci.org/ozimov/spring-boot-email-tools.svg?branch=master)](https://travis-ci.org/ozimov/spring-boot-email-tools)
+[![codecov.io](https://codecov.io/github/ozimov/spring-boot-email-tools/coverage.svg?branch=master)](https://codecov.io/github/ozimov/spring-boot-email-tools?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/7a4364b93df6473fb18a597e900edceb)](https://www.codacy.com/app/roberto-trunfio/spring-boot-email-tools)
 
-![codecov.io](https://codecov.io/github/robertotru/spring-boot-email-tools/branch.svg?branch=master)
+![codecov.io](https://codecov.io/github/ozimov/spring-boot-email-tools/branch.svg?branch=master)
 
 
 ## Dependency
@@ -22,7 +22,7 @@ Latest release is:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-tools</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -186,22 +186,56 @@ final InlinePicture inlinePicture = InlinePictureImpl.builder()
 
 This is required to set the a proper content-id.
 
-## Exception handling
+## Email scheduling
 
-This library uses Zalando's [Problems for Spring Web MVC library](https://github.com/zalando/problem-spring-web). To have an explicit handling of library specificy exceptions thrown by spring-boot-email-tools, just define your controller advice as follows.
+The library supports email scheduling. Email can be set in different queues, from the one with
+ highest priority to the least important. Priority 1 is the highest.
+
+To define the number of priority levels, just add in the `application.properties` the following line:
+
+```properties
+spring.mail.scheduler.priorityLevels=10
+```
+
+Scheduling an email is actually easy. To schedule an email, just resort to the service
+`PriorityQueueSchedulerService`. The service allows to schedule an email with or without
+the use of a template engine...
 
 ```java
-@ControllerAdvice
-public class ExceptionHandling implements EmailConversionAdviceTrait {
+@Autowired
+private PriorityQueueSchedulerService scheduler;
 
+
+public void schedule (final Email mimeEmail, final OffsetDateTime scheduledDateTime, final int priorityLevel) throws CannotSendEmailException {
+  scheduler.schedule(mimeEmail, scheduledDateTime, priorityLevel);
 }
 ```
+Here we go, an email has been scheduled.
+When scheduling emails, observe that **`OffsetDateTime` must be** used with **UTC**, so do not forget to convert it if you
+use a different zone offset.
+
+To schedule an email with a template and inline images, just do
+```java
+@Autowired
+private PriorityQueueSchedulerService scheduler;
+
+
+schedule(final Email mimeEmail,
+                  final OffsetDateTime scheduledDateTime,
+                  final int priorityLevel,
+                  final String template,
+                  final Map<String, Object> modelObject,
+                  final InlinePicture... inlinePictures) throws CannotSendEmailException {
+  scheduler.schedule(mimeEmail, scheduledDateTime, priorityLevel, template, modelObject, inlinePictures);
+}
+```
+
+
 
 ## Future plans
 
 Here are listed the backlog for the features to be added to the library in the near future:
-* Quartz scheduler for handling newsletter
-* Email queuing using priorities
+* Enabling for the use of any template engine
 
 Any contribution is welcome.
 
@@ -219,3 +253,10 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+
+==============================================
+[![forthebadge](http://forthebadge.com/images/badges/built-by-developers.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/pretty-risque.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/makes-people-smile.svg)](http://forthebadge.com)

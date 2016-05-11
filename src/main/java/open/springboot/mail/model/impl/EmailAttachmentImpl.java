@@ -34,7 +34,6 @@ import org.springframework.http.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
@@ -84,7 +83,4 @@ public class EmailAttachmentImpl implements EmailAttachment {
         return mediaType;
     }
 
-
 }
-
-

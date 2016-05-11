@@ -26,7 +26,6 @@ public enum ImageType {
     JPEG("jpeg", "image/jpeg"),
     PNG("png", "image/png");
 
-
     private final String extension;
     private final String contentType;
 

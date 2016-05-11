@@ -42,9 +42,6 @@ import java.util.UUID;
 
 import static com.google.common.base.Optional.fromNullable;
 
-/**
- * @author rtrunfio
- */
 @Service
 @Slf4j
 public class EmailServiceImpl implements EmailService {
