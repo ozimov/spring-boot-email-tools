@@ -206,25 +206,36 @@ the use of a template engine...
 private PriorityQueueSchedulerService scheduler;
 
 
-public void schedule (final Email mimeEmail, final OffsetDateTime scheduledDateTime, final int priorityLevel){
+public void schedule (final Email mimeEmail, final OffsetDateTime scheduledDateTime, final int priorityLevel) throws CannotSendEmailException {
   scheduler.schedule(mimeEmail, scheduledDateTime, priorityLevel);
 }
 ```
-
-Observe that `OffsetDateTime` must be used with UTC.
-
-
 Here we go, an email has been scheduled.
+When scheduling emails, observe that **`OffsetDateTime` must be** used with **UTC**, so do not forget to convert it if you
+use a different zone offset.
 
-To schedule an
+To schedule an email with a template and inline images, just do
+```java
+@Autowired
+private PriorityQueueSchedulerService scheduler;
+
+
+schedule(final Email mimeEmail,
+                  final OffsetDateTime scheduledDateTime,
+                  final int priorityLevel,
+                  final String template,
+                  final Map<String, Object> modelObject,
+                  final InlinePicture... inlinePictures) throws CannotSendEmailException {
+  scheduler.schedule(mimeEmail, scheduledDateTime, priorityLevel, template, modelObject, inlinePictures);
+}
+```
 
 
 
 ## Future plans
 
 Here are listed the backlog for the features to be added to the library in the near future:
-* Quartz scheduler for handling newsletter
-* Email queuing using priorities
+* Enabling for the use of any template engine
 
 Any contribution is welcome.
 

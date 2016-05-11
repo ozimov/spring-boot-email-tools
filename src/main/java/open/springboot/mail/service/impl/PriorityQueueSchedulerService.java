@@ -91,9 +91,11 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     }
 
     @Override
-    public synchronized void schedule(@NonNull final Email mimeEmail, @NonNull final String template,
+    public synchronized void schedule(@NonNull final Email mimeEmail,
+                                      @NonNull final OffsetDateTime scheduledDateTime,
+                                      final int priorityLevel,
+                                      @NonNull final String template,
                                       @NonNull final Map<String, Object> modelObject,
-                                      @NonNull final OffsetDateTime scheduledDateTime, final int priorityLevel,
                                       final InlinePicture... inlinePictures) throws CannotSendEmailException {
         checkPriorityLevel(priorityLevel);
 
@@ -126,9 +128,6 @@ public class PriorityQueueSchedulerService implements SchedulerService {
             for (final TreeSet<EmailSchedulingWrapper> queue : queues) {
                 if (!queue.isEmpty()) {
                     final long time = queue.first().getScheduledDateTime().toInstant().toEpochMilli();
-                    System.out.println(time);
-                    System.out.println(now);
-                    System.out.println(time-now);
                     if (time - now <= DELTA) {
                         //message found!
                         emailSchedulingWrapper = queue.pollFirst();
@@ -151,7 +150,6 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                 }
             }
         }
-        System.out.println();
         //here emailSchedulingWrapper is the message to send
         return emailSchedulingWrapper;
     }
@@ -186,8 +184,6 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                             log.error("An error occurred while sending the email", e);
                         }
                     } else {
-                        System.out.println("SENDING EMAIL");
-                        System.out.println(emailSchedulingWrapper.getEmail());
                         emailService.send(emailSchedulingWrapper.getEmail());
                     }
                 } catch (final InterruptedException e) {

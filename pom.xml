@@ -45,6 +45,8 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <it.ozimov.cirneco>0.10.0</it.ozimov.cirneco>
+        <powermock.version>1.6.5</powermock.version>
     </properties>
 
     <developers>
@@ -116,26 +118,20 @@
 
         <!-- Testing Dependencies  -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>guava-hamcrest-matchers</artifactId>
-            <version>0.10.0</version>
+            <version>${it.ozimov.cirneco}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>java8-hamcrest-matchers</artifactId>
-            <version>0.10.0</version>
+            <version>${it.ozimov.cirneco}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.6.5</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -177,10 +173,53 @@
                 <version>0.7.6.201602180812</version>
                 <executions>
                     <execution>
+                        <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
+                    <!-- DISABLED UNTIL JaCoCo feature is not available (will ever it be?)-->
+                    <!--<execution>-->
+                        <!--<id>default-check</id>-->
+                        <!--<phase>prepare-package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>report</goal>-->
+                            <!--<goal>check</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<rules>-->
+                                <!--<rule>-->
+                                    <!--<element>CLASS</element>-->
+                                    <!--<excludes>-->
+                                        <!--<exclude>JAVAC.SYNTHCLASS</exclude>-->
+                                        <!--<exclude>JAVAC.SYNTHMETH</exclude>-->
+                                        <!--<exclude>JAVAC.ENUM</exclude>-->
+                                        <!--<exclude>JAVAC.TRYWITH</exclude>-->
+                                        <!--<exclude>JAVAC.STRINGSWITCH</exclude>-->
+                                        <!--<exclude>KOTLIN.PROPERTIES</exclude>-->
+                                        <!--<exclude>LOMBOK.DATA</exclude>-->
+                                    <!--</excludes>-->
+                                    <!--<limits>-->
+                                        <!--<limit>-->
+                                            <!--<counter>BRANCH</counter>-->
+                                            <!--<value>COVEREDRATIO</value>-->
+                                            <!--<minimum>0.7</minimum>-->
+                                        <!--</limit>-->
+                                        <!--<limit>-->
+                                            <!--<counter>LINE</counter>-->
+                                            <!--<value>COVEREDRATIO</value>-->
+                                            <!--<minimum>0.7</minimum>-->
+                                        <!--</limit>-->
+                                        <!--<limit>-->
+                                            <!--<counter>CLASS</counter>-->
+                                            <!--<value>MISSEDCOUNT</value>-->
+                                            <!--<maximum>0</maximum>-->
+                                        <!--</limit>-->
+                                    <!--</limits>-->
+                                <!--</rule>-->
+                            <!--</rules>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
@@ -238,7 +277,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.0</version>
+                        <version>2.4</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -278,7 +317,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
+                        <version>1.6.6</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>

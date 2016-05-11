@@ -16,6 +16,7 @@
 
 package open.springboot.mail.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -25,9 +26,10 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Getter
+@Builder
 public class EmailSchedulingWrapper implements Comparable<EmailSchedulingWrapper> {
 
-    private UUID id = UUID.randomUUID();
+    private final UUID id = UUID.randomUUID();
     private final Email email;
     private final OffsetDateTime scheduledDateTime;
     private final int priority;

@@ -41,17 +41,17 @@ public interface SchedulerService {
      * Schedules the sending of an email message.
      *
      * @param mimeEmail      an email to be sent
-     * @param template       the reference to the template file
-     * @param modelObject    the model object to be used for the template engine, it may be null
      * @param scheduledDateTime  the date-time at which the email should be sent
      * @param priorityLevel  the priority level for the email:
      *                       the emails with scheduledTime<=now are sent according to an order depending
      *                       on their priority level
+     * @param template       the reference to the template file
+     * @param modelObject    the model object to be used for the template engine, it may be null
      * @param inlinePictures list of pictures to be rendered inline in the template
      */
     void schedule(Email mimeEmail,
-                  String template, Map<String, Object> modelObject,
                   OffsetDateTime scheduledDateTime, int priorityLevel,
+                  String template, Map<String, Object> modelObject,
                   InlinePicture... inlinePictures) throws CannotSendEmailException;
 
 }

@@ -33,7 +33,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import static java.nio.charset.Charset.forName;
-
 /**
  * Mime email.
  */

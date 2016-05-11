@@ -18,7 +18,11 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Map;
 
+import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static junit.framework.TestCase.fail;
+import static open.springboot.mail.service.impl.TemplatingTestUtils.NAME;
+import static open.springboot.mail.service.impl.TemplatingTestUtils.TEMPLATE;
+import static open.springboot.mail.service.impl.TemplatingTestUtils.getExpectedBody;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -27,31 +31,21 @@ import static org.hamcrest.core.Is.is;
 @WebIntegrationTest("server.port=0")
 public class FreemarkerTemplateServiceTest {
 
-    private final String template = "email_template.ftl";
-    private final String name = "Titus";
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
     @Autowired
     private TemplateService templateService;
 
-    private static String readFile(final File file) throws IOException {
-        final byte[] encoded = Files.readAllBytes(file.toPath());
-        return new String(encoded, Charset.forName("UTF-8"));
-    }
-
     @Test
     public void testMergeTemplateIntoString() throws Exception {
         //Arrange
-        final Map<String, Object> modelObject = new ImmutableMap.Builder<String, Object>()
-                .put("name", name)
-                .build();
         final String expectedBody = getExpectedBody();
 
         //Act
-        final String body = templateService.mergeTemplateIntoString(template, modelObject);
+        final String body = templateService.mergeTemplateIntoString(TemplatingTestUtils.TEMPLATE, TemplatingTestUtils.MODEL_OBJECT);
 
         //Assert
-        assertThat("The template ", body, is(expectedBody));
+        given(body).assertThat(is(expectedBody));
     }
 
     @Test
@@ -82,10 +76,4 @@ public class FreemarkerTemplateServiceTest {
         fail("IllegalArgumentException expected");
     }
 
-    public String getExpectedBody() throws IOException {
-        final File file = new File(getClass().getClassLoader()
-                .getResource("templates" + File.separator + template).getFile());
-        final String template = readFile(file);
-        return template.replace("${name}", name);
-    }
 }
