@@ -3,12 +3,21 @@ All notable changes to Spring-Boot-Email-Tools project will be documented in thi
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+
+## [0.3.0] - 2016-05-14
+### Added
+- Added support for **Mustache** (version from Spring Boot _1.3.4.RELEASE_)
+  and **Pebble** (_version 2.2.1_)
+
 ### Changed
-- Module names to support generic template engines
+- Main module changed to `spring-boot-email-core` to support generic template engines
 - Added specific modules based on known template engines (Freemarker, Mustache and Pebble)
 
+### Fixed
+- Closing mechanism of the scheduler is now responsive
 
-## [0.2.0] - 2016-03-12
+## [0.2.0] - 2016-05-12
 ### Added
 - Added implementation of a scheduler service with class `PriorityQyeyeSchedulerService`
 

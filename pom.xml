@@ -15,7 +15,7 @@
     <packaging>pom</packaging>
 
     <name>Spring Boot Email Build</name>
-    <description>Tools to deal with emails using the Spring Boot framework</description>
+    <description>Build module for Spring Boot Email Tools project</description>
 
     <inceptionYear>2015</inceptionYear>
 
@@ -53,7 +53,6 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-
     </properties>
 
     <developers>
@@ -159,48 +158,6 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-                    <!-- DISABLED UNTIL JaCoCo feature is not available (will ever it be?)-->
-                    <!--<execution>-->
-                    <!--<id>default-check</id>-->
-                    <!--<phase>prepare-package</phase>-->
-                    <!--<goals>-->
-                    <!--<goal>report</goal>-->
-                    <!--<goal>check</goal>-->
-                    <!--</goals>-->
-                    <!--<configuration>-->
-                    <!--<rules>-->
-                    <!--<rule>-->
-                    <!--<element>CLASS</element>-->
-                    <!--<excludes>-->
-                    <!--<exclude>JAVAC.SYNTHCLASS</exclude>-->
-                    <!--<exclude>JAVAC.SYNTHMETH</exclude>-->
-                    <!--<exclude>JAVAC.ENUM</exclude>-->
-                    <!--<exclude>JAVAC.TRYWITH</exclude>-->
-                    <!--<exclude>JAVAC.STRINGSWITCH</exclude>-->
-                    <!--<exclude>KOTLIN.PROPERTIES</exclude>-->
-                    <!--<exclude>LOMBOK.DATA</exclude>-->
-                    <!--</excludes>-->
-                    <!--<limits>-->
-                    <!--<limit>-->
-                    <!--<counter>BRANCH</counter>-->
-                    <!--<value>COVEREDRATIO</value>-->
-                    <!--<minimum>0.7</minimum>-->
-                    <!--</limit>-->
-                    <!--<limit>-->
-                    <!--<counter>LINE</counter>-->
-                    <!--<value>COVEREDRATIO</value>-->
-                    <!--<minimum>0.7</minimum>-->
-                    <!--</limit>-->
-                    <!--<limit>-->
-                    <!--<counter>CLASS</counter>-->
-                    <!--<value>MISSEDCOUNT</value>-->
-                    <!--<maximum>0</maximum>-->
-                    <!--</limit>-->
-                    <!--</limits>-->
-                    <!--</rule>-->
-                    <!--</rules>-->
-                    <!--</configuration>-->
-                    <!--</execution>-->
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
@@ -310,7 +267,6 @@
             </build>
         </profile>
     </profiles>
-
 
     <repositories>
         <repository>
