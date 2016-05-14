@@ -7,13 +7,13 @@
     <parent>
         <groupId>it.ozimov</groupId>
         <artifactId>spring-boot-email-build</artifactId>
-        <version>${spring.boot.email.version}</version>
+        <version>0.3.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-core</artifactId>
-    <version>${spring.boot.email.version}</version>
+    <version>0.3.0</version>
     <packaging>jar</packaging>
 
     <name>Spring Boot Email Core</name>
