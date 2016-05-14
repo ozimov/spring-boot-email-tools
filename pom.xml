@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>it.ozimov</groupId>
-    <artifactId>spring-boot-email-tools</artifactId>
-    <packaging>jar</packaging>
-    <version>0.3.0-SNAPSHOT</version>
-
-    <name>SpringBootEmail</name>
-    <description>Utilities to deal with emails in Spring Boot using Freemarker templating</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -18,13 +9,26 @@
         <version>1.3.4.RELEASE</version>
     </parent>
 
+    <groupId>it.ozimov</groupId>
+    <artifactId>spring-boot-email-build</artifactId>
+    <version>${spring.boot.email.version}</version>
+    <packaging>pom</packaging>
+
+    <name>Spring Boot Email Build</name>
+    <description>Build module for Spring Boot Email Tools project</description>
+
     <inceptionYear>2015</inceptionYear>
 
-    <url>https://github.com/robertotru/spring-boot-email-tools</url>
+    <modules>
+        <module>spring-boot-email-core</module>
+        <module>spring-boot-email-template-engines</module>
+    </modules>
+
+    <url>https://github.com/ozimov/spring-boot-email-tools</url>
     <scm>
-        <connection>scm:git:git@github.com:robertotru/spring-boot-email-tools.git</connection>
-        <developerConnection>scm:git:git@github.com:robertotru/spring-boot-email-tools.git</developerConnection>
-        <url>https://github.com/robertotru/spring-boot-email-tools</url>
+        <connection>scm:git:git@github.com:ozimov/spring-boot-email-tools.git</connection>
+        <developerConnection>scm:git:git@github.com:ozimov/spring-boot-email-tools.git</developerConnection>
+        <url>https://github.com/ozimov/spring-boot-email-tools</url>
     </scm>
     <issueManagement>
         <system>GitHub Issue Tracking</system>
@@ -39,27 +43,29 @@
     </licenses>
 
     <properties>
+        <spring.boot.version>1.3.4.RELEASE</spring.boot.version>
+        <spring.boot.email.version>0.3.0-SNAPSHOT</spring.boot.email.version>
+        <it.ozimov.cirneco.version>0.10.0</it.ozimov.cirneco.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <it.ozimov.cirneco>0.10.0</it.ozimov.cirneco>
-        <powermock.version>1.6.5</powermock.version>
     </properties>
 
     <developers>
         <developer>
             <id>gmmazzeo</id>
-            <name>Massimiliano Giuseppem Mazzeo</name>
+            <name>Massimiliano Giuseppe Mazzeo</name>
             <email>gmmazzeo@gmail.com</email>
             <organization>University of California, Los Angeles</organization>
             <organizationUrl>http://www.ucla.edu</organizationUrl>
             <roles>
                 <role>developer</role>
             </roles>
-            <timezone>+1</timezone>
+            <timezone>-8</timezone>
         </developer>
         <developer>
             <id>rtrunfio</id>
@@ -75,31 +81,6 @@
     </developers>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-
-        <!-- Templating engine -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-freemarker</artifactId>
-        </dependency>
-
-        <!-- Guess Content Type -->
-        <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-core</artifactId>
-            <version>1.12</version>
-        </dependency>
-
-        <!-- Validation -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>5.2.4.Final</version>
-        </dependency>
-
         <!--  Misc  -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -108,7 +89,6 @@
         </dependency>
 
         <!--  Boilerplate code killer  -->
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -120,22 +100,22 @@
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>guava-hamcrest-matchers</artifactId>
-            <version>${it.ozimov.cirneco}</version>
+            <version>${it.ozimov.cirneco.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>java8-hamcrest-matchers</artifactId>
-            <version>${it.ozimov.cirneco}</version>
+            <version>${it.ozimov.cirneco.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.boot.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 
     <prerequisites>
         <maven>3.0.4</maven>
@@ -178,48 +158,6 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-                    <!-- DISABLED UNTIL JaCoCo feature is not available (will ever it be?)-->
-                    <!--<execution>-->
-                        <!--<id>default-check</id>-->
-                        <!--<phase>prepare-package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>report</goal>-->
-                            <!--<goal>check</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<rules>-->
-                                <!--<rule>-->
-                                    <!--<element>CLASS</element>-->
-                                    <!--<excludes>-->
-                                        <!--<exclude>JAVAC.SYNTHCLASS</exclude>-->
-                                        <!--<exclude>JAVAC.SYNTHMETH</exclude>-->
-                                        <!--<exclude>JAVAC.ENUM</exclude>-->
-                                        <!--<exclude>JAVAC.TRYWITH</exclude>-->
-                                        <!--<exclude>JAVAC.STRINGSWITCH</exclude>-->
-                                        <!--<exclude>KOTLIN.PROPERTIES</exclude>-->
-                                        <!--<exclude>LOMBOK.DATA</exclude>-->
-                                    <!--</excludes>-->
-                                    <!--<limits>-->
-                                        <!--<limit>-->
-                                            <!--<counter>BRANCH</counter>-->
-                                            <!--<value>COVEREDRATIO</value>-->
-                                            <!--<minimum>0.7</minimum>-->
-                                        <!--</limit>-->
-                                        <!--<limit>-->
-                                            <!--<counter>LINE</counter>-->
-                                            <!--<value>COVEREDRATIO</value>-->
-                                            <!--<minimum>0.7</minimum>-->
-                                        <!--</limit>-->
-                                        <!--<limit>-->
-                                            <!--<counter>CLASS</counter>-->
-                                            <!--<value>MISSEDCOUNT</value>-->
-                                            <!--<maximum>0</maximum>-->
-                                        <!--</limit>-->
-                                    <!--</limits>-->
-                                <!--</rule>-->
-                            <!--</rules>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
@@ -329,7 +267,6 @@
             </build>
         </profile>
     </profiles>
-
 
     <repositories>
         <repository>

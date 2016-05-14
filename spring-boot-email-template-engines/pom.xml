@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>it.ozimov</groupId>
+        <artifactId>spring-boot-email-build</artifactId>
+        <version>${spring.boot.email.version}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>it.ozimov</groupId>
+    <artifactId>spring-boot-email-template-engines</artifactId>
+    <version>${spring.boot.email.version}</version>
+    <packaging>pom</packaging>
+
+    <name>Spring Boot Email Template Engines</name>
+    <description>Tools to deal with emails using the Spring Boot framework</description>
+
+    <modules>
+        <module>spring-boot-freemarker-email</module>
+        <module>spring-boot-mustache-email</module>
+        <module>spring-boot-pebble-email</module>
+    </modules>
+
+</project>

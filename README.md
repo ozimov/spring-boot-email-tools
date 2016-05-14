@@ -1,11 +1,13 @@
-# spring-boot-email-tools
-A set of services and tools for sending emails in a **Spring Boot** application using *Freemarker* template engine.
+# Spring Boot Email Tools
+A set of services and tools for sending emails in a **Spring Boot** application using plain text, html or
+a template engine to generate dynamic content.
 
 **Source Website:** *[github.com/ozimov/spring-boot-email-tools](http://github.com/ozimov/spring-boot-email-tools/)*<br />
 
-**Latest Release:** *0.2.0*<br />
-**Latest Artifacts:** *it.ozimov:/spring-boot-email-tools* <br />
-**Continuous Integration:**<br />
+**Latest Release:** *0.3.0* <br />
+**Latest Artifacts:** *it.ozimov:spring-boot-email-core*, *it.ozimov:spring-boot-freemarker-email*,
+    *it.ozimov:spring-boot-mustache-email*, *it.ozimov:spring-boot-pebble-email* <br />
+**Continuous Integration:** <br />
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/it.ozimov/spring-boot-email-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.ozimov/spring-boot-email-tools)
 <br />
 [![Build Status](https://travis-ci.org/ozimov/spring-boot-email-tools.svg?branch=master)](https://travis-ci.org/ozimov/spring-boot-email-tools)
@@ -15,16 +17,59 @@ A set of services and tools for sending emails in a **Spring Boot** application 
 ![codecov.io](https://codecov.io/github/ozimov/spring-boot-email-tools/branch.svg?branch=master)
 
 
+## Background
+
+The project relies on a templateless module `it.ozimov:spring-boot-email-core` that provides the core
+features (e.g. sending emails, scheduling and prioritizing). Since it is templateless, it  does not provide
+ any implementation of the service to be used to generate the body of the email via template engine.
+
+If you want to use one of the template engines supported by this project (i.e. _Freemarker_,
+_Mustache_ and _Pebble_), you can use the dedicated templatefull
+module that is shipped with the core module. The standard naming for the templatefull module is
+`it.ozimov:spring-boot-{template_engine_name}-email` (where `{template_engine_name}` is for instance `pebble`).
+
 ## Dependency
-Latest release is:
+Latest release is **`0.3.0`**. To use the core module, you can import the following dependency in Maven
 
 ```xml
 <dependency>
     <groupId>it.ozimov</groupId>
-    <artifactId>spring-boot-email-tools</artifactId>
-    <version>0.2.0</version>
+    <artifactId>spring-boot-email-core</artifactId>
+    <version>0.3.0</version>
 </dependency>
 ```
+
+To embed the module that includes the _Freemarker_ template engine, you can use the following Maven dependency:
+
+```xml
+<dependency>
+    <groupId>it.ozimov</groupId>
+    <artifactId>spring-boot-freemarker-email</artifactId>
+    <version>0.3.0</version>
+</dependency>
+```
+
+for _Mustache_:
+
+```xml
+<dependency>
+    <groupId>it.ozimov</groupId>
+    <artifactId>spring-boot-mustache-email</artifactId>
+    <version>0.3.0</version>
+</dependency>
+```
+
+and for _Pebble_:
+
+```xml
+<dependency>
+    <groupId>it.ozimov</groupId>
+    <artifactId>spring-boot-pebble-email</artifactId>
+    <version>0.3.0</version>
+</dependency>
+```
+
+Remember that if you import the templatefull module, the core module is not required.
 
 
 ## Usage
@@ -35,7 +80,8 @@ to scan for all the services and controllers defined in the Spring Boot Email mo
 package com.myapplication;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.myapplication", "open.springboot.mail"})
+@ComponentScan(basePackages = {"com.myapplication", "it.ozimov.springbooot.mail",
+                                                    "it.ozimov.springbooot.templating.mail.service"})
 public class MainApplication  {
 
     public static void main(final String... args) {
@@ -44,7 +90,7 @@ public class MainApplication  {
 }
 ```
 
-in you application.yml set the configuration needed to send the emails, e.g. if you want to send
+in you `application.yml` set the configuration needed to send the emails, e.g. if you want to send
 the emails using a Gmail account you can set:
 
 ```yml
@@ -78,8 +124,20 @@ public void sendEmailWithoutTemplating(){
 ```
 
 
-The previous code will send a plain text message. To obtain some more dynamic fancy emails, you can use the Freemarker template engine. Just put the template in the required folder (e.g. ``templates`` under ``resourses``) and
+The previous code will send a plain text message. To obtain some more dynamic fancy emails, you have two options:
+_i)_ the former and easier-to-use is to use a templatefull module (e.g. based on Freemarker);
+_ii)_ the latter (which requires some effort on your side) needs an an implementation of the
+interface **`it.ozimov.springboot.templating.mail.service.TemplateService`**.
 
+The aforementioned interface requires a component that implements the following method
+
+```java
+String mergeTemplateIntoString(String templateReference, Map<String, Object> model)
+            throws IOException, TemplateException;
+```
+
+Assuming you opted for one of the previous options, just put the template in the required folder
+ (e.g. ``templates`` under ``resourses``) and try to execute the following code (it works with _Freemarker_):
 
 ```java
 @Autowired
@@ -115,7 +173,7 @@ private static class Cospirator {
 }
 ```
 
-where the template ``idus_martii.ftl`` is a Freemarker file like:
+where the template ``idus_martii.ftl`` is a _Freemarker_ file like:
 
 ```html
 <!doctype html>
@@ -129,7 +187,7 @@ where the template ``idus_martii.ftl`` is a Freemarker file like:
 ```
 
 
-The following example shows how to send emails that include an inline image.
+The following example shows how to send and email that includes an inline image.
 
 
 ```java
@@ -235,9 +293,10 @@ schedule(final Email mimeEmail,
 ## Future plans
 
 Here are listed the backlog for the features to be added to the library in the near future:
-* Enabling for the use of any template engine
+* Script to automatize version change during deploy in the readme file
+* Persistence of the emails to prevent loss in case of application crash or stop
 
-Any contribution is welcome.
+**Any contribution is welcome (and warmly encouraged).**
 
 
 ## License
