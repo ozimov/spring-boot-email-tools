@@ -25,27 +25,31 @@ import org.apache.tika.mime.MediaType;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.apache.tika.metadata.TikaMetadataKeys.RESOURCE_NAME_KEY;
 
 /**
- * <p>
  * A convenience singleton class that uses ApacheTika to guess the MIME type.
- * </p>
  */
 public class TikaDetector {
 
-    private Detector detector;
+    private final Detector detector;
 
-    public TikaDetector() {
+    public static class TikaDetectorSingletonHolder {
+        static TikaDetector tikaDetector = new TikaDetector();
+    }
+
+    private TikaDetector() {
         final TikaConfig config = TikaConfig.getDefaultConfig();
         detector = config.getDetector();
     }
 
     public static TikaDetector tikaDetector() {
-        return Singleton.INSTANCE.singleton;
+        return TikaDetectorSingletonHolder.tikaDetector;
     }
 
     private static org.springframework.http.MediaType toSpringMediaType(final MediaType mediaType) {
@@ -64,32 +68,11 @@ public class TikaDetector {
         return detect(stream, fileName);
     }
 
-    /**
-     * Detect the MediaType tikaDetector the given input stream
-     *
-     * @param file the file for which the content has to be detected
-     * @return the guessed media type
-     */
-    public org.springframework.http.MediaType detect(final File file) throws IOException {
-        checkNotNull(file);
-        checkArgument(file.exists(), "The given File object does not exists");
-        checkArgument(file.isFile(), "The given File object does not represent a file");
-
-        final TikaInputStream stream = TikaInputStream.get(file);
-        return detect(stream, file.getName());
-    }
-
     private org.springframework.http.MediaType detect(final TikaInputStream stream, final String fileName) throws IOException {
         final Metadata metadata = new Metadata();
         metadata.add(RESOURCE_NAME_KEY, fileName);
-        final MediaType mediaType = detector.detect(stream, metadata);
+        final MediaType mediaType = detector.detect(requireNonNull(stream), metadata);
         return toSpringMediaType(mediaType);
-    }
-
-    private enum Singleton {
-        INSTANCE;
-
-        final TikaDetector singleton = new TikaDetector();
     }
 
 }

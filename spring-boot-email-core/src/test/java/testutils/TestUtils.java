@@ -16,8 +16,10 @@
 
 package testutils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
@@ -33,6 +35,10 @@ public class TestUtils {
 
     public static byte[] loadFileIntoByte(final String path) throws IOException {
         return Files.readAllBytes(loadFile(path).toPath());
+    }
+
+    public static InputStream loadFileIntoInputStream(final String path) throws IOException {
+        return new ByteArrayInputStream(loadFileIntoByte(path));
     }
 
     public static String readFile(final String path) throws IOException {

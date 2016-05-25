@@ -10,16 +10,16 @@ import testutils.TestUtils;
 import java.io.File;
 import java.io.IOException;
 
+import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.fail;
 import static org.springframework.http.MediaType.IMAGE_JPEG;
 
 public class EmailAttachmentImplTest {
 
-    private final String filePath = "images" + File.separator + "100_percent_free.jpg";
+    private static final String FILE_PATH = "images" + File.separator + "100_percent_free.jpg";
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -31,11 +31,11 @@ public class EmailAttachmentImplTest {
 
         //Act
         EmailAttachmentImpl.builder()
-                .attachmentData(TestUtils.loadFileIntoByte(filePath))
+                .attachmentData(TestUtils.loadFileIntoByte(FILE_PATH))
                 .build();
 
         //Assert
-        fail("Expected a NullPointerException for missing mandatory field");
+        fail();
     }
 
     @Test
@@ -49,7 +49,7 @@ public class EmailAttachmentImplTest {
                 .build();
 
         //Assert
-        fail("Expected a NullPointerException for missing mandatory field");
+        fail();
     }
 
     @Test
@@ -93,7 +93,7 @@ public class EmailAttachmentImplTest {
     private EmailAttachmentImpl getEmailAttachmentImpl() throws IOException {
         return EmailAttachmentImpl.builder()
                 .attachmentName("Attachment.jpg")
-                .attachmentData(TestUtils.loadFileIntoByte(filePath))
+                .attachmentData(TestUtils.loadFileIntoByte(FILE_PATH))
                 .build();
     }
 
