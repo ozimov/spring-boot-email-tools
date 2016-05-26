@@ -38,11 +38,8 @@ import static com.google.common.io.Files.getNameWithoutExtension;
 public class ThymeleafTemplateService implements TemplateService {
 
     @Autowired
-    ThymeleafViewResolver thymeleafViewResolver;
-    //    @Autowired
-//    private SpringResourceTemplateResolver thymeleafTemplateResolver;
-    @Autowired
     private SpringTemplateEngine thymeleafEngine;
+
     @Value("${spring.thymeleaf.suffix:.html}")
     private String thymeleafSuffix;
 

@@ -50,13 +50,19 @@ public class EmailServiceImpl implements EmailService {
 
     private EmailToMimeMessage emailToMimeMessage;
 
-    @Autowired
+    @Autowired(required = false)
     public EmailServiceImpl(final @NonNull JavaMailSender javaMailSender,
-                            final @NonNull TemplateService templateService,
+                            final TemplateService templateService,
                             final @NonNull EmailToMimeMessage emailToMimeMessage) {
         this.javaMailSender = javaMailSender;
         this.templateService = templateService;
         this.emailToMimeMessage = emailToMimeMessage;
+    }
+
+    @Autowired(required = false)
+    public EmailServiceImpl(final @NonNull JavaMailSender javaMailSender,
+                            final @NonNull EmailToMimeMessage emailToMimeMessage) {
+        this(javaMailSender, null, emailToMimeMessage);
     }
 
     @Override

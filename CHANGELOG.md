@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.3] - 2016-07-01
+### Added
+- Fixed `README.md`
+- Made `TemplateService` optional in `EmailService`
+
 ## [0.3.2] - 2016-05-26
 ### Added
 - Added support for **Thymeleaf** (version from Spring Boot _1.3.5.RELEASE_)
