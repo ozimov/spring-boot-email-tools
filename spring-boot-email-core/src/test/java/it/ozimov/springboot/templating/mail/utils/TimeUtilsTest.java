@@ -1,8 +1,6 @@
 package it.ozimov.springboot.templating.mail.utils;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -10,7 +8,6 @@ import java.time.OffsetDateTime;
 
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static it.ozimov.cirneco.hamcrest.java7.base.IsBetweenInclusive.betweenInclusive;
-import static it.ozimov.cirneco.hamcrest.java7.clazz.IsValidNoArgumentConstructor.hasNoArgumentConstructor;
 import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.CoreMatchers.is;
 

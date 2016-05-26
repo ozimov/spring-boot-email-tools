@@ -22,6 +22,7 @@
         <module>spring-boot-freemarker-email</module>
         <module>spring-boot-mustache-email</module>
         <module>spring-boot-pebble-email</module>
+        <module>spring-boot-thymeleaf-email</module>
     </modules>
 
 </project>

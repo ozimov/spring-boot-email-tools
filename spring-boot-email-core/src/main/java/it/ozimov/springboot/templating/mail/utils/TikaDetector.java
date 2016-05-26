@@ -22,13 +22,9 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
 import static org.apache.tika.metadata.TikaMetadataKeys.RESOURCE_NAME_KEY;
 
@@ -38,10 +34,6 @@ import static org.apache.tika.metadata.TikaMetadataKeys.RESOURCE_NAME_KEY;
 public class TikaDetector {
 
     private final Detector detector;
-
-    public static class TikaDetectorSingletonHolder {
-        static TikaDetector tikaDetector = new TikaDetector();
-    }
 
     private TikaDetector() {
         final TikaConfig config = TikaConfig.getDefaultConfig();
@@ -73,6 +65,10 @@ public class TikaDetector {
         metadata.add(RESOURCE_NAME_KEY, fileName);
         final MediaType mediaType = detector.detect(requireNonNull(stream), metadata);
         return toSpringMediaType(mediaType);
+    }
+
+    public static class TikaDetectorSingletonHolder {
+        public static TikaDetector tikaDetector = new TikaDetector();
     }
 
 }

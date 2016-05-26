@@ -24,7 +24,6 @@ import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailExc
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -46,13 +45,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Slf4j
 public class PriorityQueueSchedulerService implements SchedulerService {
 
-    private ServiceStatus serviceStatus = ServiceStatus.CREATED;
-
     /**
      * millisecs elapsed form the call of the send method and the actual sending by SMTP server
      */
     private static final long DELTA = SECONDS.toMillis(1);
-
+    private ServiceStatus serviceStatus = ServiceStatus.CREATED;
     private Long timeOfNextScheduledMessage;
 
     private TreeSet<EmailSchedulingWrapper>[] queues;
@@ -108,7 +105,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         }
     }
 
-    public synchronized ServiceStatus status(){
+    public synchronized ServiceStatus status() {
         return serviceStatus;
     }
 
@@ -177,7 +174,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
             while (canRun) {
                 try {
                     final Optional<EmailSchedulingWrapper> emailSchedulingWrapperOptional = dequeue();
-                    if(canRun && emailSchedulingWrapperOptional.isPresent()) {
+                    if (canRun && emailSchedulingWrapperOptional.isPresent()) {
                         final EmailSchedulingWrapper emailSchedulingWrapper = emailSchedulingWrapperOptional.get();
                         if (emailSchedulingWrapper instanceof EmailTemplateSchedulingWrapper) {
                             final EmailTemplateSchedulingWrapper emailTemplateSchedulingWrapper =
@@ -193,8 +190,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                         } else {
                             emailService.send(emailSchedulingWrapper.getEmail());
                         }
-                    }
-                    else {
+                    } else {
                         log.info("Email scheduler consumer stopped");
                     }
                 } catch (final InterruptedException e) {
@@ -204,7 +200,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
             log.info("Email scheduler consumer stopped");
         }
 
-        public synchronized boolean enabled(){
+        public synchronized boolean enabled() {
             return canRun;
         }
 

@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.2] - 2016-05-26
+### Added
+- Added support for **Thymeleaf** (version from Spring Boot _1.3.5.RELEASE_)
+
 ## [0.3.1] - 2016-05-14
 ### Changed
 - Using Spring Boot _1.3.5.RELEASE_

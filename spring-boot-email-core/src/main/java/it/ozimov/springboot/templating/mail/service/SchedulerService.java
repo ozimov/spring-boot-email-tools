@@ -54,7 +54,7 @@ public interface SchedulerService {
                   InlinePicture... inlinePictures) throws CannotSendEmailException;
 
 
-    default ServiceStatus status(){
+    default ServiceStatus status() {
         return ServiceStatus.CLOSED;
     }
 
