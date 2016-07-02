@@ -4,9 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.4] - 2016-07-05
+### Changed
+- Using Spring Boot _1.3.6.RELEASE_
+
 ## [0.3.3] - 2016-07-01
-### Added
-- Fixed `README.md`
+### Fixed
+- Corrected annotation for autowiring beans in `README.md`
 - Made `TemplateService` optional in `EmailService`
 
 ## [0.3.2] - 2016-05-26
