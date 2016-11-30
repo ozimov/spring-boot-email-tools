@@ -90,7 +90,7 @@ to scan for all the services and controllers defined in the Spring Boot Email mo
 package com.myapplication;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.myapplication", "it.ozimov.springbooot"})
+@ComponentScan(basePackages = {"com.myapplication", "it.ozimov.springboot"})
 public class MainApplication  {
 
     public static void main(final String... args) {
