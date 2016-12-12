@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package it.ozimov.springboot.templating.mail.model.impl;
+package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 
-import it.ozimov.springboot.templating.mail.model.Email;
+import com.google.common.base.Charsets;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +26,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.mail.internet.InternetAddress;
-import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
@@ -42,7 +41,7 @@ import static java.nio.charset.Charset.forName;
 @AllArgsConstructor
 @Data
 @Builder
-public class EmailImpl implements Email, Serializable {
+public class DefaultEmail implements it.ozimov.springboot.templating.mail.model.Email {
 
     private static final long serialVersionUID = 634175529482595823L;
 
@@ -57,17 +56,15 @@ public class EmailImpl implements Email, Serializable {
 
     private Collection<InternetAddress> bcc;
 
-    private
     @NonNull
-    String subject;
+    private String subject;
 
-    private
     @NonNull
-    String body;
+    private String body;
 
-    private Collection<EmailAttachmentImpl> attachments;
+    private Collection<DefaultEmailAttachment> attachments;
 
-    private Charset encoding = forName("UTF-8");
+    private Charset encoding = forName(Charsets.UTF_8.name());
 
     private Locale locale;
 

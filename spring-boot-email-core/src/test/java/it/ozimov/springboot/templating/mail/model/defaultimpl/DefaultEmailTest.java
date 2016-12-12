@@ -1,4 +1,4 @@
-package it.ozimov.springboot.templating.mail.model.impl;
+package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 
-public class EmailImplTest {
+public class DefaultEmailTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -23,7 +23,7 @@ public class EmailImplTest {
         expectedException.expect(NullPointerException.class);
 
         //Act
-        EmailImpl.builder()
+        DefaultEmail.builder()
                 .subject("subject")
                 .body("body")
                 .build();
@@ -38,7 +38,7 @@ public class EmailImplTest {
         expectedException.expect(NullPointerException.class);
 
         //Act
-        EmailImpl.builder()
+        DefaultEmail.builder()
                 .from(new InternetAddress())
                 .body("body")
                 .build();
@@ -53,7 +53,7 @@ public class EmailImplTest {
         expectedException.expect(NullPointerException.class);
 
         //Act
-        EmailImpl.builder()
+        DefaultEmail.builder()
                 .from(new InternetAddress())
                 .subject("subject")
                 .build();
@@ -67,7 +67,7 @@ public class EmailImplTest {
         //Arrange
 
         //Act
-        final EmailImpl email = EmailImpl.builder()
+        final DefaultEmail email = DefaultEmail.builder()
                 .from(new InternetAddress())
                 .subject("subject")
                 .body("body")

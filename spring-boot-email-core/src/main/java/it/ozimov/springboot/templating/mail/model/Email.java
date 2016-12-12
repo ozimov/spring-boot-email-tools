@@ -16,15 +16,14 @@
 
 package it.ozimov.springboot.templating.mail.model;
 
-import it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl;
-
 import javax.mail.internet.InternetAddress;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
-public interface Email {
+public interface Email extends Serializable {
 
     InternetAddress getFrom();
 
@@ -44,7 +43,7 @@ public interface Email {
         return "";
     }
 
-    Collection<EmailAttachmentImpl> getAttachments();
+    Collection<EmailAttachment> getAttachments();
 
     Charset getEncoding();
 

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package it.ozimov.springboot.templating.mail.service;
+package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 
 import com.google.common.collect.Maps;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.ImageType;
-import it.ozimov.springboot.templating.mail.model.InlinePicture;
-import it.ozimov.springboot.templating.mail.model.impl.InlinePictureImpl;
+import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultInlinePicture;
+import it.ozimov.springboot.templating.mail.service.TemplateService;
+import it.ozimov.springboot.templating.mail.service.defaultimpl.DefaultEmailService;
 import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
 import it.ozimov.springboot.templating.mail.service.exception.TemplateException;
 import it.ozimov.springboot.templating.mail.utils.EmailToMimeMessage;
@@ -44,14 +45,14 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.getSimpleMail;
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.validateBcc;
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.validateBody;
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.validateCc;
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.validateFrom;
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.validateReplyTo;
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.validateSubject;
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.validateTo;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateBcc;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateBody;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateCc;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateFrom;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateReplyTo;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateSubject;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
@@ -64,7 +65,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EmailServiceTest {
+public class DefaultEmailServiceTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -77,12 +78,12 @@ public class EmailServiceTest {
 
     private EmailToMimeMessage emailToMimeMessage;
 
-    private EmailServiceImpl mailService;
+    private DefaultEmailService mailService;
 
     @Before
     public void setUp() {
         emailToMimeMessage = new EmailToMimeMessage(javaMailSender);
-        mailService = new EmailServiceImpl(javaMailSender, templateService, emailToMimeMessage);
+        mailService = new DefaultEmailService(javaMailSender, templateService, emailToMimeMessage);
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
@@ -229,8 +230,8 @@ public class EmailServiceTest {
         mailService.send(email, "never_called.ftl", Maps.newHashMap(), null);
     }
 
-    private InlinePicture getInlinePicture(final File inlineImageFile, final String imageName) {
-        return InlinePictureImpl.builder()
+    private it.ozimov.springboot.templating.mail.model.InlinePicture getInlinePicture(final File inlineImageFile, final String imageName) {
+        return DefaultInlinePicture.builder()
                 .file(inlineImageFile)
                 .imageType(ImageType.JPG)
                 .templateName(imageName).build();

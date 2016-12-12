@@ -1,4 +1,4 @@
-package it.ozimov.springboot.templating.mail.model.impl;
+package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 import it.ozimov.springboot.templating.mail.model.ImageType;
 import org.junit.Rule;
@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InlinePictureImplTest {
+public class DefaultInlinePictureTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -30,7 +30,7 @@ public class InlinePictureImplTest {
         expectedException.expect(NullPointerException.class);
 
         //Act
-        InlinePictureImpl.builder()
+        DefaultInlinePicture.builder()
                 .file(mockFile)
                 .templateName("template.ftl")
                 .build();
@@ -45,7 +45,7 @@ public class InlinePictureImplTest {
         expectedException.expect(NullPointerException.class);
 
         //Act
-        InlinePictureImpl.builder()
+        DefaultInlinePicture.builder()
                 .imageType(ImageType.JPEG)
                 .templateName("template.ftl")
                 .build();
@@ -60,7 +60,7 @@ public class InlinePictureImplTest {
         expectedException.expect(NullPointerException.class);
 
         //Act
-        InlinePictureImpl.builder()
+        DefaultInlinePicture.builder()
                 .file(mockFile)
                 .imageType(ImageType.JPEG)
                 .build();
@@ -74,7 +74,7 @@ public class InlinePictureImplTest {
         //Arrange
 
         //Act
-        final InlinePictureImpl inlinePicture = InlinePictureImpl.builder()
+        final DefaultInlinePicture inlinePicture = DefaultInlinePicture.builder()
                 .file(mockFile)
                 .imageType(ImageType.JPEG)
                 .templateName("template.ftl")

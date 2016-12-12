@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package it.ozimov.springboot.templating.mail.model.impl;
+package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 import it.ozimov.springboot.templating.mail.model.ImageType;
-import it.ozimov.springboot.templating.mail.model.InlinePicture;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import java.io.File;
 
@@ -30,18 +25,14 @@ import java.io.File;
 @AllArgsConstructor
 @Data
 @Builder
-public class InlinePictureImpl implements InlinePicture {
+public class DefaultInlinePicture implements it.ozimov.springboot.templating.mail.model.InlinePicture {
 
-    private
-    @NonNull
-    ImageType imageType;
+    private static final long serialVersionUID = 1040548679790587446L;
 
-    private
-    @NonNull
-    File file;
+    private @NonNull ImageType imageType;
 
-    private
-    @NonNull
-    String templateName;
+    private @NonNull File file;
+
+    private @NonNull String templateName;
 
 }

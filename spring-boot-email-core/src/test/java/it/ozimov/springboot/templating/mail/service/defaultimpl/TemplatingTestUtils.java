@@ -1,4 +1,4 @@
-package it.ozimov.springboot.templating.mail.service;
+package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 import com.google.common.collect.ImmutableMap;
 

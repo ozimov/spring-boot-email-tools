@@ -1,4 +1,4 @@
-package it.ozimov.springboot.templating.mail.model.impl;
+package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.IMAGE_JPEG;
 
-public class EmailAttachmentImplTest {
+public class DefaultEmailAttachmentTest {
 
     private static final String FILE_PATH = "images" + File.separator + "100_percent_free.jpg";
 
@@ -30,7 +30,7 @@ public class EmailAttachmentImplTest {
         expectedException.expect(NullPointerException.class);
 
         //Act
-        EmailAttachmentImpl.builder()
+        DefaultEmailAttachment.builder()
                 .attachmentData(TestUtils.loadFileIntoByte(FILE_PATH))
                 .build();
 
@@ -44,7 +44,7 @@ public class EmailAttachmentImplTest {
         expectedException.expect(NullPointerException.class);
 
         //Act
-        EmailAttachmentImpl.builder()
+        DefaultEmailAttachment.builder()
                 .attachmentName("Attachment.jpg")
                 .build();
 
@@ -57,7 +57,7 @@ public class EmailAttachmentImplTest {
         //Arrange
 
         //Act
-        final EmailAttachmentImpl emailAttachment = getEmailAttachmentImpl();
+        final DefaultEmailAttachment emailAttachment = getEmailAttachmentImpl();
 
         //Assert
         assertThat(emailAttachment, not(is(nullValue())));
@@ -67,7 +67,7 @@ public class EmailAttachmentImplTest {
     @Test
     public void testGetInputStream() throws Exception {
         //Arrange
-        final EmailAttachmentImpl emailAttachment = getEmailAttachmentImpl();
+        final DefaultEmailAttachment emailAttachment = getEmailAttachmentImpl();
 
         //Act
         final ByteArrayResource byteArrayResource = emailAttachment.getInputStream();
@@ -80,7 +80,7 @@ public class EmailAttachmentImplTest {
     @Test
     public void testGetContentType() throws Exception {
         //Arrange
-        final EmailAttachmentImpl emailAttachment = getEmailAttachmentImpl();
+        final DefaultEmailAttachment emailAttachment = getEmailAttachmentImpl();
 
         //Act
         final MediaType mediaType = emailAttachment.getContentType();
@@ -90,8 +90,8 @@ public class EmailAttachmentImplTest {
         assertThat(mediaType, is(IMAGE_JPEG));
     }
 
-    private EmailAttachmentImpl getEmailAttachmentImpl() throws IOException {
-        return EmailAttachmentImpl.builder()
+    private DefaultEmailAttachment getEmailAttachmentImpl() throws IOException {
+        return DefaultEmailAttachment.builder()
                 .attachmentName("Attachment.jpg")
                 .attachmentData(TestUtils.loadFileIntoByte(FILE_PATH))
                 .build();

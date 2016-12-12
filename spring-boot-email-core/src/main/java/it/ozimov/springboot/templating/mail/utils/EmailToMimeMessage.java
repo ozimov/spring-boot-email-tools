@@ -18,7 +18,7 @@ package it.ozimov.springboot.templating.mail.utils;
 
 import it.ozimov.springboot.templating.mail.exceptions.EmailConversionException;
 import it.ozimov.springboot.templating.mail.model.Email;
-import it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl;
+import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailAttachment;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,12 +75,12 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                 }
             }
             if (ofNullable(email.getAttachments()).isPresent()) {
-                for (final EmailAttachmentImpl attachment : email.getAttachments()) {
+                for (final DefaultEmailAttachment attachment : email.getAttachments()) {
                     try {
                         messageHelper.addAttachment(attachment.getAttachmentName(),
                                 attachment.getInputStream(), attachment.getContentType().getType());
                     } catch (IOException e) {
-                        log.error("Error while converting Email to MimeMessage");
+                        log.error("Error while converting DefaultEmail to MimeMessage");
                         throw new EmailConversionException(e);
                     }
                 }
@@ -92,7 +92,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                 messageHelper.setSentDate(email.getSentAt());
             }
         } catch (MessagingException e) {
-            log.error("Error while converting Email to MimeMessage");
+            log.error("Error while converting DefaultEmail to MimeMessage");
             throw new EmailConversionException(e);
         }
 

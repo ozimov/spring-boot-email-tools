@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package it.ozimov.springboot.templating.mail.service;
+package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 import com.google.common.collect.ImmutableMap;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.InlinePicture;
+import it.ozimov.springboot.templating.mail.service.EmailService;
+import it.ozimov.springboot.templating.mail.service.TemplateService;
 import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
 import it.ozimov.springboot.templating.mail.service.exception.TemplateException;
 import it.ozimov.springboot.templating.mail.utils.EmailToMimeMessage;
@@ -42,7 +44,7 @@ import static com.google.common.base.Optional.fromNullable;
 
 @Service
 @Slf4j
-public class EmailServiceImpl implements EmailService {
+public class DefaultEmailService implements EmailService {
 
     private JavaMailSender javaMailSender;
 
@@ -51,17 +53,17 @@ public class EmailServiceImpl implements EmailService {
     private EmailToMimeMessage emailToMimeMessage;
 
     @Autowired(required = false)
-    public EmailServiceImpl(final @NonNull JavaMailSender javaMailSender,
-                            final TemplateService templateService,
-                            final @NonNull EmailToMimeMessage emailToMimeMessage) {
+    public DefaultEmailService(final @NonNull JavaMailSender javaMailSender,
+                               final TemplateService templateService,
+                               final @NonNull EmailToMimeMessage emailToMimeMessage) {
         this.javaMailSender = javaMailSender;
         this.templateService = templateService;
         this.emailToMimeMessage = emailToMimeMessage;
     }
 
     @Autowired(required = false)
-    public EmailServiceImpl(final @NonNull JavaMailSender javaMailSender,
-                            final @NonNull EmailToMimeMessage emailToMimeMessage) {
+    public DefaultEmailService(final @NonNull JavaMailSender javaMailSender,
+                               final @NonNull EmailToMimeMessage emailToMimeMessage) {
         this(javaMailSender, null, emailToMimeMessage);
     }
 

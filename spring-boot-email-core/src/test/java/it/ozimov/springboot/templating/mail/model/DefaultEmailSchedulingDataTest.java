@@ -1,36 +1,37 @@
 package it.ozimov.springboot.templating.mail.model;
 
+import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import org.junit.Test;
 
 import java.time.OffsetDateTime;
 
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.getSimpleMail;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static org.hamcrest.CoreMatchers.is;
 
-public class EmailSchedulingWrapperTest {
+public class DefaultEmailSchedulingDataTest {
 
     @Test
     public void testCompareTo() throws Exception {
         //Arrange
         final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow();
-        final EmailSchedulingWrapper wrapper = EmailSchedulingWrapper.builder()
+        final DefaultEmailSchedulingData wrapper = DefaultEmailSchedulingData.builder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime)
                 .priority(1)
                 .build();
-        final EmailSchedulingWrapper wrapperSmallerPrio = EmailSchedulingWrapper.builder()
+        final DefaultEmailSchedulingData wrapperSmallerPrio = DefaultEmailSchedulingData.builder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime)
                 .priority(2)
                 .build();
-        final EmailSchedulingWrapper wrapperBefore = EmailSchedulingWrapper.builder()
+        final DefaultEmailSchedulingData wrapperBefore = DefaultEmailSchedulingData.builder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime.minusDays(1))
                 .priority(1)
                 .build();
-        final EmailSchedulingWrapper wrapperAfter = EmailSchedulingWrapper.builder()
+        final DefaultEmailSchedulingData wrapperAfter = DefaultEmailSchedulingData.builder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime.plusDays(1))
                 .priority(1)

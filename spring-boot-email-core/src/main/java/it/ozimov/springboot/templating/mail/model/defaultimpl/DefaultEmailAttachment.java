@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package it.ozimov.springboot.templating.mail.model.impl;
+package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 
-import it.ozimov.springboot.templating.mail.model.EmailAttachment;
 import it.ozimov.springboot.templating.mail.utils.TikaDetector;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,19 +48,17 @@ import static java.util.Optional.ofNullable;
 @ToString(exclude = "attachmentData")
 @EqualsAndHashCode
 @Slf4j
-public class EmailAttachmentImpl implements EmailAttachment {
+public class DefaultEmailAttachment implements it.ozimov.springboot.templating.mail.model.EmailAttachment {
 
     private static final long serialVersionUID = -3307831714212032363L;
 
     @Getter
-    private
     @NonNull
-    String attachmentName;
+    private String attachmentName;
 
     @Getter
-    private
     @NonNull
-    byte[] attachmentData;
+    private byte[] attachmentData;
 
     private MediaType mediaType;
 

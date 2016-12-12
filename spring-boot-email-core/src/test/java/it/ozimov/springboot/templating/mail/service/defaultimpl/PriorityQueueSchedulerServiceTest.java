@@ -1,8 +1,15 @@
-package it.ozimov.springboot.templating.mail.service;
+package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 import it.ozimov.springboot.templating.mail.CoreTestApplication;
 import it.ozimov.springboot.templating.mail.model.Email;
+import it.ozimov.springboot.templating.mail.service.EmailService;
+import it.ozimov.springboot.templating.mail.service.ServiceStatus;
+import it.ozimov.springboot.templating.mail.service.defaultimpl.PriorityQueueSchedulerService;
+import it.ozimov.springboot.templating.mail.service.defaultimpl.TemplatingTestUtils;
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
+import org.assertj.core.api.JUnitSoftAssertions;
+import org.assertj.core.api.SoftAssertions;
+import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -13,6 +20,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -21,15 +31,14 @@ import java.time.OffsetDateTime;
 import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
-import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.getSimpleMail;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringApplicationConfiguration(classes = CoreTestApplication.class)
-@WebIntegrationTest("server.port=0")
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = CoreTestApplication.class, webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PriorityQueueSchedulerServiceTest {
 
     @Rule
@@ -38,7 +47,10 @@ public class PriorityQueueSchedulerServiceTest {
     @Rule
     public Timeout globalTimeout = new Timeout(10, TimeUnit.SECONDS);
 
-    @Mock
+    @Rule
+    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+
+    @MockBean
     private EmailService emailService;
 
     @Mock
@@ -164,12 +176,11 @@ public class PriorityQueueSchedulerServiceTest {
         Thread.sleep(oneSecondInMillis());
 
         //Assert
-        given(priorityQueueSchedulerService.status()).assertThat(is(ServiceStatus.CLOSED));
+        given(priorityQueueSchedulerService.status()).assertThat(CoreMatchers.is(ServiceStatus.CLOSED));
     }
 
     private PriorityQueueSchedulerService scheduler(int numPriorityLevels) {
         final PriorityQueueSchedulerService schedulerService = new PriorityQueueSchedulerService(emailService, numPriorityLevels);
-//        given(schedulerService.logger()).willReturn(logger);
         return schedulerService;
     }
 

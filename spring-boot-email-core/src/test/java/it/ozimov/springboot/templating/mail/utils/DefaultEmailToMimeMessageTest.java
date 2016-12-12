@@ -17,8 +17,7 @@
 package it.ozimov.springboot.templating.mail.utils;
 
 import com.google.common.collect.Lists;
-import it.ozimov.springboot.templating.mail.model.Email;
-import it.ozimov.springboot.templating.mail.model.impl.EmailImpl;
+import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmail;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -54,7 +53,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EmailToMimeMessageTest {
+public class DefaultEmailToMimeMessageTest {
 
     @Mock
     private JavaMailSender javaMailSender;
@@ -62,51 +61,51 @@ public class EmailToMimeMessageTest {
     @InjectMocks
     private EmailToMimeMessage emailToMimeMessage;
 
-    public static void validateFrom(final Email email, final MimeMessage sentMessage)
+    public static void validateFrom(final it.ozimov.springboot.templating.mail.model.Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         final List<Address> froms = asList(sentMessage.getFrom());
         assertThat(froms, hasSize(1)); // redundant with contains
         assertThat(froms, contains((Address) email.getFrom()));
     }
 
-    public static void validateReplyTo(final Email email, final MimeMessage sentMessage)
+    public static void validateReplyTo(final it.ozimov.springboot.templating.mail.model.Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         final List<Address> replyTos = asList(sentMessage.getReplyTo());
         assertThat(replyTos, hasSize(1)); // redundant with contains
         assertThat(replyTos, contains((Address) email.getReplyTo()));
     }
 
-    public static void validateTo(final Email email, final MimeMessage sentMessage)
+    public static void validateTo(final it.ozimov.springboot.templating.mail.model.Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         final List<Address> tos = asList(sentMessage.getRecipients(TO));
         assertThat(tos.get(0), is((Address) (new ArrayList<>(email.getTo()).get(0))));
         assertThat(tos, everyItem(isIn(toAddress(email.getTo()))));
     }
 
-    public static void validateCc(final Email email, final MimeMessage sentMessage)
+    public static void validateCc(final it.ozimov.springboot.templating.mail.model.Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         final List<Address> ccs = asList(sentMessage.getRecipients(CC));
         assertThat(ccs, everyItem(isIn(toAddress(email.getCc()))));
     }
 
-    public static void validateBcc(final Email email, final MimeMessage sentMessage)
+    public static void validateBcc(final it.ozimov.springboot.templating.mail.model.Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         final List<Address> bccs = asList(sentMessage.getRecipients(BCC));
         assertThat(bccs, everyItem(isIn(toAddress(email.getBcc()))));
     }
 
-    public static void validateSubject(final Email email, final MimeMessage sentMessage)
+    public static void validateSubject(final it.ozimov.springboot.templating.mail.model.Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         assertThat(sentMessage.getSubject(), is(email.getSubject()));
     }
 
-    public static void validateBody(final Email email, final MimeMessage sentMessage)
+    public static void validateBody(final it.ozimov.springboot.templating.mail.model.Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         assertThat(sentMessage.getContent(), is(email.getBody()));
     }
 
-    public static Email getSimpleMail(InternetAddress from) throws UnsupportedEncodingException {
-        return EmailImpl.builder().from(from)
+    public static it.ozimov.springboot.templating.mail.model.Email getSimpleMail(InternetAddress from) throws UnsupportedEncodingException {
+        return DefaultEmail.builder().from(from)
                 .replyTo(new InternetAddress("tullius.cicero@urbs.aeterna", "Marcus Tullius Cicero"))
                 .to(Lists.newArrayList(new InternetAddress("titus@de-rerum.natura", "Pomponius Attĭcus")))
                 .cc(Lists.newArrayList(new InternetAddress("tito55@de-rerum.natura", "Titus Lucretius Carus"),
@@ -118,7 +117,7 @@ public class EmailToMimeMessageTest {
                 .encoding(Charset.forName("UTF-8")).build();
     }
 
-    public static Email getSimpleMail() throws UnsupportedEncodingException {
+    public static it.ozimov.springboot.templating.mail.model.Email getSimpleMail() throws UnsupportedEncodingException {
         return getSimpleMail(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone"));
     }
 
@@ -132,7 +131,7 @@ public class EmailToMimeMessageTest {
         // Arrange
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
 
-        final Email email = getSimpleMail();
+        final it.ozimov.springboot.templating.mail.model.Email email = getSimpleMail();
 
         // Act
         final MimeMessage sentMessage = emailToMimeMessage.apply(email);
