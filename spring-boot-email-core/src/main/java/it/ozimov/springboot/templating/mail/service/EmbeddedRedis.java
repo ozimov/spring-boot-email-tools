@@ -1,6 +1,6 @@
 package it.ozimov.springboot.templating.mail.service;
 
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import redis.embedded.RedisServer;
@@ -13,10 +13,13 @@ import java.io.IOException;
 @ConditionalOnProperty("${spring.mail.persistence.redis.enabled:false}")
 public class EmbeddedRedis {
 
-    @Value("${spring.mail.persistence.redis.port:6381}")
-    private int redisPort;
+    private final int redisPort;
 
     private RedisServer redisServer;
+
+    public EmbeddedRedis(@Value("${spring.mail.persistence.redis.port:6381}") final int redisPort) {
+        this.redisPort = redisPort;
+    }
 
     @PostConstruct
     public void startRedis() throws IOException {

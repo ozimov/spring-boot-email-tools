@@ -18,10 +18,12 @@ package it.ozimov.springboot.templating.mail.utils;
 
 import it.ozimov.springboot.templating.mail.exceptions.EmailConversionException;
 import it.ozimov.springboot.templating.mail.model.Email;
+import it.ozimov.springboot.templating.mail.model.EmailAttachment;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailAttachment;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -75,10 +77,11 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                 }
             }
             if (ofNullable(email.getAttachments()).isPresent()) {
-                for (final DefaultEmailAttachment attachment : email.getAttachments()) {
+                for (final EmailAttachment attachment : email.getAttachments()) {
                     try {
                         messageHelper.addAttachment(attachment.getAttachmentName(),
-                                attachment.getInputStream(), attachment.getContentType().getType());
+                                new ByteArrayResource(attachment.getAttachmentData()),
+                                attachment.getContentType().getType());
                     } catch (IOException e) {
                         log.error("Error while converting DefaultEmail to MimeMessage");
                         throw new EmailConversionException(e);

@@ -38,7 +38,7 @@ public class DefaultEmailSchedulingData implements EmailSchedulingData {
     protected final int assignedPriority;
     protected final int desiredPriority;
 
-    @Builder
+    @Builder(builderMethodName = "defaultEmailSchedulingDataBuilder")
     public DefaultEmailSchedulingData(@NonNull final Email email,
                                       @NonNull final OffsetDateTime scheduledDateTime,
                                       final int desiredPriority,

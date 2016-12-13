@@ -2,6 +2,9 @@ package it.ozimov.springboot.templating.mail.model;
 
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
+import org.assertj.core.api.JUnitSoftAssertions;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.OffsetDateTime;
@@ -12,46 +15,53 @@ import static org.hamcrest.CoreMatchers.is;
 
 public class DefaultEmailSchedulingDataTest {
 
+    @Rule
+    public JUnitSoftAssertions assertions = new JUnitSoftAssertions();
+
     @Test
     public void testCompareTo() throws Exception {
         //Arrange
         final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow();
-        final DefaultEmailSchedulingData wrapper = DefaultEmailSchedulingData.builder()
+        final DefaultEmailSchedulingData wrapper = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime)
-                .priority(1)
+                .assignedPriority(1)
+                .desiredPriority(1)
                 .build();
-        final DefaultEmailSchedulingData wrapperSmallerPrio = DefaultEmailSchedulingData.builder()
+        final DefaultEmailSchedulingData wrapperSmallerPrio = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime)
-                .priority(2)
+                .assignedPriority(2)
+                .desiredPriority(2)
                 .build();
-        final DefaultEmailSchedulingData wrapperBefore = DefaultEmailSchedulingData.builder()
+        final DefaultEmailSchedulingData wrapperBefore = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime.minusDays(1))
-                .priority(1)
+                .assignedPriority(1)
+                .desiredPriority(1)
                 .build();
-        final DefaultEmailSchedulingData wrapperAfter = DefaultEmailSchedulingData.builder()
+        final DefaultEmailSchedulingData wrapperAfter = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime.plusDays(1))
-                .priority(1)
+                .assignedPriority(1)
+                .desiredPriority(1)
                 .build();
 
         //Act+Assert
-        given(wrapper.compareTo(wrapperSmallerPrio)).assertThat(is(-1));
-        given(wrapperSmallerPrio.compareTo(wrapper)).assertThat(is(1));
+        assertions.assertThat(wrapper).isLessThan(wrapperSmallerPrio);
+        assertions.assertThat(wrapperSmallerPrio).isGreaterThan(wrapper);
 
-        given(wrapper.compareTo(wrapperBefore)).assertThat(is(1));
-        given(wrapperBefore.compareTo(wrapper)).assertThat(is(-1));
+        assertions.assertThat(wrapper).isGreaterThan(wrapperBefore);
+        assertions.assertThat(wrapperBefore).isLessThan(wrapper);
 
-        given(wrapper.compareTo(wrapperAfter)).assertThat(is(-1));
-        given(wrapperAfter.compareTo(wrapper)).assertThat(is(1));
+        assertions.assertThat(wrapper).isLessThan(wrapperAfter);
+        assertions.assertThat(wrapperAfter).isGreaterThan(wrapper);
 
-        given(wrapperSmallerPrio.compareTo(wrapperAfter)).assertThat(is(-1));
-        given(wrapperAfter.compareTo(wrapperSmallerPrio)).assertThat(is(1));
+        assertions.assertThat(wrapperSmallerPrio).isLessThan(wrapperAfter);
+        assertions.assertThat(wrapperAfter).isGreaterThan(wrapperSmallerPrio);
 
-        given(wrapperSmallerPrio.compareTo(wrapperBefore)).assertThat(is(1));
-        given(wrapperBefore.compareTo(wrapperSmallerPrio)).assertThat(is(-1));
+        assertions.assertThat(wrapperSmallerPrio).isGreaterThan(wrapperBefore);
+        assertions.assertThat(wrapperBefore).isLessThan(wrapperSmallerPrio);
     }
 
 }

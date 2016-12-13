@@ -28,6 +28,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
@@ -180,7 +181,7 @@ public class PriorityQueueSchedulerServiceTest {
     }
 
     private PriorityQueueSchedulerService scheduler(int numPriorityLevels) {
-        final PriorityQueueSchedulerService schedulerService = new PriorityQueueSchedulerService(emailService, numPriorityLevels);
+        final PriorityQueueSchedulerService schedulerService = new PriorityQueueSchedulerService(emailService, numPriorityLevels, Optional.empty());
         return schedulerService;
     }
 

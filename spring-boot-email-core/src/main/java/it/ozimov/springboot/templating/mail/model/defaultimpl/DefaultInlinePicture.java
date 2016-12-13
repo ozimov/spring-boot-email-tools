@@ -17,6 +17,7 @@
 package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 import it.ozimov.springboot.templating.mail.model.ImageType;
+import it.ozimov.springboot.templating.mail.model.InlinePicture;
 import lombok.*;
 
 import java.io.File;
@@ -25,7 +26,7 @@ import java.io.File;
 @AllArgsConstructor
 @Data
 @Builder
-public class DefaultInlinePicture implements it.ozimov.springboot.templating.mail.model.InlinePicture {
+public class DefaultInlinePicture implements InlinePicture {
 
     private static final long serialVersionUID = 1040548679790587446L;
 

@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Map;
@@ -35,8 +36,7 @@ import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.Is.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = FreemarkerTestApplication.class)
-@WebIntegrationTest("server.port=0")
+@SpringBootTest(classes = FreemarkerTestApplication.class)
 public class FreemarkerTemplateServiceTest {
 
     @Rule

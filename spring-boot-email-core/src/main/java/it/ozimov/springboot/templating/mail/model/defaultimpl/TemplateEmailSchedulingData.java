@@ -35,7 +35,7 @@ public class TemplateEmailSchedulingData extends DefaultEmailSchedulingData {
     private final Map<String, Object> modelObject;
     private final InlinePicture[] inlinePictures;
 
-    @Builder
+    @Builder(builderMethodName = "templateEmailSchedulingDataBuilder")
     public TemplateEmailSchedulingData(@NonNull final Email email,
                                        @NonNull final OffsetDateTime scheduledDateTime,
                                        final int desiredPriority,

@@ -16,7 +16,6 @@
 
 package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
-import com.sun.istack.internal.Nullable;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
@@ -66,23 +65,16 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     private Consumer consumer;
 
-    private PersistenceService persistenceService;
-
-    @Autowired
-    public PriorityQueueSchedulerService(
-            final EmailService emailService,
-            @Value("${spring.mail.scheduler.priorityLevels:10}") final int numberOfPriorityLevels) {
-        this(emailService, numberOfPriorityLevels, null);
-    }
+    private Optional<PersistenceService> persistenceService;
 
     @Autowired
     public PriorityQueueSchedulerService(
             final EmailService emailService,
             @Value("${spring.mail.scheduler.priorityLevels:10}") final int numberOfPriorityLevels,
-            @Nullable final PersistenceService persistenceService) {
+            final Optional<PersistenceService> persistenceServiceOptional) {
         checkArgument(numberOfPriorityLevels > 0, "Expected at least one priority level");
         this.emailService = requireNonNull(emailService);
-        this.persistenceService = persistenceService;
+        this.persistenceService = persistenceServiceOptional;
         queues = new TreeSet[numberOfPriorityLevels];
         for (int i = 0; i < numberOfPriorityLevels; i++) {
             queues[i] = new TreeSet<>();
@@ -102,7 +94,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         checkPriorityLevel(desiredPriorityLevel);
 
         final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);
-        final EmailSchedulingData emailSchedulingData = DefaultEmailSchedulingData.builder()
+        final EmailSchedulingData emailSchedulingData = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                                                             .email(mimeEmail)
                                                             .scheduledDateTime(scheduledDateTime)
                                                             .assignedPriority(assignedPriorityLevel)
@@ -125,7 +117,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         checkPriorityLevel(desiredPriorityLevel);
 
         final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);
-        final EmailSchedulingData emailTemplateSchedulingData = TemplateEmailSchedulingData.builder()
+        final EmailSchedulingData emailTemplateSchedulingData = TemplateEmailSchedulingData.templateEmailSchedulingDataBuilder()
                 .email(mimeEmail)
                 .scheduledDateTime(scheduledDateTime)
                 .assignedPriority(assignedPriorityLevel)

@@ -18,6 +18,8 @@ package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 
 import com.google.common.base.Charsets;
+import it.ozimov.springboot.templating.mail.model.Email;
+import it.ozimov.springboot.templating.mail.model.EmailAttachment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,7 +43,7 @@ import static java.nio.charset.Charset.forName;
 @AllArgsConstructor
 @Data
 @Builder
-public class DefaultEmail implements it.ozimov.springboot.templating.mail.model.Email {
+public class DefaultEmail implements Email {
 
     private static final long serialVersionUID = 634175529482595823L;
 
@@ -62,7 +64,7 @@ public class DefaultEmail implements it.ozimov.springboot.templating.mail.model.
     @NonNull
     private String body;
 
-    private Collection<DefaultEmailAttachment> attachments;
+    private Collection<EmailAttachment> attachments;
 
     private Charset encoding = forName(Charsets.UTF_8.name());
 
