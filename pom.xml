@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.2.RELEASE</version>
+        <version>1.4.3.RELEASE</version>
     </parent>
 
     <groupId>it.ozimov</groupId>
@@ -43,8 +43,8 @@
     </licenses>
 
     <properties>
-        <spring.boot.version>1.4.2.RELEASE</spring.boot.version>
-        <it.ozimov.cirneco.version>1.1.2</it.ozimov.cirneco.version>
+        <spring.boot.version>1.4.3.RELEASE</spring.boot.version>
+        <it.ozimov.cirneco.version>1.2.0</it.ozimov.cirneco.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -105,6 +105,12 @@
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>java8-hamcrest-matchers</artifactId>
+            <version>${it.ozimov.cirneco.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.ozimov</groupId>
+            <artifactId>mockito-helpers</artifactId>
             <version>${it.ozimov.cirneco.version}</version>
             <scope>test</scope>
         </dependency>

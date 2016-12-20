@@ -33,6 +33,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 import static com.google.common.base.Optional.fromNullable;
@@ -54,7 +55,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
     public MimeMessage apply(final Email email) {
         final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         final MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage,
-                fromNullable(email.getEncoding()).or(Charset.forName("UTF-8")).displayName());
+                fromNullable(email.getEncoding()).or(StandardCharsets.UTF_8.name()));
 
         try {
             messageHelper.setFrom(email.getFrom());

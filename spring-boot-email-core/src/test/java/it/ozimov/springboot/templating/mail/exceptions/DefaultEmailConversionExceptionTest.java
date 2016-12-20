@@ -1,12 +1,13 @@
 package it.ozimov.springboot.templating.mail.exceptions;
 
+import it.ozimov.springboot.templating.mail.UnitTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.is;
 
-public class DefaultEmailConversionExceptionTest {
+public class DefaultEmailConversionExceptionTest implements UnitTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

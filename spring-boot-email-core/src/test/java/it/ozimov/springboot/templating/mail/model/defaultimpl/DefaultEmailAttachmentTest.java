@@ -1,5 +1,6 @@
 package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
+import it.ozimov.springboot.templating.mail.UnitTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -17,7 +18,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.IMAGE_JPEG;
 
-public class DefaultEmailAttachmentTest {
+public class DefaultEmailAttachmentTest implements UnitTest {
 
     private static final String FILE_PATH = "images" + File.separator + "100_percent_free.jpg";
 

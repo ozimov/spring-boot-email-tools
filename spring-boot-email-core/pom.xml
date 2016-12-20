@@ -48,13 +48,19 @@
         <!-- Spring Redis -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-redis</artifactId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         <!-- Embedded Redis -->
         <dependency>
             <groupId>com.github.kstyrc</groupId>
             <artifactId>embedded-redis</artifactId>
             <version>0.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

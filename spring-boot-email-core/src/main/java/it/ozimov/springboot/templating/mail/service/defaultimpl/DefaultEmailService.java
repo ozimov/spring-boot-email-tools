@@ -104,7 +104,7 @@ public class DefaultEmailService implements EmailService {
 
             //Set the HTML text part
             final MimeBodyPart textPart = new MimeBodyPart();
-            textPart.setText(text, email.getEncoding().displayName(), "html");
+            textPart.setText(text, email.getEncoding(), "html");
             content.addBodyPart(textPart);
 
             mimeMessage.setContent(content);

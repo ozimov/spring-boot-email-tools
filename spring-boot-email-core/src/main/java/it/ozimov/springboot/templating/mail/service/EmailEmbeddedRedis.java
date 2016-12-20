@@ -1,5 +1,6 @@
 package it.ozimov.springboot.templating.mail.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -9,30 +10,33 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 
-@Component(value = "EmailEmbeddedRedis")
-@ConditionalOnProperty("${spring.mail.persistence.redis.enabled:false}")
-public class EmbeddedRedis {
+@Component
+@ConditionalOnProperty(prefix="spring.mail.persistence.redis", name={"enabled", "embedded"})
+public class EmailEmbeddedRedis {
 
-    private final int redisPort;
+    private int redisPort;
 
     private RedisServer redisServer;
 
-    public EmbeddedRedis(@Value("${spring.mail.persistence.redis.port:6381}") final int redisPort) {
+    @Autowired
+    public EmailEmbeddedRedis(@Value("${spring.mail.persistence.redis.port}") final int redisPort) {
         this.redisPort = redisPort;
     }
 
     @PostConstruct
-    public void startRedis() throws IOException {
+    public EmailEmbeddedRedis startRedis() throws IOException {
         redisServer = RedisServer.builder()
                 .port(redisPort)
                 .setting("appendonly yes")
                 .build();
         redisServer.start();
+        return this;
     }
 
     @PreDestroy
-    public void stopRedis() {
+    public EmailEmbeddedRedis stopRedis() {
         redisServer.stop();
+        return this;
     }
 
 }

@@ -16,14 +16,17 @@
 
 package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
+import com.google.common.base.Preconditions;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.service.PersistenceService;
 import it.ozimov.springboot.templating.mail.utils.ByteArrayToSerializable;
 import it.ozimov.springboot.templating.mail.utils.SerializableToByteArray;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Service;
 
@@ -35,15 +38,12 @@ import java.util.stream.IntStream;
 
 import static java.util.Objects.nonNull;
 
-@Service
-@ConditionalOnProperty("${spring.mail.persistence.redis.enabled:false}")
+@Service("defaultEmailPersistenceService")
+@ConditionalOnProperty(prefix = "spring.mail.persistence.redis", name = "enabled")
 public class DefaultPersistenceService implements PersistenceService {
 
-
-    private final RedisTemplate redisTemplate;
     private final StringRedisTemplate orderingTemplate;
     private final RedisTemplate<String, EmailSchedulingData> valueTemplate;
-
 
     private static class SerializerInstanceHolder {
         public static final SerializableToByteArray<EmailSchedulingData> INSTANCE = new SerializableToByteArray<>();
@@ -53,27 +53,31 @@ public class DefaultPersistenceService implements PersistenceService {
         public static final ByteArrayToSerializable<EmailSchedulingData> INSTANCE = new ByteArrayToSerializable<>();
     }
 
-    public DefaultPersistenceService(@NonNull final RedisTemplate redisTemplate,
-                                     @NonNull final StringRedisTemplate orderingTemplate,
+    @Autowired
+    public DefaultPersistenceService(@NonNull final StringRedisTemplate orderingTemplate,
                                      @NonNull final RedisTemplate<String, EmailSchedulingData> valueTemplate) {
-        this.redisTemplate = redisTemplate;
-
         this.orderingTemplate = orderingTemplate;
+        this.orderingTemplate.setEnableTransactionSupport(true);
 
         this.valueTemplate = valueTemplate;
-        this.valueTemplate.setKeySerializer(new StringRedisSerializer());
-        this.valueTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
-        this.valueTemplate.setEnableDefaultSerializer(false);
+        RedisSerializer<String> stringSerializer = new StringRedisSerializer();
+        JdkSerializationRedisSerializer jdkSerializationRedisSerializer = new JdkSerializationRedisSerializer();
+        this.valueTemplate.setKeySerializer(stringSerializer);
+        this.valueTemplate.setValueSerializer(jdkSerializationRedisSerializer);
+        this.valueTemplate.setHashKeySerializer(stringSerializer);
+        this.valueTemplate.setHashValueSerializer(stringSerializer);
+
+//        this.valueTemplate.setKeySerializer(new StringRedisSerializer());
+//        this.valueTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
+//        this.valueTemplate.setEnableDefaultSerializer(false);
         this.valueTemplate.afterPropertiesSet();
+
+        this.valueTemplate.setEnableTransactionSupport(true);
     }
 
     @Override
     public void add(@NonNull final EmailSchedulingData emailSchedulingData) {
-        redisTemplate.execute((RedisCallback) connection -> {
             addOps(emailSchedulingData);
-            connection.exec();
-            return null;
-        });
     }
 
     protected void addOps(final EmailSchedulingData emailSchedulingData) {
@@ -82,11 +86,17 @@ public class DefaultPersistenceService implements PersistenceService {
 
         final double score = calculateScore(emailSchedulingData);
 
-        orderingTemplate.boundZSetOps(orderingKey).add(valueKey, score);
-        orderingTemplate.boundZSetOps(orderingKey).persist();
+        BoundZSetOperations<String, String > orderingZSetOps = orderingTemplate.boundZSetOps(orderingKey);
+        orderingZSetOps.add(valueKey, score);
+        final boolean orderingKeyPersisted = orderingZSetOps.persist();
+        Preconditions.checkState(orderingKeyPersisted,
+                "OrderingKey for EmailSchedulingData with id %s and assigned priority level %d not persisted.", valueKey, emailSchedulingData.getAssignedPriority());
 
-        valueTemplate.boundValueOps(valueKey).set(emailSchedulingData);
-        valueTemplate.boundValueOps(valueKey).persist();
+        BoundValueOperations<String, EmailSchedulingData> valueValueOps  = valueTemplate.boundValueOps(valueKey);
+        valueValueOps.set(emailSchedulingData);
+        final boolean valuePersisted = valueValueOps.persist();
+        Preconditions.checkState(valuePersisted,
+                "Value for EmailSchedulingData with id %s not persisted.", valueKey);
     }
 
     @Override
@@ -95,6 +105,7 @@ public class DefaultPersistenceService implements PersistenceService {
     }
 
     protected EmailSchedulingData getOps(final String id) {
+        //valueTemplate.
         BoundValueOperations<String, EmailSchedulingData> boundValueOps = valueTemplate.boundValueOps(id);
         EmailSchedulingData emailSchedulingData = boundValueOps.get();
         return emailSchedulingData;
@@ -102,13 +113,7 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public boolean remove(@NonNull final String id) {
-        return (Boolean) redisTemplate.execute(
-                (RedisCallback<Boolean>) connection -> {
-                    boolean result = removeOps(id);
-                    if(result) connection.exec();
-
-                    return result;
-                });
+         return removeOps(id);
     }
 
     protected boolean removeOps(final String id){
@@ -125,11 +130,7 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public void addAll(@NonNull final Collection<EmailSchedulingData> emailSchedulingDataList) {
-        redisTemplate.executePipelined((RedisCallback) connection -> {
             addAllOps(emailSchedulingDataList);
-            connection.exec();
-            return null;
-        });
     }
 
     protected void addAllOps(final Collection<EmailSchedulingData> emailSchedulingDataList) {
@@ -140,12 +141,7 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public Collection<EmailSchedulingData> getNextBatch(final int priorityLevel, final int batchMaxSize) {
-        return (Collection<EmailSchedulingData>) redisTemplate.execute(
-                (RedisCallback<Collection<EmailSchedulingData>>) connection -> getNextBatchOps(priorityLevel, batchMaxSize));
-    }
-
-    protected Collection<EmailSchedulingData> getNextBatchOps(final int priorityLevel, final int batchMaxSize) {
-        final String orderingKey = orderingKey(priorityLevel);
+        final String orderingKey = RedisBasedPersistenceServiceConstants.orderingKey(priorityLevel);
         return getNextBatchOps(orderingKey, batchMaxSize);
     }
 
@@ -161,12 +157,7 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public Collection<EmailSchedulingData> getNextBatch(final int batchMaxSize) {
-        return (Collection<EmailSchedulingData>) redisTemplate.execute(
-                (RedisCallback<Collection<EmailSchedulingData>>) connection -> getNextBatchOps(batchMaxSize));
-    }
-
-    protected Collection<EmailSchedulingData> getNextBatchOps(final int batchMaxSize) {
-        Set<String> keys = new TreeSet<>(orderingTemplate.keys(orderingKeyPrefix()+"*"));
+        Set<String> keys = new TreeSet<>(orderingTemplate.keys(RedisBasedPersistenceServiceConstants.orderingKeyPrefix()+"*"));
 
         Set<EmailSchedulingData> emailSchedulingDataSet = new HashSet<>();
         for(String key : keys) {
@@ -177,33 +168,13 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public void removeAll() {
-        redisTemplate.executePipelined(
-                (RedisCallback) connection -> {
-                    removeAllOps();
-                    connection.exec();
-                    return null;
-                }
-        );
-    }
-
-    protected void removeAllOps(){
         orderingTemplate.delete("*");
         valueTemplate.delete("*");
     }
 
     @Override
     public void removeAll(final int priorityLevel) {
-        redisTemplate.executePipelined(
-                (RedisCallback) connection -> {
-                    removeAllOps(priorityLevel);
-                    connection.exec();
-                    return null;
-                }
-        );
-    }
-
-    protected void removeAllOps(int priorityLevel){
-        final String orderingKey = orderingKey(priorityLevel);
+        final String orderingKey =  RedisBasedPersistenceServiceConstants.orderingKey(priorityLevel);
 
         BoundZSetOperations<String, String> boundZSetOperations = orderingTemplate.boundZSetOps(orderingKey);
         long amount = boundZSetOperations.size();
@@ -225,32 +196,13 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public void removeAll(@NonNull final Collection<String> ids) {
-        redisTemplate.executePipelined(
-                (RedisCallback) connection -> {
-                    removeAllOps(ids);
-                    connection.exec();
-                    return null;
-                }
-        );
-    }
-
-    protected void removeAllOps(final Collection<String> ids){
         ids.parallelStream()
                 .forEach(id -> removeOps(id));
     }
 
     private String orderingKey(final EmailSchedulingData emailSchedulingData) {
-        return orderingKey(emailSchedulingData.getAssignedPriority());
+        return RedisBasedPersistenceServiceConstants.orderingKey(emailSchedulingData.getAssignedPriority());
     }
-
-    private String orderingKey(final int priorityLevel) {
-        return orderingKeyPrefix() + priorityLevel;
-    }
-
-    private String orderingKeyPrefix() {
-        return "priority-level:";
-    }
-
 
     private double calculateScore(final EmailSchedulingData emailSchedulingData) {
         final long nanos = emailSchedulingData.getScheduledDateTime().getLong(ChronoField.NANO_OF_SECOND);

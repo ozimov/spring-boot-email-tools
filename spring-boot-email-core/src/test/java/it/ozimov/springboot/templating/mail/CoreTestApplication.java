@@ -19,10 +19,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@ComponentScan(basePackages = {"it.ozimov.springbooot.mail"})
+@PropertySource("classpath:base-test.properties")
+@ComponentScan(basePackages = {"it.ozimov.springboot.templating.mail"})
 public class CoreTestApplication {
 
     public static void main(final String... args) {

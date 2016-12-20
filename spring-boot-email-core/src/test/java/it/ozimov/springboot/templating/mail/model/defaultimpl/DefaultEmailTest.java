@@ -1,5 +1,6 @@
 package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
+import it.ozimov.springboot.templating.mail.UnitTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -12,7 +13,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 
-public class DefaultEmailTest {
+public class DefaultEmailTest implements UnitTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

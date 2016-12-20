@@ -1,5 +1,6 @@
 package it.ozimov.springboot.templating.mail.model;
 
+import it.ozimov.springboot.templating.mail.UnitTest;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import org.assertj.core.api.JUnitSoftAssertions;
@@ -13,7 +14,7 @@ import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static org.hamcrest.CoreMatchers.is;
 
-public class DefaultEmailSchedulingDataTest {
+public class DefaultEmailSchedulingDataTest implements UnitTest {
 
     @Rule
     public JUnitSoftAssertions assertions = new JUnitSoftAssertions();
@@ -22,25 +23,25 @@ public class DefaultEmailSchedulingDataTest {
     public void testCompareTo() throws Exception {
         //Arrange
         final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow();
-        final DefaultEmailSchedulingData wrapper = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
+        final DefaultEmailSchedulingData reference = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime)
                 .assignedPriority(1)
                 .desiredPriority(1)
                 .build();
-        final DefaultEmailSchedulingData wrapperSmallerPrio = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
+        final DefaultEmailSchedulingData smallerPrio = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime)
                 .assignedPriority(2)
                 .desiredPriority(2)
                 .build();
-        final DefaultEmailSchedulingData wrapperBefore = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
+        final DefaultEmailSchedulingData before = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime.minusDays(1))
                 .assignedPriority(1)
                 .desiredPriority(1)
                 .build();
-        final DefaultEmailSchedulingData wrapperAfter = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
+        final DefaultEmailSchedulingData after = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                 .email(getSimpleMail())
                 .scheduledDateTime(dateTime.plusDays(1))
                 .assignedPriority(1)
@@ -48,20 +49,20 @@ public class DefaultEmailSchedulingDataTest {
                 .build();
 
         //Act+Assert
-        assertions.assertThat(wrapper).isLessThan(wrapperSmallerPrio);
-        assertions.assertThat(wrapperSmallerPrio).isGreaterThan(wrapper);
+        assertions.assertThat(reference).isLessThan(smallerPrio);
+        assertions.assertThat(smallerPrio).isGreaterThan(reference);
 
-        assertions.assertThat(wrapper).isGreaterThan(wrapperBefore);
-        assertions.assertThat(wrapperBefore).isLessThan(wrapper);
+        assertions.assertThat(reference).isGreaterThan(before);
+        assertions.assertThat(before).isLessThan(reference);
 
-        assertions.assertThat(wrapper).isLessThan(wrapperAfter);
-        assertions.assertThat(wrapperAfter).isGreaterThan(wrapper);
+        assertions.assertThat(reference).isLessThan(after);
+        assertions.assertThat(after).isGreaterThan(reference);
 
-        assertions.assertThat(wrapperSmallerPrio).isLessThan(wrapperAfter);
-        assertions.assertThat(wrapperAfter).isGreaterThan(wrapperSmallerPrio);
+        assertions.assertThat(smallerPrio).isLessThan(after);
+        assertions.assertThat(after).isGreaterThan(smallerPrio);
 
-        assertions.assertThat(wrapperSmallerPrio).isGreaterThan(wrapperBefore);
-        assertions.assertThat(wrapperBefore).isLessThan(wrapperSmallerPrio);
+        assertions.assertThat(smallerPrio).isGreaterThan(before);
+        assertions.assertThat(before).isLessThan(smallerPrio);
     }
 
 }

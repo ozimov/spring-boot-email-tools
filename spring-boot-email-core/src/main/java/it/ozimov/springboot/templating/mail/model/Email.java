@@ -45,7 +45,11 @@ public interface Email extends Serializable {
 
     Collection<EmailAttachment> getAttachments();
 
-    Charset getEncoding();
+    /**
+     * Return the charset encoding. Default value is UTF-8
+     */
+    //Observe that Charset does not guarantee that the object is Serializable, therefore we may break serialization
+    String getEncoding();
 
     Locale getLocale();
 

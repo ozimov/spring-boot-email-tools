@@ -18,6 +18,7 @@ package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 
 import com.google.common.collect.Maps;
+import it.ozimov.springboot.templating.mail.UnitTest;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.ImageType;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultInlinePicture;
@@ -65,7 +66,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultEmailServiceTest {
+public class DefaultEmailServiceTest implements UnitTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();

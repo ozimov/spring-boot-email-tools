@@ -28,5 +28,4 @@ public class TemplatingTestUtils {
         return new String(encoded, Charset.forName("UTF-8"));
     }
 
-
 }

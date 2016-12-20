@@ -1,5 +1,6 @@
 package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
+import it.ozimov.springboot.templating.mail.ContextBasedTest;
 import it.ozimov.springboot.templating.mail.CoreTestApplication;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.service.EmailService;
@@ -39,17 +40,14 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = CoreTestApplication.class, webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PriorityQueueSchedulerServiceTest {
+@SpringBootTest(classes = CoreTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Rule
-    public Timeout globalTimeout = new Timeout(10, TimeUnit.SECONDS);
-
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+    public Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
 
     @MockBean
     private EmailService emailService;

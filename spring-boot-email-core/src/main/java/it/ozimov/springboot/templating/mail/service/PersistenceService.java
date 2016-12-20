@@ -17,6 +17,7 @@
 package it.ozimov.springboot.templating.mail.service;
 
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -33,6 +34,7 @@ public interface PersistenceService {
      *
      * @param emailSchedulingData the data to be stored.
      */
+    @Transactional(rollbackFor = Exception.class)
     void add(EmailSchedulingData emailSchedulingData);
 
     /**
@@ -44,6 +46,7 @@ public interface PersistenceService {
      * @return an optional containing the scheduling data of an email if any was found for the
      * given emailSchedulingDataId; otherwise, an empty optional.
      */
+    @Transactional(readOnly = true)
     Optional<EmailSchedulingData> get(String id);
 
     /**
@@ -53,6 +56,7 @@ public interface PersistenceService {
      * @param id the id of stored {@linkplain EmailSchedulingData}.
      * @return {@code true} if the id exists and the value was successfully removed; {@code false} otherwise.
      */
+    @Transactional(rollbackFor = Exception.class)
     boolean remove(String id);
 
     /**
@@ -66,6 +70,7 @@ public interface PersistenceService {
      *
      * @param emailSchedulingDataList collection of {@linkplain EmailSchedulingData} to be persisted
      */
+    @Transactional(rollbackFor = Exception.class)
     void addAll(Collection<EmailSchedulingData> emailSchedulingDataList);
 
     /**
@@ -80,6 +85,7 @@ public interface PersistenceService {
      * @param batchMaxSize the desired size of the batch.
      * @return a batch of {@linkplain EmailSchedulingData} to be retrieved from the persistence layer.
      */
+    @Transactional(readOnly = true)
     Collection<EmailSchedulingData> getNextBatch(int priorityLevel, int batchMaxSize);
 
 
@@ -94,12 +100,14 @@ public interface PersistenceService {
      * @param batchMaxSize the desired size of the batch.
      * @return a batch of {@linkplain EmailSchedulingData} to be retrieved from the persistence layer.
      */
+    @Transactional(readOnly = true)
     Collection<EmailSchedulingData> getNextBatch(int batchMaxSize);
 
     /**
      * Remove all the {@linkplain EmailSchedulingData} in the peristence layer.
      *
      */
+    @Transactional(rollbackFor = Exception.class)
     void removeAll();
 
     /**
@@ -107,6 +115,7 @@ public interface PersistenceService {
      *
      * @param priorityLevel the id of the prioroty level that has to be erased.
      */
+    @Transactional(rollbackFor = Exception.class)
     void removeAll(int priorityLevel);
 
 
@@ -117,6 +126,7 @@ public interface PersistenceService {
      *
      * @param ids a collection of ids of stored {@linkplain EmailSchedulingData}.
      */
+    @Transactional(rollbackFor = Exception.class)
     void removeAll(Collection<String> ids);
 
 }

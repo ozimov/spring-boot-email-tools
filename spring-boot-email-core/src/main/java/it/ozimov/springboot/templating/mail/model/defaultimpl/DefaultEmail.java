@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.mail.internet.InternetAddress;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
@@ -66,12 +67,10 @@ public class DefaultEmail implements Email {
 
     private Collection<EmailAttachment> attachments;
 
-    private Charset encoding = forName(Charsets.UTF_8.name());
+    private String encoding = StandardCharsets.UTF_8.name();
 
     private Locale locale;
 
     private Date sentAt;
 
 }
-
-

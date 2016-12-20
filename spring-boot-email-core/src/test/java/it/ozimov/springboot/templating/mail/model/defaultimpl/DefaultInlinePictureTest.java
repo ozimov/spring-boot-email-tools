@@ -1,5 +1,6 @@
 package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
+import it.ozimov.springboot.templating.mail.UnitTest;
 import it.ozimov.springboot.templating.mail.model.ImageType;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +18,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultInlinePictureTest {
+public class DefaultInlinePictureTest implements UnitTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

@@ -4,18 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [Planned]
-Revise unit testing by only using AssertJ and removing Hamcrest
+Revise unit testing by only using AssertJ and JUnit5
 
 ## [Unreleased]
-
-
 
 ## [0.4.0] - 2016-XX-XX
 ### Added
 - Persistence has been introduced with optional `PersistenceService`: default implementation relies on embedded-REDIS. 
 
 ### Changed
-- Using Spring Boot _1.4.2.RELEASE_
+- Using Spring Boot _1.4.3.RELEASE_
 - Using Pebble _2.3.0.RELEASE_
 
 ## [0.3.4] - 2016-07-05
