@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.5] - 2017-01-04
+### Added
+- Added receipt notification in email header
+
 ## [0.3.4] - 2016-07-05
 ### Changed
 - Using Spring Boot _1.3.6.RELEASE_

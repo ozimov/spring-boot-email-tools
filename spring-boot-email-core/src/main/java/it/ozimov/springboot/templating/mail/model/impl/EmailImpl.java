@@ -73,7 +73,7 @@ public class EmailImpl implements Email, Serializable {
 
     private Date sentAt;
 
-    private InternetAddress reciptTo;
+    private InternetAddress receiptTo;
 
     private InternetAddress depositionNotificationTo;
 

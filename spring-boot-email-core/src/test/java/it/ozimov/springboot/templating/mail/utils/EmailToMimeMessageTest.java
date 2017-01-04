@@ -59,7 +59,7 @@ public class EmailToMimeMessageTest {
 
     private static final String HEADER_DEPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
 
-    private static final String HEADER_RETURN_RECIPT = "Return-Receipt-To";
+    private static final String HEADER_RETURN_RECEIPT = "Return-Receipt-To";
 
     @Mock
     private JavaMailSender javaMailSender;
@@ -118,11 +118,10 @@ public class EmailToMimeMessageTest {
                 .cc(Lists.newArrayList(new InternetAddress("tito55@de-rerum.natura", "Titus Lucretius Carus"),
                         new InternetAddress("info@de-rerum.natura", "Info Best Seller")))
                 .bcc(Lists.newArrayList(new InternetAddress("caius-memmius@urbs.aeterna", "Caius Memmius")))
-                .depositionNotificationTo(new InternetAddress("ssanchez@bassan.co", "Juan Sebastian Sanchez"))
-                .reciptTo(new InternetAddress("ssanchez@bassan.co", "Juan Sebastian Sanchez"))
+                .depositionNotificationTo(new InternetAddress("caligola@urbs.aeterna", "Gaius Iulius Caesar Augustus Germanicus"))
+                .receiptTo(new InternetAddress("caligola@urbs.aeterna", "Gaius Iulius Caesar Augustus Germanicus"))
                 .subject("Laelius de amicitia")
-                .body(
-                        "Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
+                .body("Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
                 .encoding(Charset.forName("UTF-8")).build();
     }
 
@@ -152,19 +151,19 @@ public class EmailToMimeMessageTest {
         validateCc(email, sentMessage);
         validateBcc(email, sentMessage);
         validateDepositionNotification(email, sentMessage);
-        validateRecipt(email, sentMessage);
+        validateReceipt(email, sentMessage);
         validateSubject(email, sentMessage);
         validateBody(email, sentMessage);
 
         verify(javaMailSender, times(1)).createMimeMessage();
     }
 
-    private void validateRecipt(Email email, MimeMessage sentMessage) throws MessagingException {
-        assertThat(sentMessage.getHeader(HEADER_RETURN_RECIPT)[0], is(email.getReciptTo().getAddress()));
+    private void validateReceipt(Email email, MimeMessage sentMessage) throws MessagingException {
+        assertThat(sentMessage.getHeader(HEADER_RETURN_RECEIPT)[0], is(email.getReceiptTo().getAddress()));
     }
 
     private void validateDepositionNotification(Email email, MimeMessage sentMessage) throws MessagingException {
-        assertThat(sentMessage.getHeader(HEADER_DEPOSITION_NOTIFICATION_TO)[0], is(email.getReciptTo().getAddress()));
+        assertThat(sentMessage.getHeader(HEADER_DEPOSITION_NOTIFICATION_TO)[0], is(email.getReceiptTo().getAddress()));
     }
 
 }

@@ -4,7 +4,7 @@ a template engine to generate dynamic content.
 
 **Source Website:** *[github.com/ozimov/spring-boot-email-tools](http://github.com/ozimov/spring-boot-email-tools/)*<br />
 
-**Latest Release:** *0.3.4* <br />
+**Latest Release:** *0.3.5* <br />
 **Latest Artifacts:** *it.ozimov:spring-boot-email-core*, *it.ozimov:spring-boot-freemarker-email*,
     *it.ozimov:spring-boot-mustache-email*, *it.ozimov:spring-boot-pebble-email*, *it.ozimov:spring-boot-thymeleaf-email* <br />
 **Continuous Integration:** <br />
@@ -29,13 +29,13 @@ module that is shipped with the core module. The standard naming for the templat
 `it.ozimov:spring-boot-{template_engine_name}-email` (where `{template_engine_name}` is for instance `pebble`).
 
 ## Dependency
-Latest release is **`0.3.4`**. To use the core module, you can import the following dependency in Maven
+Latest release is **`0.3.5`**. To use the core module, you can import the following dependency in Maven
 
 ```xml
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-core</artifactId>
-    <version>0.3.4</version>
+    <version>0.3.5</version>
 </dependency>
 ```
 
@@ -45,7 +45,7 @@ To embed the module that includes the _Freemarker_ template engine, you can use 
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-freemarker-email</artifactId>
-    <version>0.3.4</version>
+    <version>0.3.5</version>
 </dependency>
 ```
 
@@ -55,7 +55,7 @@ for _Mustache_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-mustache-email</artifactId>
-    <version>0.3.4</version>
+    <version>0.3.5</version>
 </dependency>
 ```
 
@@ -65,7 +65,7 @@ for _Pebble_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-pebble-email</artifactId>
-    <version>0.3.4</version>
+    <version>0.3.5</version>
 </dependency>
 ```
 
@@ -75,7 +75,7 @@ and for _Thymeleaf_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-thymeleaf-email</artifactId>
-    <version>0.3.4</version>
+    <version>0.3.5</version>
 </dependency>
 ```
 
