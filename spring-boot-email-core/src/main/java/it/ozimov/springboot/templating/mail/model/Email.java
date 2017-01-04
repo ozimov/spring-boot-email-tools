@@ -54,4 +54,8 @@ public interface Email {
 
     void setSentAt(Date sentAt);
 
+    InternetAddress getReciptTo();
+
+    InternetAddress getDepositionNotificationTo();
+
 }

@@ -51,7 +51,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
     @Override
     public MimeMessage apply(final Email email) {
         final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        final MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage,
+        final MimeMessageHelperExt messageHelper = new MimeMessageHelperExt(mimeMessage,
                 fromNullable(email.getEncoding()).or(Charset.forName("UTF-8")).displayName());
 
         try {
@@ -91,6 +91,15 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
             if (nonNull(email.getSentAt())) {
                 messageHelper.setSentDate(email.getSentAt());
             }
+
+            if (nonNull(email.getReciptTo())) {
+                messageHelper.setHeaderDepositionNotificationTo(email.getReciptTo().getAddress());
+            }
+
+            if (nonNull(email.getDepositionNotificationTo())) {
+                messageHelper.setHeaderReturnRecipt(email.getDepositionNotificationTo().getAddress());
+            }
+
         } catch (MessagingException e) {
             log.error("Error while converting Email to MimeMessage");
             throw new EmailConversionException(e);
