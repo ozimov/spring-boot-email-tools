@@ -90,7 +90,7 @@ to scan for all the services and controllers defined in the Spring Boot Email mo
 package com.myapplication;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.myapplication", "it.ozimov.springbooot"})
+@ComponentScan(basePackages = {"com.myapplication", "it.ozimov.springboot"})
 public class MainApplication  {
 
     public static void main(final String... args) {
@@ -256,9 +256,9 @@ This is required to set the a proper content-id.
 ## Email scheduling
 
 The library supports email scheduling. Email can be set in different queues, from the one with
- highest assignedPriority to the least important. Priority 1 is the highest.
+ highest priority to the least important. Priority 1 is the highest.
 
-To define the number of assignedPriority levels, just add in the `application.properties` the following line:
+To define the number of priority levels, just add in the `application.properties` the following line:
 
 ```properties
 spring.mail.scheduler.priorityLevels=10

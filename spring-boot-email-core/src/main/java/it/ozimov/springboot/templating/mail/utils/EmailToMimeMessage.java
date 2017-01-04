@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
@@ -54,7 +53,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
     @Override
     public MimeMessage apply(final Email email) {
         final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        final MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage,
+        final MimeMessageHelperExt messageHelper = new MimeMessageHelperExt(mimeMessage,
                 fromNullable(email.getEncoding()).or(StandardCharsets.UTF_8.name()));
 
         try {
@@ -95,6 +94,15 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
             if (nonNull(email.getSentAt())) {
                 messageHelper.setSentDate(email.getSentAt());
             }
+
+            if (nonNull(email.getReceiptTo())) {
+                messageHelper.setHeaderDepositionNotificationTo(email.getReceiptTo().getAddress());
+            }
+
+            if (nonNull(email.getDepositionNotificationTo())) {
+                messageHelper.setHeaderReturnReceipt(email.getDepositionNotificationTo().getAddress());
+            }
+
         } catch (MessagingException e) {
             log.error("Error while converting DefaultEmail to MimeMessage");
             throw new EmailConversionException(e);

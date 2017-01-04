@@ -57,6 +57,10 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultEmailToMimeMessageTest {
 
+    private static final String HEADER_DEPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
+
+    private static final String HEADER_RETURN_RECEIPT = "Return-Receipt-To";
+
     @Mock
     private JavaMailSender javaMailSender;
 
@@ -107,15 +111,17 @@ public class DefaultEmailToMimeMessageTest {
     }
 
     public static Email getSimpleMail(InternetAddress from) throws UnsupportedEncodingException {
-        return DefaultEmail.builder().from(from)
+        return DefaultEmail.builder()
+                .from(from)
                 .replyTo(new InternetAddress("tullius.cicero@urbs.aeterna", "Marcus Tullius Cicero"))
                 .to(Lists.newArrayList(new InternetAddress("titus@de-rerum.natura", "Pomponius Attĭcus")))
                 .cc(Lists.newArrayList(new InternetAddress("tito55@de-rerum.natura", "Titus Lucretius Carus"),
                         new InternetAddress("info@de-rerum.natura", "Info Best Seller")))
                 .bcc(Lists.newArrayList(new InternetAddress("caius-memmius@urbs.aeterna", "Caius Memmius")))
+                .depositionNotificationTo(new InternetAddress("caligola@urbs.aeterna", "Gaius Iulius Caesar Augustus Germanicus"))
+                .receiptTo(new InternetAddress("caligola@urbs.aeterna", "Gaius Iulius Caesar Augustus Germanicus"))
                 .subject("Laelius de amicitia")
-                .body(
-                        "Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
+                .body("Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
                 .encoding(StandardCharsets.UTF_8.name()).build();
     }
 
@@ -144,10 +150,20 @@ public class DefaultEmailToMimeMessageTest {
         validateTo(email, sentMessage);
         validateCc(email, sentMessage);
         validateBcc(email, sentMessage);
+        validateDepositionNotification(email, sentMessage);
+        validateReceipt(email, sentMessage);
         validateSubject(email, sentMessage);
         validateBody(email, sentMessage);
 
-        verify(javaMailSender, times(1)).createMimeMessage();
+        verify(javaMailSender).createMimeMessage();
+    }
+
+    private void validateReceipt(Email email, MimeMessage sentMessage) throws MessagingException {
+        assertThat(sentMessage.getHeader(HEADER_RETURN_RECEIPT)[0], is(email.getReceiptTo().getAddress()));
+    }
+
+    private void validateDepositionNotification(Email email, MimeMessage sentMessage) throws MessagingException {
+        assertThat(sentMessage.getHeader(HEADER_DEPOSITION_NOTIFICATION_TO)[0], is(email.getReceiptTo().getAddress()));
     }
 
 }

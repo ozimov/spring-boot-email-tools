@@ -57,4 +57,8 @@ public interface Email extends Serializable {
 
     void setSentAt(Date sentAt);
 
+    InternetAddress getReceiptTo();
+
+    InternetAddress getDepositionNotificationTo();
+
 }

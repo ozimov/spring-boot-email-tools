@@ -73,4 +73,8 @@ public class DefaultEmail implements Email {
 
     private Date sentAt;
 
+    private InternetAddress receiptTo;
+
+    private InternetAddress depositionNotificationTo;
+
 }
