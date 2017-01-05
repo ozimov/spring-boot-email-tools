@@ -3,11 +3,13 @@ All notable changes to Spring-Boot-Email-Tools project will be documented in thi
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-## [0.3.5] - 2017-01-04
+
+
+## [0.3.5] - 2017-01-05
 ### Changed
 - Using Spring Boot _1.4.3.RELEASE_
 ### Fixed
-- Support to email attachment (issue 15)
+- Support to email attachment has been fixed (issue 15)
 
 ## [0.3.5] - 2017-01-04
 ### Added
