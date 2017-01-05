@@ -22,7 +22,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@ComponentScan(basePackages = {"it.ozimov.springbooot.mail"})
+@ComponentScan(basePackages = {"it.ozimov.springboot.templating.mail"})
 public class CoreTestApplication {
 
     public static void main(final String... args) {
