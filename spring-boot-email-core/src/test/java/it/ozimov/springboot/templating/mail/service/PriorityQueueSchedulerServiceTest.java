@@ -13,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -27,9 +29,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringApplicationConfiguration(classes = CoreTestApplication.class)
-@WebIntegrationTest("server.port=0")
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = CoreTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PriorityQueueSchedulerServiceTest {
 
     @Rule

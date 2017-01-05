@@ -40,7 +40,6 @@ import static java.util.Optional.ofNullable;
 /**
  * Plain text email.
  *
- * @author rtrunfio
  */
 @NoArgsConstructor
 @RequiredArgsConstructor
