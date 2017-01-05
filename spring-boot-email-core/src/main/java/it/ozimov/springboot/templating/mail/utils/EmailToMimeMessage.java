@@ -60,7 +60,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
         try {
             final MimeMessageHelperExt messageHelper = new MimeMessageHelperExt(mimeMessage,
                     isMultipart,
-                    fromNullable(email.getEncoding()).or(StandardCharsets.UTF_8.name());
+                    fromNullable(email.getEncoding()).or(StandardCharsets.UTF_8.name()));
 
             messageHelper.setFrom(email.getFrom());
             if (nonNull(email.getReplyTo())) {

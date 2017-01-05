@@ -16,12 +16,11 @@
 
 package it.ozimov.springboot.templating.mail.utils;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import it.ozimov.springboot.templating.mail.model.Email;
+import it.ozimov.springboot.templating.mail.model.EmailAttachment;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmail;
-import it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl;
-import it.ozimov.springboot.templating.mail.model.impl.EmailImpl;
+import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailAttachment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,18 +45,10 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
-import static javax.mail.Message.RecipientType.BCC;
-import static javax.mail.Message.RecipientType.CC;
-import static javax.mail.Message.RecipientType.TO;
+import static javax.mail.Message.RecipientType.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
-import static org.mockito.Mockito.times;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -117,7 +108,7 @@ public class DefaultEmailToMimeMessageTest {
         assertThat(sentMessage.getContent(), is(email.getBody()));
     }
 
-    public static Email getSimpleMail(InternetAddress from) throws UnsupportedEncodingException {
+    public static Email getSimpleMail(InternetAddress from, EmailAttachment... emailAttachments) throws UnsupportedEncodingException {
         final DefaultEmail.DefaultEmailBuilder builder = DefaultEmail.builder()
                 .from(from)
                 .replyTo(new InternetAddress("tullius.cicero@urbs.aeterna", "Marcus Tullius Cicero"))
@@ -182,9 +173,9 @@ public class DefaultEmailToMimeMessageTest {
         assertThat(sentMessage.getHeader(HEADER_DEPOSITION_NOTIFICATION_TO)[0], is(email.getReceiptTo().getAddress()));
     }
 
-    private static EmailAttachmentImpl getCsvAttachment(String filename) {
+    private static EmailAttachment getCsvAttachment(String filename) {
         final String testData = "col1,col2\n1,2\n3,4";
-        final it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl attachment = it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl.builder()
+        final DefaultEmailAttachment attachment = DefaultEmailAttachment.builder()
                 .attachmentName(filename+".csv")
                 .attachmentData(testData.getBytes(Charset.forName("UTF-8")))
                 .mediaType(MediaType.TEXT_PLAIN).build();
