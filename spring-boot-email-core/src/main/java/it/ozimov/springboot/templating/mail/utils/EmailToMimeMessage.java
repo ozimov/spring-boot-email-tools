@@ -43,6 +43,8 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 public class EmailToMimeMessage implements Function<Email, MimeMessage> {
 
+    private static final String EMPTY_STRING = "";
+
     private JavaMailSender javaMailSender;
 
     @Autowired
@@ -53,30 +55,33 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
     @Override
     public MimeMessage apply(final Email email) {
         final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        final MimeMessageHelperExt messageHelper = new MimeMessageHelperExt(mimeMessage,
-                fromNullable(email.getEncoding()).or(StandardCharsets.UTF_8.name()));
+        final boolean isMultipart = nonNull(email.getAttachments()) && !email.getAttachments().isEmpty();
 
         try {
+            final MimeMessageHelperExt messageHelper = new MimeMessageHelperExt(mimeMessage,
+                    isMultipart,
+                    fromNullable(email.getEncoding()).or(StandardCharsets.UTF_8.name());
+
             messageHelper.setFrom(email.getFrom());
-            if (ofNullable(email.getReplyTo()).isPresent()) {
+            if (nonNull(email.getReplyTo())) {
                 messageHelper.setReplyTo(email.getReplyTo());
             }
-            if (ofNullable(email.getTo()).isPresent()) {
+            if (nonNull(email.getTo())) {
                 for (final InternetAddress address : email.getTo()) {
                     messageHelper.addTo(address);
                 }
             }
-            if (ofNullable(email.getCc()).isPresent()) {
+            if (nonNull(email.getCc())) {
                 for (final InternetAddress address : email.getCc()) {
                     messageHelper.addCc(address);
                 }
             }
-            if (ofNullable(email.getBcc()).isPresent()) {
+            if (nonNull(email.getBcc())) {
                 for (final InternetAddress address : email.getBcc()) {
                     messageHelper.addBcc(address);
                 }
             }
-            if (ofNullable(email.getAttachments()).isPresent()) {
+            if (isMultipart) {
                 for (final EmailAttachment attachment : email.getAttachments()) {
                     try {
                         messageHelper.addAttachment(attachment.getAttachmentName(),
@@ -88,8 +93,8 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                     }
                 }
             }
-            messageHelper.setSubject(ofNullable(email.getSubject()).orElse(""));
-            messageHelper.setText(ofNullable(email.getBody()).orElse(""));
+            messageHelper.setSubject(ofNullable(email.getSubject()).orElse(EMPTY_STRING));
+            messageHelper.setText(ofNullable(email.getBody()).orElse(EMPTY_STRING));
 
             if (nonNull(email.getSentAt())) {
                 messageHelper.setSentDate(email.getSentAt());
@@ -107,7 +112,6 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
             log.error("Error while converting DefaultEmail to MimeMessage");
             throw new EmailConversionException(e);
         }
-
 
         return mimeMessage;
     }

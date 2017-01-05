@@ -16,14 +16,18 @@
 
 package it.ozimov.springboot.templating.mail.utils;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmail;
+import it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl;
+import it.ozimov.springboot.templating.mail.model.impl.EmailImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.mail.Address;
@@ -36,10 +40,13 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
 import static javax.mail.Message.RecipientType.BCC;
 import static javax.mail.Message.RecipientType.CC;
@@ -111,7 +118,7 @@ public class DefaultEmailToMimeMessageTest {
     }
 
     public static Email getSimpleMail(InternetAddress from) throws UnsupportedEncodingException {
-        return DefaultEmail.builder()
+        final DefaultEmail.DefaultEmailBuilder builder = DefaultEmail.builder()
                 .from(from)
                 .replyTo(new InternetAddress("tullius.cicero@urbs.aeterna", "Marcus Tullius Cicero"))
                 .to(Lists.newArrayList(new InternetAddress("titus@de-rerum.natura", "Pomponius Attĭcus")))
@@ -122,11 +129,20 @@ public class DefaultEmailToMimeMessageTest {
                 .receiptTo(new InternetAddress("caligola@urbs.aeterna", "Gaius Iulius Caesar Augustus Germanicus"))
                 .subject("Laelius de amicitia")
                 .body("Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
-                .encoding(StandardCharsets.UTF_8.name()).build();
+                .encoding(StandardCharsets.UTF_8.name());
+        if(nonNull(emailAttachments)){
+            builder.attachments(Arrays.asList(emailAttachments));
+        }
+        return builder.build();
     }
 
     public static Email getSimpleMail() throws UnsupportedEncodingException {
         return getSimpleMail(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone"));
+    }
+
+    public static Email getSimpleMailWithAttachments() throws UnsupportedEncodingException {
+        return getSimpleMail(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone"),
+                getCsvAttachment("test1"), getCsvAttachment("test2"));
     }
 
     private static List<Address> toAddress(final Collection<InternetAddress> internetAddresses) {
@@ -164,6 +180,15 @@ public class DefaultEmailToMimeMessageTest {
 
     private void validateDepositionNotification(Email email, MimeMessage sentMessage) throws MessagingException {
         assertThat(sentMessage.getHeader(HEADER_DEPOSITION_NOTIFICATION_TO)[0], is(email.getReceiptTo().getAddress()));
+    }
+
+    private static EmailAttachmentImpl getCsvAttachment(String filename) {
+        final String testData = "col1,col2\n1,2\n3,4";
+        final it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl attachment = it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl.builder()
+                .attachmentName(filename+".csv")
+                .attachmentData(testData.getBytes(Charset.forName("UTF-8")))
+                .mediaType(MediaType.TEXT_PLAIN).build();
+        return attachment;
     }
 
 }

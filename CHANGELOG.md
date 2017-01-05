@@ -8,13 +8,19 @@ Revise unit testing by only using AssertJ and JUnit5
 
 ## [Unreleased]
 
-## [0.4.0] - 2016-XX-XX
+
+## [0.4.0] - 2017-XX-XX
 ### Added
 - Persistence has been introduced with optional `PersistenceService`: default implementation relies on embedded-REDIS. 
 
 ### Changed
-- Using Spring Boot _1.4.3.RELEASE_
 - Using Pebble _2.3.0.RELEASE_
+
+## [0.3.5] - 2017-01-05
+### Changed
+- Using Spring Boot _1.4.3.RELEASE_
+### Fixed
+- Support to email attachment has been fixed (issue 15)
 
 ## [0.3.5] - 2017-01-04
 ### Added
