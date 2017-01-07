@@ -1,7 +1,9 @@
-package it.ozimov.springboot.templating.mail.service;
+package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 
+import it.ozimov.springboot.templating.mail.ContextBasedTest;
 import it.ozimov.springboot.templating.mail.model.Email;
+import it.ozimov.springboot.templating.mail.service.EmailService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.properties")
-public class EmailServiceIntegrationTest {
+public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
 
     @SpyBean
     public JavaMailSender javaMailSender;

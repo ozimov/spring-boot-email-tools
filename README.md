@@ -20,7 +20,7 @@ a template engine to generate dynamic content.
 ## Background
 
 The project relies on a templateless module `it.ozimov:spring-boot-email-core` that provides the core
-features (e.g. sending emails, scheduling and prioritizing). Since it is templateless, it  does not provide
+features (e.g. sending emails, scheduling and prioritizing, persistence). Since it is templateless, it  does not provide
  any implementation of the service to be used to generate the body of the email via template engine.
 
 If you want to use one of the template engines supported by this project (i.e. _Freemarker_,
@@ -297,13 +297,29 @@ schedule(final Email mimeEmail,
 }
 ```
 
+## Persistence
+Persistence has been introduced in version `0.4.0`. Persistence is maily of interest if the scheduler is used.
+Whenever an email is scheduled, it can happen that the application crashes and the in-memory scheduled emails get lost forever (forever ever).
+
+For this reason, on optional persistence layer has been added based on REDIS. 
+To enable the persistence layer just add the additional properties in your `application.properties` file:
+
+```
+spring.mail.persistence.enabled=true
+spring.mail.persistence.redis.embedded=true
+spring.mail.persistence.redis.enabled=true
+spring.mail.persistence.redis.host=localhost
+spring.mail.persistence.redis.port=6381
+```
+Clearly, you can provide your own persistence layer. However the `SchedulerService` needs to use it. 
+Luckily, the default implementation provided in this tool calls the `PersistenceService`, so just 
+provide the one you want.
 
 
 ## Future plans
 
 Here are listed the backlog for the features to be added to the library in the near future:
-* Script to automatize version change during deploy in the readme file
-* Persistence of the emails to prevent loss in case of application crash or stop
+* Optimizations for scheduled emails that require the use of a template engine
 
 **Any contribution is welcome (and warmly encouraged).**
 

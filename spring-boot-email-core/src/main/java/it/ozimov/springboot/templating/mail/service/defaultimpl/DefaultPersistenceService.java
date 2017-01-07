@@ -19,12 +19,13 @@ package it.ozimov.springboot.templating.mail.service.defaultimpl;
 import com.google.common.base.Preconditions;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.service.PersistenceService;
-import it.ozimov.springboot.templating.mail.utils.ByteArrayToSerializable;
-import it.ozimov.springboot.templating.mail.utils.SerializableToByteArray;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.BoundValueOperations;
+import org.springframework.data.redis.core.BoundZSetOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -36,22 +37,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.Objects.nonNull;
 
 @Service("defaultEmailPersistenceService")
 @ConditionalOnProperty(prefix = "spring.mail.persistence.redis", name = "enabled")
 public class DefaultPersistenceService implements PersistenceService {
 
+    private static final String MATCH_ALL = "*";
+
     private final StringRedisTemplate orderingTemplate;
     private final RedisTemplate<String, EmailSchedulingData> valueTemplate;
-
-    private static class SerializerInstanceHolder {
-        public static final SerializableToByteArray<EmailSchedulingData> INSTANCE = new SerializableToByteArray<>();
-    }
-
-    private static class DeserializerInstanceHolder {
-        public static final ByteArrayToSerializable<EmailSchedulingData> INSTANCE = new ByteArrayToSerializable<>();
-    }
 
     @Autowired
     public DefaultPersistenceService(@NonNull final StringRedisTemplate orderingTemplate,
@@ -77,7 +74,7 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public void add(@NonNull final EmailSchedulingData emailSchedulingData) {
-            addOps(emailSchedulingData);
+        addOps(emailSchedulingData);
     }
 
     protected void addOps(final EmailSchedulingData emailSchedulingData) {
@@ -86,17 +83,13 @@ public class DefaultPersistenceService implements PersistenceService {
 
         final double score = calculateScore(emailSchedulingData);
 
-        BoundZSetOperations<String, String > orderingZSetOps = orderingTemplate.boundZSetOps(orderingKey);
+        BoundZSetOperations<String, String> orderingZSetOps = orderingTemplate.boundZSetOps(orderingKey);
         orderingZSetOps.add(valueKey, score);
-        final boolean orderingKeyPersisted = orderingZSetOps.persist();
-        Preconditions.checkState(orderingKeyPersisted,
-                "OrderingKey for EmailSchedulingData with id %s and assigned priority level %d not persisted.", valueKey, emailSchedulingData.getAssignedPriority());
+        orderingZSetOps.persist();
 
-        BoundValueOperations<String, EmailSchedulingData> valueValueOps  = valueTemplate.boundValueOps(valueKey);
+        BoundValueOperations<String, EmailSchedulingData> valueValueOps = valueTemplate.boundValueOps(valueKey);
         valueValueOps.set(emailSchedulingData);
-        final boolean valuePersisted = valueValueOps.persist();
-        Preconditions.checkState(valuePersisted,
-                "Value for EmailSchedulingData with id %s not persisted.", valueKey);
+        valueValueOps.persist();
     }
 
     @Override
@@ -113,12 +106,12 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public boolean remove(@NonNull final String id) {
-         return removeOps(id);
+        return removeOps(id);
     }
 
-    protected boolean removeOps(final String id){
+    protected boolean removeOps(final String id) {
         final EmailSchedulingData emailSchedulingData = getOps(id);
-        if(nonNull(emailSchedulingData)){
+        if (nonNull(emailSchedulingData)) {
             valueTemplate.delete(id);
             final String orderingKey = orderingKey(emailSchedulingData);
             orderingTemplate.boundZSetOps(orderingKey).remove(id);
@@ -130,25 +123,29 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public void addAll(@NonNull final Collection<EmailSchedulingData> emailSchedulingDataList) {
-            addAllOps(emailSchedulingDataList);
+        addAllOps(emailSchedulingDataList);
     }
 
     protected void addAllOps(final Collection<EmailSchedulingData> emailSchedulingDataList) {
-        for(EmailSchedulingData emailSchedulingData : emailSchedulingDataList) {
+        for (EmailSchedulingData emailSchedulingData : emailSchedulingDataList) {
             addOps(emailSchedulingData);
         }
     }
 
     @Override
     public Collection<EmailSchedulingData> getNextBatch(final int priorityLevel, final int batchMaxSize) {
+        Preconditions.checkArgument(batchMaxSize > 0, "Batch size should be a positive integer.");
+
         final String orderingKey = RedisBasedPersistenceServiceConstants.orderingKey(priorityLevel);
         return getNextBatchOps(orderingKey, batchMaxSize);
     }
 
     protected Collection<EmailSchedulingData> getNextBatchOps(final String orderingKey, final int batchMaxSize) {
-        BoundZSetOperations<String, String> boundZSetOperations = orderingTemplate.boundZSetOps(orderingKey);
-        long amount = boundZSetOperations.size();
-        Set<String> valueIds = boundZSetOperations.range(0, Math.min(amount, batchMaxSize));
+        Preconditions.checkArgument(batchMaxSize > 0, "Batch size should be a positive integer.");
+
+        final BoundZSetOperations<String, String> boundZSetOperations = orderingTemplate.boundZSetOps(orderingKey);
+        final long amount = boundZSetOperations.size();
+        final Set<String> valueIds = boundZSetOperations.range(0, max(0, min(amount, batchMaxSize) - 1));
         return valueIds.stream()
                 .map(id -> getOps(id))
                 .filter(Objects::nonNull)
@@ -157,35 +154,41 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public Collection<EmailSchedulingData> getNextBatch(final int batchMaxSize) {
-        Set<String> keys = new TreeSet<>(orderingTemplate.keys(RedisBasedPersistenceServiceConstants.orderingKeyPrefix()+"*"));
+        Preconditions.checkArgument(batchMaxSize > 0, "Batch size should be a positive integer.");
 
-        Set<EmailSchedulingData> emailSchedulingDataSet = new HashSet<>();
-        for(String key : keys) {
-            emailSchedulingDataSet.addAll(getNextBatchOps(key, Math.min(batchMaxSize, emailSchedulingDataSet.size())));
+        final Set<String> keys = new TreeSet<>(orderingTemplate.keys(RedisBasedPersistenceServiceConstants.orderingKeyPrefix() + MATCH_ALL));
+
+        final Set<EmailSchedulingData> emailSchedulingDataSet = new TreeSet<>(EmailSchedulingData.DEFAULT_COMPARATOR);
+
+        for (String key : keys) {
+            emailSchedulingDataSet.addAll(getNextBatchOps(key, batchMaxSize));
         }
-        return emailSchedulingDataSet;
+
+        return emailSchedulingDataSet.stream()
+                .limit(min(batchMaxSize, emailSchedulingDataSet.size()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public void removeAll() {
-        orderingTemplate.delete("*");
-        valueTemplate.delete("*");
+        orderingTemplate.delete(MATCH_ALL);
+        valueTemplate.delete(MATCH_ALL);
     }
 
     @Override
     public void removeAll(final int priorityLevel) {
-        final String orderingKey =  RedisBasedPersistenceServiceConstants.orderingKey(priorityLevel);
+        final String orderingKey = RedisBasedPersistenceServiceConstants.orderingKey(priorityLevel);
 
         BoundZSetOperations<String, String> boundZSetOperations = orderingTemplate.boundZSetOps(orderingKey);
         long amount = boundZSetOperations.size();
 
         final int offset = 2_000;
 
-        IntStream.range(0, (int) Math.ceil(amount/offset))
+        IntStream.range(0, (int) Math.ceil(amount / offset))
                 .parallel()
                 .forEach(i -> {
                     long start = i * offset;
-                    long end = Math.min(amount, start + offset);
+                    long end = min(amount, start + offset);
                     Set<String> valueIds = boundZSetOperations.range(start, end);
                     valueTemplate.delete(valueIds);
 

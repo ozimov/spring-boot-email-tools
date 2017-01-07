@@ -19,6 +19,7 @@ package it.ozimov.springboot.templating.mail.model.defaultimpl;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.InlinePicture;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -27,6 +28,7 @@ import java.util.Map;
 
 
 @Getter
+@EqualsAndHashCode
 public class TemplateEmailSchedulingData extends DefaultEmailSchedulingData {
 
     private static final long serialVersionUID = -8267649519235191875L;

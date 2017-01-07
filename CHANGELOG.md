@@ -14,11 +14,13 @@ Revise unit testing by only using AssertJ and JUnit5
 - Persistence has been introduced with optional `PersistenceService`: default implementation relies on embedded-REDIS. 
 
 ### Changed
+- All the classes ending with `Impl` are now renamed. Instead, they start with `Default`
 - Using Pebble _2.3.0.RELEASE_
 
 ## [0.3.5] - 2017-01-05
 ### Changed
 - Using Spring Boot _1.4.3.RELEASE_
+
 ### Fixed
 - Support to email attachment has been fixed (issue 15)
 
@@ -57,7 +59,7 @@ Revise unit testing by only using AssertJ and JUnit5
 
 ## [0.2.0] - 2016-05-12
 ### Added
-- Added implementation of a scheduler service with class `PriorityQyeyeSchedulerService`
+- Added implementation of a scheduler service with class `PriorityQueyeSchedulerService`
 
 ### Changed
 - Using Spring Boot _1.3.4.RELEASE_

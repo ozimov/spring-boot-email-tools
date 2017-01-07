@@ -16,11 +16,14 @@
 
 package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
+import com.google.common.base.Preconditions;
+
 public final class RedisBasedPersistenceServiceConstants {
 
     public static final String ORDERING_KEY_PREFIX = "priority-level:";
 
     public static final String orderingKey(final int priorityLevel) {
+        Preconditions.checkArgument(priorityLevel >= 0, "Priority level must be a positive integer number");
         return orderingKeyPrefix() + priorityLevel;
     }
 

@@ -19,6 +19,7 @@ package it.ozimov.springboot.templating.mail.model.defaultimpl;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -28,6 +29,7 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Getter
+@EqualsAndHashCode
 public class DefaultEmailSchedulingData implements EmailSchedulingData {
 
     private static final long serialVersionUID = 60021395842232155L;
