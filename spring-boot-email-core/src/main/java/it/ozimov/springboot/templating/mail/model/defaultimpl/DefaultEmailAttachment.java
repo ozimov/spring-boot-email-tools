@@ -17,6 +17,7 @@
 package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 
+import it.ozimov.springboot.templating.mail.model.EmailAttachment;
 import it.ozimov.springboot.templating.mail.utils.TikaDetector;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ import static java.util.Optional.ofNullable;
 @ToString(exclude = "attachmentData")
 @EqualsAndHashCode
 @Slf4j
-public class DefaultEmailAttachment implements it.ozimov.springboot.templating.mail.model.EmailAttachment {
+public class DefaultEmailAttachment implements EmailAttachment {
 
     private static final long serialVersionUID = -3307831714212032363L;
 
@@ -53,10 +54,6 @@ public class DefaultEmailAttachment implements it.ozimov.springboot.templating.m
     private byte[] attachmentData;
 
     private MediaType mediaType;
-
-    public ByteArrayResource getInputStream() {
-        return new ByteArrayResource(attachmentData);
-    }
 
     public MediaType getContentType() throws IOException {
         final InputStream attachmentDataStream = new ByteArrayInputStream(attachmentData);

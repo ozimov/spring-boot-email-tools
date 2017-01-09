@@ -31,6 +31,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
@@ -111,14 +112,6 @@ public abstract class BaseRedisTest  implements ContextBasedTest {
         }
     }
 
-//    @
-//    public void destroy() {
-//        redisServer.stop();
-////        if (Objects.nonNull(emailEmbeddedRedis)) {
-////            emailEmbeddedRedis.stopRedis();
-////        }
-//    }
-
     @FunctionalInterface
     public interface BeforeTransactionAssertion {
 
@@ -131,15 +124,8 @@ public abstract class BaseRedisTest  implements ContextBasedTest {
         void assertAfterTransaction(@NonNull final RedisConnection connection);
     }
 
-
-    @PreDestroy
-    public void redisServerDestroy() {
-        System.exit(-1);
-    }
-
     @Configuration
     @PropertySource("classpath:redis-test.properties")
-    //@TestPropertySource("classpath:redis-test.yml")
     @ComponentScan(basePackages = {"it.ozimov.springboot.templating.mail"})
     public static class JedisContextConfiguration {
 
@@ -150,7 +136,6 @@ public abstract class BaseRedisTest  implements ContextBasedTest {
         public JedisContextConfiguration() throws IOException {
             int redisPort = randomFreePort();
 
-//            emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort).startRedis();
             redisServer = RedisServer.builder()
                     .port(redisPort)
                     .setting("appendonly yes")

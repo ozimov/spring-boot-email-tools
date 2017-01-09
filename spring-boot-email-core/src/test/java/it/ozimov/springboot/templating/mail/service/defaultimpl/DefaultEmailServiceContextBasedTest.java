@@ -2,10 +2,12 @@ package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 
 import com.google.common.collect.Lists;
+import it.ozimov.springboot.templating.mail.ContextBasedTest;
 import it.ozimov.springboot.templating.mail.model.Email;
-import it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl;
-import it.ozimov.springboot.templating.mail.model.impl.EmailImpl;
+import it.ozimov.springboot.templating.mail.service.EmailService;
+import it.ozimov.springboot.templating.mail.service.TemplateService;
 import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,14 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMailWithAttachments;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -50,7 +54,7 @@ public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
     public EmailService emailService;
 
     @Before
-    public void setUp() throws IOException, TemplateException {
+    public void setUp() throws Exception {
         when(templateService.mergeTemplateIntoString(anyString(), any(Map.class)))
                 .thenReturn( "<!doctype html>\n" +
                         "<html>\n" +

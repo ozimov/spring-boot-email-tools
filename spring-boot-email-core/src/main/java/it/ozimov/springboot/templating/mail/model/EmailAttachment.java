@@ -16,6 +16,7 @@
 
 package it.ozimov.springboot.templating.mail.model;
 
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
@@ -28,5 +29,9 @@ public interface EmailAttachment extends Serializable {
     byte[] getAttachmentData();
 
     MediaType getContentType() throws IOException;
+
+    default ByteArrayResource getInputStream() {
+        return new ByteArrayResource(getAttachmentData());
+    }
 
 }

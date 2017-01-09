@@ -161,11 +161,6 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
                 .contains(defaultEmailSchedulingDataSameId);
     }
 
-////    @Transactional(transactionManager = "transactionManager", propagation = Propagation.REQUIRES_NEW)
-////    @Rollback(false)
-//    private void add(EmailSchedulingData emailSchedulingData) {
-//        defaultPersistenceService.add(emailSchedulingData);
-//    }
 
     @Test
     public void shouldGetThrowNullPointerExceptionWhenInputParamIsNull() throws Exception {
