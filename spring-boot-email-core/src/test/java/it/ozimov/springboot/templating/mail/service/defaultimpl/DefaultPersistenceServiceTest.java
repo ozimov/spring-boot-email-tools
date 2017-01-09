@@ -25,7 +25,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -75,8 +74,6 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
     private ArgumentCaptor<String> valueTemplateKeyArgumentCaptor;
     @Captor
     private ArgumentCaptor<String> orderingTemplateKeyArgumentCaptor;
-
-    private ResultCaptor<BoundZSetOperations<String, String>> orderingTemplateBoundZSetOperationsResultCaptor;
 
     @Test
     public void shouldAddThrowNullPointerExceptionWhenInputParamIsNull() throws Exception {
@@ -623,6 +620,46 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
         //Act
         defaultPersistenceService.removeAll(allKeysToBeRemoved);
+    }
+
+    @Test
+    public void shouldRemoveAllDoNothingWhenNoDataIsPersisted() throws Exception {
+        //Arrange
+        final int assignedPriority = 1;
+
+        setBeforeTransactionAssertion(connection -> {
+            assertions.assertThat(connection.exists("*".getBytes())).isFalse();
+        });
+
+        //Act
+        defaultPersistenceService.removeAll();
+    }
+
+    @Test
+    public void shouldRemoveAllDoNothingOnUnknownPriorityLevel() throws Exception {
+        //Arrange
+        final int assignedPriority = 1;
+        final String unmappedOrderingKey = RedisBasedPersistenceServiceConstants.orderingKey(assignedPriority);
+
+        setBeforeTransactionAssertion(connection -> {
+            assertions.assertThat(connection.exists(unmappedOrderingKey.getBytes())).isFalse();
+        });
+
+        //Act
+        defaultPersistenceService.removeAll(assignedPriority);
+    }
+
+    @Test
+    public void shouldRemoveDoNothingOnUnknownKey() throws Exception {
+        //Arrange
+        String unmappedKey = UUID.randomUUID().toString();
+
+        setBeforeTransactionAssertion(connection -> {
+            assertions.assertThat(connection.exists(unmappedKey.getBytes())).isFalse();
+        });
+
+        //Act
+        defaultPersistenceService.removeAll(ImmutableList.of(unmappedKey));
     }
 
     private DefaultEmailSchedulingData createDefaultEmailSchedulingDataWithPriority(final int assignedPriority) throws UnsupportedEncodingException {

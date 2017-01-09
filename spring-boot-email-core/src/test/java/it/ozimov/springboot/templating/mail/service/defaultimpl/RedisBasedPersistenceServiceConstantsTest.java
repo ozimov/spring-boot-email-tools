@@ -33,17 +33,15 @@ public class RedisBasedPersistenceServiceConstantsTest {
         RedisBasedPersistenceServiceConstants.orderingKey(-1);
     }
 
+
     @Test
-    public void shouldCreateOrderingKeyPrefixFromZero() throws Exception {
+    public void shouldThrowExceptionWhenOrderingKeyIsConstructedFromZero() throws Exception {
         //Arrange
-        int priorityLevel = 0;
-        String expectedOrderingKey = EXPECTED_ORDERING_KEY_PREFIX + priorityLevel;
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Priority level must be a positive integer number");
 
         //Act
-        String givenOrderingKey = RedisBasedPersistenceServiceConstants.orderingKey(priorityLevel);
-
-        //Assert
-        assertions.assertThat(givenOrderingKey).isEqualTo(expectedOrderingKey);
+        RedisBasedPersistenceServiceConstants.orderingKey(0);
     }
 
     @Test

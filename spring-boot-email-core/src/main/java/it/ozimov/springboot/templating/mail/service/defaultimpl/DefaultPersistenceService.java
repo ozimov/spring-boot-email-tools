@@ -63,13 +63,8 @@ public class DefaultPersistenceService implements PersistenceService {
         this.valueTemplate.setValueSerializer(jdkSerializationRedisSerializer);
         this.valueTemplate.setHashKeySerializer(stringSerializer);
         this.valueTemplate.setHashValueSerializer(stringSerializer);
-
-//        this.valueTemplate.setKeySerializer(new StringRedisSerializer());
-//        this.valueTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
-//        this.valueTemplate.setEnableDefaultSerializer(false);
-        this.valueTemplate.afterPropertiesSet();
-
         this.valueTemplate.setEnableTransactionSupport(true);
+        this.valueTemplate.afterPropertiesSet();
     }
 
     @Override

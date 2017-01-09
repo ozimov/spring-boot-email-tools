@@ -16,11 +16,12 @@
 
 package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
+import com.google.common.base.Preconditions;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
+import it.ozimov.springboot.templating.mail.model.InlinePicture;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.TemplateEmailSchedulingData;
-import it.ozimov.springboot.templating.mail.model.InlinePicture;
 import it.ozimov.springboot.templating.mail.service.EmailService;
 import it.ozimov.springboot.templating.mail.service.PersistenceService;
 import it.ozimov.springboot.templating.mail.service.SchedulerService;
@@ -35,9 +36,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
 import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeSet;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.Math.max;
@@ -56,6 +55,9 @@ public class PriorityQueueSchedulerService implements SchedulerService {
      * millisecs elapsed form the call of the send method and the actual sending by SMTP server
      */
     private static final long DELTA = SECONDS.toMillis(1);
+
+    private static final int BATCH_SIZE = 500;
+
     private ServiceStatus serviceStatus = ServiceStatus.CREATED;
     private Long timeOfNextScheduledMessage;
 
@@ -65,7 +67,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     private Consumer consumer;
 
-    private Optional<PersistenceService> persistenceService;
+    private Optional<PersistenceService> persistenceServiceOptional;
 
     @Autowired
     public PriorityQueueSchedulerService(
@@ -74,17 +76,16 @@ public class PriorityQueueSchedulerService implements SchedulerService {
             final Optional<PersistenceService> persistenceServiceOptional) {
         checkArgument(numberOfPriorityLevels > 0, "Expected at least one priority level");
         this.emailService = requireNonNull(emailService);
-        this.persistenceService = persistenceServiceOptional;
+        this.persistenceServiceOptional = persistenceServiceOptional;
         queues = new TreeSet[numberOfPriorityLevels];
         for (int i = 0; i < numberOfPriorityLevels; i++) {
             queues[i] = new TreeSet<>();
         }
         consumer = new Consumer();
 
-        synchronized(this) {
+        synchronized (this) {
             consumer.start();
-
-            //EmailBatch
+            loadBatchFromPersistenceLayer();
         }
     }
 
@@ -100,7 +101,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                                                             .assignedPriority(assignedPriorityLevel)
                                                             .desiredPriority(desiredPriorityLevel)
                                                             .build();
-        queues[desiredPriorityLevel - 1].add(emailSchedulingData);
+        schedule(emailSchedulingData);
         log.info("Scheduled email {} at UTC time {} with priority {}", mimeEmail, scheduledDateTime, desiredPriorityLevel);
         if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
             notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
@@ -126,10 +127,59 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                 .modelObject(modelObject)
                 .inlinePictures(inlinePictures)
                 .build();
-        queues[desiredPriorityLevel - 1].add(emailTemplateSchedulingData);
+        schedule(emailTemplateSchedulingData);
         log.info("Scheduled email {} at UTC time {} with priority {} with template", mimeEmail, scheduledDateTime, desiredPriorityLevel);
         if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
             notify();
+        }
+    }
+
+    protected synchronized void schedule(final EmailSchedulingData emailSchedulingData) {
+        queues[emailSchedulingData.getAssignedPriority() - 1].add(emailSchedulingData);
+        addToPersistenceLayer(emailSchedulingData);
+    }
+
+    protected synchronized void loadBatchFromPersistenceLayer() {
+        persistenceServiceOptional.ifPresent(
+                persistenceService -> {
+                    Collection<EmailSchedulingData> emailSchedulingDataList =
+                            persistenceService.getNextBatch(BATCH_SIZE);
+                    if (!emailSchedulingDataList.isEmpty()) {
+                        scheduleBatch(emailSchedulingDataList);
+                    }
+                }
+        );
+    }
+
+    protected synchronized void addToPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
+        persistenceServiceOptional.ifPresent(
+                persistenceService -> persistenceService.add(emailSchedulingData)
+        );
+    }
+
+    protected synchronized void deleteFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
+        persistenceServiceOptional.ifPresent(
+                persistenceService -> persistenceService.remove(emailSchedulingData.getId())
+        );
+    }
+
+    protected synchronized void scheduleBatch(final Collection<EmailSchedulingData> emailSchedulingDataCollection) {
+        Preconditions.checkArgument(!emailSchedulingDataCollection.isEmpty(), "Collection of EmailSchedulingData should not be empty.");
+
+        Set<EmailSchedulingData> sortedEmailSchedulingData = new TreeSet<>(EmailSchedulingData.DEFAULT_COMPARATOR);
+        sortedEmailSchedulingData.addAll(emailSchedulingDataCollection);
+        EmailSchedulingData lastEmailSchedulingData = null;
+        for (final EmailSchedulingData emailSchedulingData : sortedEmailSchedulingData) {
+            lastEmailSchedulingData = emailSchedulingData;
+            queues[emailSchedulingData.getAssignedPriority() - 1].add(emailSchedulingData);
+            log.debug("Scheduled email {} at UTC time {} with assigned priority {}.",
+                    emailSchedulingData.getEmail(),
+                    emailSchedulingData.getScheduledDateTime(),
+                    emailSchedulingData.getAssignedPriority());
+        }
+
+        if (isNull(timeOfNextScheduledMessage) || lastEmailSchedulingData.getScheduledDateTime().toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
+            notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
         }
     }
 
@@ -163,7 +213,6 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                     } else if (isNull(timeOfNextScheduledMessage) || time < timeOfNextScheduledMessage) {
                         timeOfNextScheduledMessage = time;
                     }
-
                 }
             }
             if (isNull(emailSchedulingData)) {
@@ -217,6 +266,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                             }
                         } else {
                             emailService.send(emailSchedulingData.getEmail());
+                            deleteFromPersistenceLayer(emailSchedulingData);
                         }
                     } else {
                         log.info("DefaultEmail scheduler consumer stopped");

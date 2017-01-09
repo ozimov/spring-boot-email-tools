@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:base-test.properties")
 public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
 
     @SpyBean
