@@ -16,17 +16,11 @@
 
 package it.ozimov.springboot.templating.mail.model;
 
-import org.springframework.http.MediaType;
-
-import java.io.IOException;
 
 public interface EmailAttachment {
 
     String getAttachmentName();
 
     byte[] getAttachmentData();
-
-    MediaType getContentType() throws IOException;
-
 
 }

@@ -77,19 +77,6 @@ public class EmailAttachmentImplTest {
         assertThat(byteArrayResource.exists(), is(true));
     }
 
-    @Test
-    public void testGetContentType() throws Exception {
-        //Arrange
-        final EmailAttachmentImpl emailAttachment = getEmailAttachmentImpl();
-
-        //Act
-        final MediaType mediaType = emailAttachment.getContentType();
-
-        //Assert
-        assertThat(mediaType, not(is(nullValue())));
-        assertThat(mediaType, is(IMAGE_JPEG));
-    }
-
     private EmailAttachmentImpl getEmailAttachmentImpl() throws IOException {
         return EmailAttachmentImpl.builder()
                 .attachmentName("Attachment.jpg")

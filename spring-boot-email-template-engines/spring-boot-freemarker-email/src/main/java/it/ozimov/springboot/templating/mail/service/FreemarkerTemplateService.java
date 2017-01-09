@@ -39,9 +39,8 @@ public class FreemarkerTemplateService implements TemplateService {
     private Configuration freemarkerConfiguration;
 
     @Override
-    public
     @NonNull
-    String mergeTemplateIntoString(final @NonNull String templateReference,
+    public String mergeTemplateIntoString(final @NonNull String templateReference,
                                    final @NonNull Map<String, Object> model)
             throws IOException, TemplateException {
         checkArgument(!isNullOrEmpty(templateReference.trim()), "The given template is null, empty or blank");

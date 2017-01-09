@@ -16,7 +16,6 @@
 
 package it.ozimov.springboot.templating.mail.utils;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl;
@@ -44,18 +43,10 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
-import static javax.mail.Message.RecipientType.BCC;
-import static javax.mail.Message.RecipientType.CC;
-import static javax.mail.Message.RecipientType.TO;
+import static javax.mail.Message.RecipientType.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
-import static org.mockito.Mockito.times;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -91,19 +82,19 @@ public class EmailToMimeMessageTest {
             throws MessagingException, IOException {
         final List<Address> tos = asList(sentMessage.getRecipients(TO));
         assertThat(tos.get(0), is((Address) (new ArrayList<>(email.getTo()).get(0))));
-        assertThat(tos, everyItem(isIn(toAddress(email.getTo()))));
+        assertThat(tos, everyItem(is(in(toAddress(email.getTo())))));
     }
 
     public static void validateCc(final Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         final List<Address> ccs = asList(sentMessage.getRecipients(CC));
-        assertThat(ccs, everyItem(isIn(toAddress(email.getCc()))));
+        assertThat(ccs, everyItem(is(in(toAddress(email.getCc())))));
     }
 
     public static void validateBcc(final Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         final List<Address> bccs = asList(sentMessage.getRecipients(BCC));
-        assertThat(bccs, everyItem(isIn(toAddress(email.getBcc()))));
+        assertThat(bccs, everyItem(is(in(toAddress(email.getBcc())))));
     }
 
     public static void validateSubject(final Email email, final MimeMessage sentMessage)
@@ -121,7 +112,7 @@ public class EmailToMimeMessageTest {
         EmailImpl.EmailImplBuilder builder = EmailImpl.builder()
                 .from(from)
                 .replyTo(new InternetAddress("tullius.cicero@urbs.aeterna", "Marcus Tullius Cicero"))
-                .to(Lists.newArrayList(new InternetAddress("titus@de-rerum.natura", "Pomponius Attĭcus")))
+                .to(Lists.newArrayList(new InternetAddress("roberto.trunfio@gmail.com", "titus@de-rerum.natura", "Pomponius Attĭcus")))
                 .cc(Lists.newArrayList(new InternetAddress("tito55@de-rerum.natura", "Titus Lucretius Carus"),
                         new InternetAddress("info@de-rerum.natura", "Info Best Seller")))
                 .bcc(Lists.newArrayList(new InternetAddress("caius-memmius@urbs.aeterna", "Caius Memmius")))

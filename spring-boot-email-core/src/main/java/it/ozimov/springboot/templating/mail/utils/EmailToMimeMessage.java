@@ -80,13 +80,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
             }
             if (isMultipart) {
                 for (final EmailAttachmentImpl attachment : email.getAttachments()) {
-                    try {
-                        messageHelper.addAttachment(attachment.getAttachmentName(),
-                                attachment.getInputStream(), attachment.getContentType().getType());
-                    } catch (IOException e) {
-                        log.error("Error while converting Email to MimeMessage");
-                        throw new EmailConversionException(e);
-                    }
+                    messageHelper.addAttachment(attachment.getAttachmentName(), attachment.getInputStream());
                 }
             }
             messageHelper.setSubject(ofNullable(email.getSubject()).orElse(EMPTY_STRING));
