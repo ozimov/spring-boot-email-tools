@@ -10,6 +10,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Removed Apache Tika dependency
 
+## [0.3.7] - 2017-01-09
+### Fixed
+- Support to email attachment has been fixed by removing the content type of attachments (issue 15)
+### Changed
+- Removed Apache Tika dependency
+
 ## [0.3.6] - 2017-01-05
 ### Changed
 - Using Spring Boot _1.4.3.RELEASE_

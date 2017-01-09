@@ -31,6 +31,13 @@
             <version>${spring.boot.version}</version>
         </dependency>
 
+        <!-- Guess Content Type -->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.14</version>
+        </dependency>
+
         <!-- Validation -->
         <dependency>
             <groupId>org.hibernate</groupId>
