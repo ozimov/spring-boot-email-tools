@@ -51,10 +51,7 @@ import static java.util.Objects.nonNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
 
-@TestExecutionListeners(
-        mergeMode =TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
-        listeners = {BaseRedisTest.class})
-public abstract class BaseRedisTest  implements ContextBasedTest, TestExecutionListener {
+public abstract class BaseRedisTest  implements ContextBasedTest {
 
     protected AfterTransactionAssertion afterTransactionAssertion;
     protected BeforeTransactionAssertion beforeTransactionAssertion;
@@ -151,7 +148,6 @@ public abstract class BaseRedisTest  implements ContextBasedTest, TestExecutionL
         private JedisConnectionFactory connectionFactory;
 
         public JedisContextConfiguration() throws IOException {
-            System.out.println("AAAAH");
             int redisPort = randomFreePort();
 
 //            emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort).startRedis();
@@ -206,40 +202,9 @@ public abstract class BaseRedisTest  implements ContextBasedTest, TestExecutionL
             return template;
         }
 
-//        @Bean
-//        public PlatformTransactionManager transactionManager() throws SQLException {
-//            return new DataSourceTransactionManager(dataSource);
-//
-////            return new AbstractPlatformTransactionManager() {
-////                @Override
-////                protected Object doGetTransaction() throws TransactionException {
-////                    return null;
-////                }
-////
-////                @Override
-////                protected void doBegin(Object o, TransactionDefinition transactionDefinition) throws TransactionException {
-////
-////                }
-////
-////                @Override
-////                protected void doCommit(DefaultTransactionStatus defaultTransactionStatus) throws TransactionException {
-////
-////                }
-////
-////                @Override
-////                protected void doRollback(DefaultTransactionStatus defaultTransactionStatus) throws TransactionException {
-////
-////                }
-////            };
-//        }
-//
-//        DataSource dataSource = mock(DataSource.class);
-
-
         @Bean
         public DataSource dataSource() throws SQLException {
             DataSource dataSource = mock(DataSource.class);
-//            when(dataSource.getConnection()).thenReturn(mock(Connection.class));
             return dataSource;
         }
 
@@ -253,19 +218,5 @@ public abstract class BaseRedisTest  implements ContextBasedTest, TestExecutionL
         }
 
     }
-
-
-
-    public void afterTestClass(TestContext testContext){
-            redisServer.stop();
-//            System.out.println("NOOOOOOOO");
-//            if (nonNull(emailEmbeddedRedis)) {
-//                emailEmbeddedRedis.stopRedis();
-//            }
-    }
-    public void	afterTestMethod(TestContext testContext){}
-    public void	beforeTestClass(TestContext testContext){}
-    public void	beforeTestMethod(TestContext testContext){}
-    public void	prepareTestInstance(TestContext testContext){}
 
 }

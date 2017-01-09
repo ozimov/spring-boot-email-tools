@@ -199,8 +199,7 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public void removeAll(@NonNull final Collection<String> ids) {
-        ids.parallelStream()
-                .forEach(id -> removeOps(id));
+        ids.parallelStream().forEach(id -> removeOps(id));
     }
 
     private String orderingKey(final EmailSchedulingData emailSchedulingData) {

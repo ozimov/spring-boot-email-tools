@@ -1,34 +1,25 @@
 package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 import com.google.common.collect.ImmutableList;
-import it.ozimov.cirneco.hamcrest.java7.javautils.IsUUID;
 import it.ozimov.mockito.helpers.captors.ResultCaptor;
 import it.ozimov.springboot.templating.mail.BaseRedisTest;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
-import it.ozimov.springboot.templating.mail.service.PersistenceService;
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
-import lombok.NonNull;
-import lombok.ToString;
-import org.assertj.core.api.Condition;
 import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.data.annotation.ReadOnlyProperty;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.BoundZSetOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -37,15 +28,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import javax.validation.constraints.Null;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -54,15 +41,10 @@ import static com.danhaywood.java.assertjext.Conditions.matchedBy;
 import static it.ozimov.cirneco.hamcrest.java7.javautils.IsUUID.UUID;
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {BaseRedisTest.JedisContextConfiguration.class})
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestExecutionListeners(
-        mergeMode =TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
-        listeners = {BaseRedisTest.class})
-//@Transactional//(transactionManager = "transactionManager")
 public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
     @Rule
@@ -88,12 +70,6 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
     @SpyBean
     @Qualifier("defaultEmailPersistenceService")
     private DefaultPersistenceService defaultPersistenceService;
-
-    @Override
-    public void additionalSetUp() {
-//        ReflectionTestUtils.setField(defaultPersistenceService, "orderingTemplate", orderingTemplate);
-//        ReflectionTestUtils.setField(defaultPersistenceService, "valueTemplate", valueTemplate);
-    }
 
     @Captor
     private ArgumentCaptor<String> valueTemplateKeyArgumentCaptor;
@@ -517,6 +493,136 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
         assertions.assertThat(givenBatch)
                 .hasSize(availableBatchSize)
                 .containsOnlyElementsOf(emailSchedulingDataCollection);
+    }
+
+    @Test
+    public void shouldRemoveWithPriorityLevelAllDeleteAllEmailSchedulingData() throws Exception {
+        //Arrange
+        final int assignedPriority_1 = 1;
+        final int assignedPriority_2 = 2;
+        assertions.assertThat(assignedPriority_1).isNotEqualTo(assignedPriority_2);
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_1_1 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_1);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_1_2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_1);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_1_3 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_1);
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_2_1 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_2);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_2_2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_2);
+
+
+        final List<String> allKeys = ImmutableList.of(
+                RedisBasedPersistenceServiceConstants.orderingKey(assignedPriority_1),
+                RedisBasedPersistenceServiceConstants.orderingKey(assignedPriority_2),
+                defaultEmailSchedulingData_1_1.getId(),
+                defaultEmailSchedulingData_1_2.getId(),
+                defaultEmailSchedulingData_1_3.getId(),
+                defaultEmailSchedulingData_2_1.getId(),
+                defaultEmailSchedulingData_2_2.getId()
+        );
+
+        setAfterTransactionAssertion(connection -> {
+            for (String key : allKeys) {
+                assertions.assertThat(connection.exists(key.getBytes())).isFalse();
+            }
+        });
+        defaultPersistenceService.addAll(ImmutableList.of(defaultEmailSchedulingData_1_1,
+                                                            defaultEmailSchedulingData_1_2,
+                                                            defaultEmailSchedulingData_1_3,
+                                                            defaultEmailSchedulingData_2_1,
+                                                            defaultEmailSchedulingData_2_2));
+
+        //Act
+        defaultPersistenceService.removeAll();
+    }
+
+    @Test
+    public void shouldRemoveAllDeleteAllEmailSchedulingData() throws Exception {
+        //Arrange
+        final int assignedPriority_1 = 1;
+        final int assignedPriority_2 = 2;
+        assertions.assertThat(assignedPriority_1).isNotEqualTo(assignedPriority_2);
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_1_1 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_1);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_1_2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_1);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_1_3 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_1);
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_2_1 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_2);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_2_2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_2);
+
+        final List<String> allKeysToBeRemoved = ImmutableList.of(
+                RedisBasedPersistenceServiceConstants.orderingKey(assignedPriority_1),
+                defaultEmailSchedulingData_1_1.getId(),
+                defaultEmailSchedulingData_1_2.getId(),
+                defaultEmailSchedulingData_1_3.getId()
+        );
+
+        final List<String> allKeysToBeKept = ImmutableList.of(
+                RedisBasedPersistenceServiceConstants.orderingKey(assignedPriority_2),
+                defaultEmailSchedulingData_2_1.getId(),
+                defaultEmailSchedulingData_2_2.getId()
+        );
+
+        setAfterTransactionAssertion(connection -> {
+            for (String key : allKeysToBeRemoved) {
+                assertions.assertThat(connection.exists(key.getBytes())).isFalse();
+            }
+            for (String key : allKeysToBeKept) {
+                assertions.assertThat(connection.exists(key.getBytes())).isTrue();
+            }
+        });
+
+        defaultPersistenceService.addAll(ImmutableList.of(defaultEmailSchedulingData_1_1,
+                defaultEmailSchedulingData_1_2,
+                defaultEmailSchedulingData_1_3,
+                defaultEmailSchedulingData_2_1,
+                defaultEmailSchedulingData_2_2));
+
+        //Act
+        defaultPersistenceService.removeAll(assignedPriority_1);
+    }
+
+    @Test
+    public void shouldRemoveAllDeleteSpecificEmailSchedulingData() throws Exception {
+        //Arrange
+        final int assignedPriority_1 = 1;
+        final int assignedPriority_2 = 2;
+        assertions.assertThat(assignedPriority_1).isNotEqualTo(assignedPriority_2);
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_1_1 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_1);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_1_2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_1);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_1_3 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_1);
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_2_1 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_2);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData_2_2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority_2);
+
+        final List<String> allKeysToBeRemoved = ImmutableList.of(
+                defaultEmailSchedulingData_1_1.getId(),
+                defaultEmailSchedulingData_2_1.getId()
+        );
+
+        final List<String> allKeysToBeKept = ImmutableList.of(
+                defaultEmailSchedulingData_1_2.getId(),
+                defaultEmailSchedulingData_1_3.getId(),
+                defaultEmailSchedulingData_2_2.getId()
+        );
+
+        setAfterTransactionAssertion(connection -> {
+            for (String key : allKeysToBeRemoved) {
+                assertions.assertThat(connection.exists(key.getBytes())).isFalse();
+            }
+            for (String key : allKeysToBeKept) {
+                assertions.assertThat(connection.exists(key.getBytes())).isTrue();
+            }
+        });
+
+        defaultPersistenceService.addAll(ImmutableList.of(defaultEmailSchedulingData_1_1,
+                defaultEmailSchedulingData_1_2,
+                defaultEmailSchedulingData_1_3,
+                defaultEmailSchedulingData_2_1,
+                defaultEmailSchedulingData_2_2));
+
+        //Act
+        defaultPersistenceService.removeAll(allKeysToBeRemoved);
     }
 
     private DefaultEmailSchedulingData createDefaultEmailSchedulingDataWithPriority(final int assignedPriority) throws UnsupportedEncodingException {
