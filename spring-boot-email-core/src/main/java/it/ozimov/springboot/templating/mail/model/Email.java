@@ -18,7 +18,6 @@ package it.ozimov.springboot.templating.mail.model;
 
 import javax.mail.internet.InternetAddress;
 import java.io.Serializable;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;

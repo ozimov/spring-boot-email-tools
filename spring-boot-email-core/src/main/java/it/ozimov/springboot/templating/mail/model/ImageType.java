@@ -18,8 +18,10 @@ package it.ozimov.springboot.templating.mail.model;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 
 @Getter
+@ToString
 public enum ImageType {
     GIF("gif", "image/gif"),
     JPG("jpg", "image/jpeg"),

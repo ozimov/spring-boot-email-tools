@@ -106,7 +106,7 @@ public class DefaultEmailService implements EmailService {
                 content.addBodyPart(imagePart);
             }
 
-            for(final EmailAttachment emailAttachment: email.getAttachments()){
+            for (final EmailAttachment emailAttachment : email.getAttachments()) {
                 //Set the image part
                 final MimeBodyPart attachmentPart = new MimeBodyPart();
                 DataSource source = new ByteArrayDataSource(emailAttachment.getAttachmentData(),
@@ -115,7 +115,7 @@ public class DefaultEmailService implements EmailService {
                 attachmentPart.setFileName(emailAttachment.getAttachmentName());
                 content.addBodyPart(attachmentPart);
             }
-            
+
             //Set the HTML text part
             final MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(text, email.getEncoding(), "html");

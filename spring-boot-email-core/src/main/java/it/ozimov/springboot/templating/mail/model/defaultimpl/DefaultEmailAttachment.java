@@ -21,7 +21,6 @@ import it.ozimov.springboot.templating.mail.model.EmailAttachment;
 import it.ozimov.springboot.templating.mail.utils.TikaDetector;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 
 import java.io.ByteArrayInputStream;
@@ -32,7 +31,6 @@ import static java.util.Optional.ofNullable;
 
 /**
  * Email attachment.
- *
  */
 @NoArgsConstructor
 @RequiredArgsConstructor

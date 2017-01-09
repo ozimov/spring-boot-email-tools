@@ -1,18 +1,31 @@
+/*
+ * Copyright 2012-2015 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package it.ozimov.springboot.templating.mail.model;
 
 import it.ozimov.springboot.templating.mail.UnitTest;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import org.assertj.core.api.JUnitSoftAssertions;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.OffsetDateTime;
 
-import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
-import static org.hamcrest.CoreMatchers.is;
 
 public class DefaultEmailSchedulingDataTest implements UnitTest {
 
@@ -20,7 +33,7 @@ public class DefaultEmailSchedulingDataTest implements UnitTest {
     public JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
     @Test
-    public void testCompareTo() throws Exception {
+    public void shouldCompareTo() throws Exception {
         //Arrange
         final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow();
         final DefaultEmailSchedulingData reference = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()

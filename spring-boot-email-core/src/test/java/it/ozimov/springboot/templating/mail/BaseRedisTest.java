@@ -1,12 +1,25 @@
+/*
+ * Copyright 2012-2015 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package it.ozimov.springboot.templating.mail;
 
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.service.EmailEmbeddedRedis;
 import lombok.NonNull;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,57 +34,25 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestContext;
-import org.springframework.test.context.TestExecutionListener;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.AbstractTestExecutionListener;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionException;
-import org.springframework.transaction.support.AbstractPlatformTransactionManager;
-import org.springframework.transaction.support.DefaultTransactionStatus;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.SocketUtils;
 import redis.clients.jedis.JedisShardInfo;
 import redis.embedded.RedisServer;
 
-import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Objects;
 
 import static java.util.Objects.nonNull;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
 
-public abstract class BaseRedisTest  implements ContextBasedTest {
+public abstract class BaseRedisTest implements ContextBasedTest {
 
     protected AfterTransactionAssertion afterTransactionAssertion;
     protected BeforeTransactionAssertion beforeTransactionAssertion;
-
-    protected AfterTransactionAssertion getAfterTransactionAssertion() {
-        return afterTransactionAssertion;
-    }
-
-    protected BeforeTransactionAssertion getBeforeTransactionAssertion() {
-        return beforeTransactionAssertion;
-    }
-
-    protected void setAfterTransactionAssertion(@NonNull final AfterTransactionAssertion afterTransactionAssertion) {
-        this.afterTransactionAssertion = afterTransactionAssertion;
-    }
-
-    protected void setBeforeTransactionAssertion(@NonNull final BeforeTransactionAssertion beforeTransactionAssertion) {
-        this.beforeTransactionAssertion = beforeTransactionAssertion;
-    }
 
     @Autowired
     private RedisServer redisServer;
@@ -92,6 +73,22 @@ public abstract class BaseRedisTest  implements ContextBasedTest {
     }
 
     public void additionalSetUp(){
+    }
+
+    protected AfterTransactionAssertion getAfterTransactionAssertion() {
+        return afterTransactionAssertion;
+    }
+
+    protected BeforeTransactionAssertion getBeforeTransactionAssertion() {
+        return beforeTransactionAssertion;
+    }
+
+    protected void setAfterTransactionAssertion(@NonNull final AfterTransactionAssertion afterTransactionAssertion) {
+        this.afterTransactionAssertion = afterTransactionAssertion;
+    }
+
+    protected void setBeforeTransactionAssertion(@NonNull final BeforeTransactionAssertion beforeTransactionAssertion) {
+        this.beforeTransactionAssertion = beforeTransactionAssertion;
     }
 
     @BeforeTransaction
@@ -136,11 +133,8 @@ public abstract class BaseRedisTest  implements ContextBasedTest {
         public JedisContextConfiguration() throws IOException {
             int redisPort = randomFreePort();
 
-            redisServer = RedisServer.builder()
-                    .port(redisPort)
-                    .setting("appendonly yes")
-                    .build();
-            redisServer.start();
+            emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort);
+            redisServer = (RedisServer) ReflectionTestUtils.getField(emailEmbeddedRedis, "redisServer");
 
             JedisShardInfo shardInfo = new JedisShardInfo("localhost", redisPort);
             connectionFactory = new JedisConnectionFactory();

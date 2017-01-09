@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.ozimov.springboot.templating.mail.exceptions;
+package it.ozimov.springboot.templating.mail.utils;
 
 public class EmailConversionException extends RuntimeException {
 

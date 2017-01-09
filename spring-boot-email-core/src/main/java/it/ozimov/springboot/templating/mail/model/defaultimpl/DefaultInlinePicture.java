@@ -30,10 +30,16 @@ public class DefaultInlinePicture implements InlinePicture {
 
     private static final long serialVersionUID = 1040548679790587446L;
 
-    private @NonNull ImageType imageType;
+    private
+    @NonNull
+    ImageType imageType;
 
-    private @NonNull File file;
+    private
+    @NonNull
+    File file;
 
-    private @NonNull String templateName;
+    private
+    @NonNull
+    String templateName;
 
 }

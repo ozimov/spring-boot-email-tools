@@ -23,7 +23,6 @@ import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.ImageType;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultInlinePicture;
 import it.ozimov.springboot.templating.mail.service.TemplateService;
-import it.ozimov.springboot.templating.mail.service.defaultimpl.DefaultEmailService;
 import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
 import it.ozimov.springboot.templating.mail.service.exception.TemplateException;
 import it.ozimov.springboot.templating.mail.utils.EmailToMimeMessage;
@@ -46,24 +45,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateBcc;
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateBody;
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateCc;
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateFrom;
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateReplyTo;
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateSubject;
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.validateTo;
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultEmailServiceTest implements UnitTest {

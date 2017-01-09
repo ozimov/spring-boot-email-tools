@@ -39,7 +39,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -122,7 +121,7 @@ public class DefaultEmailToMimeMessageTest {
                 .body("Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
                 .encoding(StandardCharsets.UTF_8.name());
         if(nonNull(emailAttachments)){
-            builder.attachments(Arrays.asList(emailAttachments));
+            builder.attachments(asList(emailAttachments));
         }
         return builder.build();
     }

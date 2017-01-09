@@ -16,7 +16,6 @@
 
 package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
-import com.google.common.base.Preconditions;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.model.InlinePicture;
@@ -57,6 +56,8 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     private static final long DELTA = SECONDS.toMillis(1);
 
     private static final int BATCH_SIZE = 500;
+    private static final int MAX_SIZE_PER_PRIORITY_LEVEL = 2000;
+
 
     private ServiceStatus serviceStatus = ServiceStatus.CREATED;
     private Long timeOfNextScheduledMessage;
@@ -96,11 +97,11 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
         final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);
         final EmailSchedulingData emailSchedulingData = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
-                                                            .email(mimeEmail)
-                                                            .scheduledDateTime(scheduledDateTime)
-                                                            .assignedPriority(assignedPriorityLevel)
-                                                            .desiredPriority(desiredPriorityLevel)
-                                                            .build();
+                .email(mimeEmail)
+                .scheduledDateTime(scheduledDateTime)
+                .assignedPriority(assignedPriorityLevel)
+                .desiredPriority(desiredPriorityLevel)
+                .build();
         schedule(emailSchedulingData);
         log.info("Scheduled email {} at UTC time {} with priority {}", mimeEmail, scheduledDateTime, desiredPriorityLevel);
         if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
@@ -135,8 +136,15 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     }
 
     protected synchronized void schedule(final EmailSchedulingData emailSchedulingData) {
-        queues[emailSchedulingData.getAssignedPriority() - 1].add(emailSchedulingData);
+        final int queueIndex = emailSchedulingData.getAssignedPriority() - 1;
+        if (canAddInMemory(queueIndex)) {
+            queues[queueIndex].add(emailSchedulingData);
+        }
         addToPersistenceLayer(emailSchedulingData);
+    }
+
+    private boolean canAddInMemory(final int queueIndex) {
+        return !persistenceServiceOptional.isPresent() || queues[queueIndex].size() >= MAX_SIZE_PER_PRIORITY_LEVEL;
     }
 
     protected synchronized void loadBatchFromPersistenceLayer() {
@@ -159,12 +167,15 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     protected synchronized void deleteFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
         persistenceServiceOptional.ifPresent(
-                persistenceService -> persistenceService.remove(emailSchedulingData.getId())
+                persistenceService -> {
+                    persistenceService.remove(emailSchedulingData.getId());
+                    scheduleBatch(persistenceService.getNextBatch(1));
+                }
         );
     }
 
     protected synchronized void scheduleBatch(final Collection<EmailSchedulingData> emailSchedulingDataCollection) {
-        Preconditions.checkArgument(!emailSchedulingDataCollection.isEmpty(), "Collection of EmailSchedulingData should not be empty.");
+        checkArgument(!emailSchedulingDataCollection.isEmpty(), "Collection of EmailSchedulingData should not be empty.");
 
         Set<EmailSchedulingData> sortedEmailSchedulingData = new TreeSet<>(EmailSchedulingData.DEFAULT_COMPARATOR);
         sortedEmailSchedulingData.addAll(emailSchedulingDataCollection);

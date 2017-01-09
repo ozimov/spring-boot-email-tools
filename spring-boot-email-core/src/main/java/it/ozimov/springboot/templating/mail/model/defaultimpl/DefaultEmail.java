@@ -17,24 +17,15 @@
 package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 
-import com.google.common.base.Charsets;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.EmailAttachment;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.mail.internet.InternetAddress;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
-
-import static java.nio.charset.Charset.forName;
 
 /**
  * Mime email.

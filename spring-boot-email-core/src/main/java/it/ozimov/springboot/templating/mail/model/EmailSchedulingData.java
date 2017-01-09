@@ -26,11 +26,11 @@ public interface EmailSchedulingData extends Comparable<EmailSchedulingData>, Se
     Email getEmail();
 
     default int getDesiredPriority() {
-        return 0;
+        return 1;
     }
 
     default int getAssignedPriority() {
-        return 0;
+        return 1;
     }
 
     default OffsetDateTime getScheduledDateTime() {

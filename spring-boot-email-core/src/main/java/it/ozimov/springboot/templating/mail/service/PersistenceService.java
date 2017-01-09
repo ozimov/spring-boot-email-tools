@@ -82,7 +82,7 @@ public interface PersistenceService {
      * </p>
      *
      * @param priorityLevel the priority level from which we want to extract the batch.
-     * @param batchMaxSize the desired size of the batch.
+     * @param batchMaxSize  the desired size of the batch.
      * @return a batch of {@linkplain EmailSchedulingData} to be retrieved from the persistence layer.
      */
     @Transactional(readOnly = true)
@@ -105,7 +105,6 @@ public interface PersistenceService {
 
     /**
      * Remove all the {@linkplain EmailSchedulingData} in the peristence layer.
-     *
      */
     @Transactional(rollbackFor = Exception.class)
     void removeAll();
