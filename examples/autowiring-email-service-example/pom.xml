@@ -6,7 +6,7 @@
 
     <groupId>no-template-example</groupId>
     <artifactId>no-template-example</artifactId>
-    <version>0.3.8-SNAPSHOT</version>
+    <version>0.3.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Spring Boot Email - EmailService Autowring Test</name>

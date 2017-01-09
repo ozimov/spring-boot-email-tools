@@ -7,8 +7,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.3.7] - 2017-01-09
 ### Fixed
 - Support to email attachment has been fixed by removing the content type of attachments (issue 15)
-### Changed
-- Removed Apache Tika dependency
 
 ## [0.3.7] - 2017-01-09
 ### Fixed
