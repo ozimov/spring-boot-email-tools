@@ -75,7 +75,7 @@ and for _Thymeleaf_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-thymeleaf-email</artifactId>
-    <version>0.4.0</version>
+    <version>0.3.6</version>
 </dependency>
 ```
 

@@ -17,10 +17,13 @@ Revise unit testing by only using AssertJ and JUnit5
 - All the classes ending with `Impl` are now renamed. Instead, they start with `Default`
 - Using Pebble _2.3.0.RELEASE_
 
-## [0.3.5] - 2017-01-05
+## [0.3.7] - 2017-01-09
+### Fixed
+- Support to email attachment has been fixed by removing the content type of attachments (issue 15)
+
+## [0.3.6] - 2017-01-05
 ### Changed
 - Using Spring Boot _1.4.3.RELEASE_
-
 ### Fixed
 - Support to email attachment has been fixed (issue 15)
 

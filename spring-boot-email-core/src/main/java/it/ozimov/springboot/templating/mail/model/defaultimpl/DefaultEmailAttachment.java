@@ -18,14 +18,7 @@ package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 
 import it.ozimov.springboot.templating.mail.utils.TikaDetector;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
@@ -37,7 +30,7 @@ import java.io.InputStream;
 import static java.util.Optional.ofNullable;
 
 /**
- * Plain text email.
+ * Email attachment.
  *
  */
 @NoArgsConstructor

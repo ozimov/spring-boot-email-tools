@@ -18,6 +18,7 @@ package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 import com.google.common.collect.ImmutableMap;
 import it.ozimov.springboot.templating.mail.model.Email;
+import it.ozimov.springboot.templating.mail.model.EmailAttachment;
 import it.ozimov.springboot.templating.mail.model.InlinePicture;
 import it.ozimov.springboot.templating.mail.service.EmailService;
 import it.ozimov.springboot.templating.mail.service.TemplateService;
@@ -30,10 +31,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Date;
@@ -82,7 +86,7 @@ public class DefaultEmailService implements EmailService {
         email.setSentAt(new Date());
         final MimeMessage mimeMessage = toMimeMessage(email);
         try {
-            final MimeMultipart content = new MimeMultipart("related");
+            final MimeMultipart content = new MimeMultipart("mixed");
 
             String text = templateService.mergeTemplateIntoString(template,
                     fromNullable(modelObject).or(ImmutableMap.of()));
@@ -102,6 +106,16 @@ public class DefaultEmailService implements EmailService {
                 content.addBodyPart(imagePart);
             }
 
+            for(final EmailAttachment emailAttachment: email.getAttachments()){
+                //Set the image part
+                final MimeBodyPart attachmentPart = new MimeBodyPart();
+                DataSource source = new ByteArrayDataSource(emailAttachment.getAttachmentData(),
+                        emailAttachment.getContentType().toString());
+                attachmentPart.setDataHandler(new DataHandler(source));
+                attachmentPart.setFileName(emailAttachment.getAttachmentName());
+                content.addBodyPart(attachmentPart);
+            }
+            
             //Set the HTML text part
             final MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(text, email.getEncoding(), "html");
