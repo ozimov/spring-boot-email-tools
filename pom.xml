@@ -11,7 +11,7 @@
 
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-build</artifactId>
-    <version>0.3.7</version>
+    <version>0.3.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Spring Boot Email Build</name>
