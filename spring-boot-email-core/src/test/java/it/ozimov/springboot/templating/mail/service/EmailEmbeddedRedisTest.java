@@ -22,7 +22,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -32,6 +35,7 @@ import redis.embedded.RedisServer;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.*;
 
@@ -41,6 +45,9 @@ import static org.mockito.Mockito.*;
 public class EmailEmbeddedRedisTest extends BaseRedisTest {
 
     private static final String REDIS_SERVER_FIELD_NAME = "redisServer";
+
+    @Rule
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();

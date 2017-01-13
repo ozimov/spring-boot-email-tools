@@ -52,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.danhaywood.java.assertjext.Conditions.matchedBy;
 import static it.ozimov.cirneco.hamcrest.java7.javautils.IsUUID.UUID;
+import static it.ozimov.springboot.templating.mail.service.defaultimpl.EmailSchedulingDataUtils.createDefaultEmailSchedulingDataWithPriority;
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static org.mockito.Mockito.inOrder;
 
@@ -61,13 +62,10 @@ import static org.mockito.Mockito.inOrder;
 public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
     @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
-
-    @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Rule
-    public Timeout timeout = new Timeout(3, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
@@ -667,18 +665,6 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
         //Act
         defaultPersistenceService.removeAll(ImmutableList.of(unmappedKey));
-    }
-
-    private DefaultEmailSchedulingData createDefaultEmailSchedulingDataWithPriority(final int assignedPriority) throws UnsupportedEncodingException {
-        final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow();
-
-        final DefaultEmailSchedulingData defaultEmailSchedulingData = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
-                .email(getSimpleMail())
-                .scheduledDateTime(dateTime)
-                .assignedPriority(assignedPriority)
-                .desiredPriority(assignedPriority)
-                .build();
-        return defaultEmailSchedulingData;
     }
 
 }

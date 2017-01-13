@@ -52,10 +52,10 @@ import static org.mockito.Mockito.verify;
 public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Rule
-    public Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
+    public final Timeout timeout = new Timeout(60, TimeUnit.SECONDS);
 
     @MockBean
     private EmailService emailService;
