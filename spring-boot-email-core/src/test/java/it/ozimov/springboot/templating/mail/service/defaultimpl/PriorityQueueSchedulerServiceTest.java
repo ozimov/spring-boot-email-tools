@@ -46,6 +46,7 @@ import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessa
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CoreTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -59,6 +60,9 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
     @MockBean
     private EmailService emailService;
+
+    @MockBean
+    private SchedulerProperties schedulerProperties;
 
     @Mock
     private MimeMessage mimeMessage;
@@ -187,7 +191,11 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     }
 
     private PriorityQueueSchedulerService scheduler(int numPriorityLevels) {
-        final PriorityQueueSchedulerService schedulerService = new PriorityQueueSchedulerService(emailService, numPriorityLevels, Optional.empty());
+        when(schedulerProperties.getPriorityLevels()).thenReturn(numPriorityLevels);
+
+        final PriorityQueueSchedulerService schedulerService = new PriorityQueueSchedulerService(emailService,
+                schedulerProperties,
+                Optional.empty());
         return schedulerService;
     }
 

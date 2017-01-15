@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.temporal.ChronoField;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -205,7 +206,12 @@ public class DefaultPersistenceService implements PersistenceService {
         final long nanos = emailSchedulingData.getScheduledDateTime().getLong(ChronoField.NANO_OF_SECOND);
         final int desiredPriority = emailSchedulingData.getDesiredPriority();
 
-        final String scoreStringValue = new StringBuilder().append(nanos).append(".").append(desiredPriority).toString();
+        final String scoreStringValue = new StringBuilder()
+                .append(nanos)
+                .append(".")
+                .append(desiredPriority)
+                .append(Math.abs(emailSchedulingData.getId().hashCode()))
+                .toString();
         final double score = new BigDecimal(scoreStringValue).doubleValue();
         return score;
     }

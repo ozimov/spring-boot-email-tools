@@ -23,12 +23,12 @@ import it.ozimov.springboot.templating.mail.CoreTestApplication;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
 import it.ozimov.springboot.templating.mail.service.EmailService;
+import lombok.Getter;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,26 +45,26 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.springboot.templating.mail.service.defaultimpl.EmailSchedulingDataUtils.createDefaultEmailSchedulingDataWithPriority;
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {BaseRedisTest.JedisContextConfiguration.class, CoreTestApplication.class})
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(classes = {BaseRedisTest.ContextConfiguration.class, CoreTestApplication.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest {
-
-    private static final int NUM_PRIORITY_LEVELS = 10;
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    @Rule
-    public final Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
+//    @Rule
+//    public final Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
+
+    @MockBean
+    public SchedulerProperties schedulerProperties;
 
     @MockBean
     public EmailService emailService;
@@ -76,6 +76,10 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     @Qualifier("defaultEmailPersistenceService")
     public DefaultPersistenceService defaultPersistenceService;
 
+    private int priorityLevels = 5;
+    private int desiredBatchSize = 100_000;
+    private int maxKeptInMemory = Integer.MAX_VALUE;
+
     public ResultCaptor<Collection<EmailSchedulingData>> nextBatchResultCaptor = new ResultCaptor<>();
 
     @Before
@@ -84,30 +88,70 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldAddFromPersistenceLayerWhenCreated() throws Exception {
+    public void shouldAddBatchFromPersistenceLayerWhenCreated() throws Exception {
         //Arrange
         final int assignedPriority = 1;
         final DefaultEmailSchedulingData defaultEmailSchedulingData1 = createDefaultEmailSchedulingDataWithPriority(assignedPriority);
         final DefaultEmailSchedulingData defaultEmailSchedulingData2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority);
         final DefaultEmailSchedulingData defaultEmailSchedulingData3 = createDefaultEmailSchedulingDataWithPriority(assignedPriority);
 
-        defaultPersistenceService.add(defaultEmailSchedulingData1);
-        defaultPersistenceService.add(defaultEmailSchedulingData2);
-        defaultPersistenceService.add(defaultEmailSchedulingData3);
+        List<EmailSchedulingData> emailSchedulingDataList = ImmutableList.of(defaultEmailSchedulingData1, defaultEmailSchedulingData2, defaultEmailSchedulingData3);
+        defaultPersistenceService.addAll(emailSchedulingDataList);
 
         //Act
-        PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler();
+        scheduler();
 
         //Assert
         verify(defaultPersistenceService, atLeastOnce()).getNextBatch(anyInt());
 
-        List<Collection<EmailSchedulingData>> results = ImmutableList.copyOf(nextBatchResultCaptor.results());
-        assertions.assertThat(results.get(0));
+        final List<Collection<EmailSchedulingData>> results = ImmutableList.copyOf(nextBatchResultCaptor.results());
 
+        assertions.assertThat(results.get(0)).containsOnlyElementsOf(emailSchedulingDataList);
+    }
+
+    @Test
+    public void shouldAddFromPersistenceLayerWhenBeforeLastFromPersistenceLayerAndBelowMaxKeptInMemory() throws Exception {
+        //Arrange
+        priorityLevels = 5;
+        desiredBatchSize = 10_000;
+        maxKeptInMemory = Integer.MAX_VALUE;
+
+
+        final int assignedPriority = 1;
+        final DefaultEmailSchedulingData defaultEmailSchedulingData1 = createDefaultEmailSchedulingDataWithPriority(assignedPriority);
+        final DefaultEmailSchedulingData defaultEmailSchedulingData2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority,
+                TimeUnit.DAYS.toNanos(1));
+
+        List<EmailSchedulingData> emailSchedulingDataList = ImmutableList.of(defaultEmailSchedulingData1, defaultEmailSchedulingData2);
+        defaultPersistenceService.addAll(emailSchedulingDataList);
+        PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler();
+        TimeUnit.MILLISECONDS.sleep(5);
+        //Act
+        priorityQueueSchedulerService.schedule();
+
+        //Assert
+        verify(defaultPersistenceService, atLeastOnce()).getNextBatch(anyInt());
+
+        final List<Collection<EmailSchedulingData>> results = ImmutableList.copyOf(nextBatchResultCaptor.results());
+
+        assertions.assertThat(results.get(0)).containsOnlyElementsOf(emailSchedulingDataList);
+//        assertions.assertThat(results.get(1)).containsOnly(defaultEmailSchedulingData3);
+//        IntStream.range(1, results.size())
+//                .forEach(i ->
+////                                System.out.println(results.get(i))
+//                        assertions.assertThat(results.get(i)).isEmpty()
+//                );
     }
 
     protected PriorityQueueSchedulerService scheduler() {
-        final PriorityQueueSchedulerService schedulerService = spy(new PriorityQueueSchedulerService(emailService, NUM_PRIORITY_LEVELS, Optional.of(defaultPersistenceService)));
+        SchedulerProperties.PersistenceLayer persistenceLayer = SchedulerProperties.PersistenceLayer.builder()
+                .maxKeptInMemory(maxKeptInMemory)
+                .desiredBatchSize(desiredBatchSize)
+                .build();
+        when(schedulerProperties.getPriorityLevels()).thenReturn(priorityLevels);
+        when(schedulerProperties.getPersistenceLayer()).thenReturn(persistenceLayer);
+
+        final PriorityQueueSchedulerService schedulerService = spy(new PriorityQueueSchedulerService(emailService, schedulerProperties, Optional.of(defaultPersistenceService)));
         return schedulerService;
     }
 

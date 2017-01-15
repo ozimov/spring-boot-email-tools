@@ -18,9 +18,11 @@ package it.ozimov.springboot.templating.mail;
 
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.service.EmailEmbeddedRedis;
+import it.ozimov.springboot.templating.mail.service.defaultimpl.SchedulerProperties;
 import lombok.NonNull;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -124,13 +126,13 @@ public abstract class BaseRedisTest implements ContextBasedTest {
     @Configuration
     @PropertySource("classpath:redis-test.properties")
     @ComponentScan(basePackages = {"it.ozimov.springboot.templating.mail"})
-    public static class JedisContextConfiguration {
+    public static class ContextConfiguration {
 
         private EmailEmbeddedRedis emailEmbeddedRedis;
         private RedisServer redisServer;
         private JedisConnectionFactory connectionFactory;
 
-        public JedisContextConfiguration() throws IOException {
+        public ContextConfiguration() throws IOException {
             int redisPort = randomFreePort();
 
             emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort);

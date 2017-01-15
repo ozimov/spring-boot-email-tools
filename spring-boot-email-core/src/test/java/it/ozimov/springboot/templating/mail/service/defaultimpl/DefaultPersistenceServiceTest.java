@@ -30,8 +30,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -42,7 +40,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -57,7 +54,7 @@ import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessa
 import static org.mockito.Mockito.inOrder;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {BaseRedisTest.JedisContextConfiguration.class})
+@ContextConfiguration(classes = {BaseRedisTest.ContextConfiguration.class})
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
@@ -173,6 +170,42 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
                 .contains(defaultEmailSchedulingDataSameId);
     }
 
+    @Test
+    public void shouldAddNotReplaceEmailSchedulingDataWhenTheAssignedPriorityAndTimestampIsTheSame() throws Exception {
+        //Arrange
+        final int assignedPriority = 1;
+        final DefaultEmailSchedulingData defaultEmailSchedulingData = createDefaultEmailSchedulingDataWithPriority(assignedPriority);
+
+        final String expectedOrderingKey = RedisBasedPersistenceServiceConstants.orderingKey(assignedPriority);
+        final String expectedValueKey_1 = defaultEmailSchedulingData.getId();
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataSamePriorityAndTimestamp =
+                createDefaultEmailSchedulingDataWithPriority(assignedPriority);
+        final String expectedValueKey_2 = defaultEmailSchedulingData.getId();
+        final OffsetDateTime dateTime = defaultEmailSchedulingData.getScheduledDateTime();
+        ReflectionTestUtils.setField(defaultEmailSchedulingDataSamePriorityAndTimestamp, "scheduledDateTime", dateTime);
+
+        setBeforeTransactionAssertion(connection -> {
+            assertions.assertThat(connection.exists(expectedOrderingKey.getBytes())).isFalse();
+            assertions.assertThat(connection.exists(expectedValueKey_1.getBytes())).isFalse();
+            assertions.assertThat(connection.exists(expectedValueKey_2.getBytes())).isFalse();
+        });
+        setAfterTransactionAssertion(connection -> {
+            assertions.assertThat(connection.exists(expectedOrderingKey.getBytes()))
+                    .as("After adding we should have the ordering key in REDIS")
+                    .isTrue();
+            assertions.assertThat(connection.exists(expectedValueKey_1.getBytes()))
+                    .as("After adding we should have the value key in REDIS")
+                    .isTrue();
+            assertions.assertThat(connection.exists(expectedValueKey_2.getBytes()))
+                    .as("After adding we should have the value key in REDIS")
+                    .isTrue();
+        });
+
+        //Act
+        defaultPersistenceService.add(defaultEmailSchedulingData);
+        defaultPersistenceService.add(defaultEmailSchedulingDataSamePriorityAndTimestamp);
+    }
 
     @Test
     public void shouldGetThrowNullPointerExceptionWhenInputParamIsNull() throws Exception {

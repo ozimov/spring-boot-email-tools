@@ -24,8 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -40,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {BaseRedisTest.JedisContextConfiguration.class})
+@ContextConfiguration(classes = {BaseRedisTest.ContextConfiguration.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EmailEmbeddedRedisTest extends BaseRedisTest {
 
@@ -54,7 +52,6 @@ public class EmailEmbeddedRedisTest extends BaseRedisTest {
 
     @Autowired
     public EmailEmbeddedRedis emailEmbeddedRedis;
-
 
     private RedisServer redisServerOriginal;
 

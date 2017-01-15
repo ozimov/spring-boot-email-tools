@@ -30,18 +30,18 @@ import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.IntStream;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static java.util.Objects.isNull;
-import static java.util.Objects.requireNonNull;
+import static java.util.Objects.*;
+import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 //TODO create a scheduler service that compiles the template as soon as possible by balancing the template engine
@@ -55,14 +55,14 @@ public class PriorityQueueSchedulerService implements SchedulerService {
      */
     private static final long DELTA = SECONDS.toMillis(1);
 
-    private static final int BATCH_SIZE = 500;
-    private static final int MAX_SIZE_PER_PRIORITY_LEVEL = 2000;
-
+    private final int batchSize;
+    private final int maxInMemory;
 
     private ServiceStatus serviceStatus = ServiceStatus.CREATED;
     private Long timeOfNextScheduledMessage;
 
     private TreeSet<EmailSchedulingData>[] queues;
+    private EmailSchedulingData[] lastLoadedFromPersistenceLayer;
 
     private EmailService emailService;
 
@@ -73,12 +73,20 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     @Autowired
     public PriorityQueueSchedulerService(
             final EmailService emailService,
-            @Value("${spring.mail.scheduler.priorityLevels:10}") final int numberOfPriorityLevels,
+            final SchedulerProperties schedulerProperties,
             final Optional<PersistenceService> persistenceServiceOptional) {
-        checkArgument(numberOfPriorityLevels > 0, "Expected at least one priority level");
+
         this.emailService = requireNonNull(emailService);
         this.persistenceServiceOptional = persistenceServiceOptional;
+
+        batchSize = nonNull(schedulerProperties.getPersistenceLayer()) ?
+                schedulerProperties.getPersistenceLayer().getDesiredBatchSize() : 0;
+        maxInMemory = nonNull(schedulerProperties.getPersistenceLayer()) ?
+                schedulerProperties.getPersistenceLayer().getMaxKeptInMemory() : Integer.MAX_VALUE;
+
+        final int numberOfPriorityLevels = schedulerProperties.getPriorityLevels();
         queues = new TreeSet[numberOfPriorityLevels];
+        lastLoadedFromPersistenceLayer = new EmailSchedulingData[numberOfPriorityLevels];
         for (int i = 0; i < numberOfPriorityLevels; i++) {
             queues[i] = new TreeSet<>();
         }
@@ -136,22 +144,32 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     }
 
     protected synchronized void schedule(final EmailSchedulingData emailSchedulingData) {
-        final int queueIndex = emailSchedulingData.getAssignedPriority() - 1;
-        if (canAddInMemory(queueIndex)) {
+        final int queueIndex = queueIndex(emailSchedulingData);
+        final boolean canAddOneInMemory = canAddOneInMemory();
+        final boolean isAfterLastLoadedFromPersistenceLayer = afterLastLoadedFromPersistenceLayer(emailSchedulingData);
+        if (canAddOneInMemory && !isAfterLastLoadedFromPersistenceLayer) {
             queues[queueIndex].add(emailSchedulingData);
+        } else if (!canAddOneInMemory && !isAfterLastLoadedFromPersistenceLayer) {
+            //We cannot exceed the total size, but if the newly scheduled email is before all the
+            //last then we need to keep it and push out one of those in the queues.
+            if (isBeforeAllLastLoadedFromPersistenceLayer(emailSchedulingData)) {
+                queues[queueIndex].add(emailSchedulingData);
+                int queueIndexOfLatestOfAllLast = queueIndexOfLatestOfAllLast();
+                TreeSet<EmailSchedulingData> queue = queues[queueIndexOfLatestOfAllLast];
+                if (!queue.isEmpty()) {
+                    queue.remove(queue.last());
+                    lastLoadedFromPersistenceLayer[queueIndexOfLatestOfAllLast] = queue.last();
+                }
+            }
         }
         addToPersistenceLayer(emailSchedulingData);
-    }
-
-    private boolean canAddInMemory(final int queueIndex) {
-        return !persistenceServiceOptional.isPresent() || queues[queueIndex].size() >= MAX_SIZE_PER_PRIORITY_LEVEL;
     }
 
     protected synchronized void loadBatchFromPersistenceLayer() {
         persistenceServiceOptional.ifPresent(
                 persistenceService -> {
                     Collection<EmailSchedulingData> emailSchedulingDataList =
-                            persistenceService.getNextBatch(BATCH_SIZE);
+                            persistenceService.getNextBatch(batchSize);
                     if (!emailSchedulingDataList.isEmpty()) {
                         scheduleBatch(emailSchedulingDataList);
                     }
@@ -161,7 +179,8 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     protected synchronized void addToPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
         persistenceServiceOptional.ifPresent(
-                persistenceService -> persistenceService.add(emailSchedulingData)
+                persistenceService ->
+                        persistenceService.add(emailSchedulingData)
         );
     }
 
@@ -169,7 +188,16 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         persistenceServiceOptional.ifPresent(
                 persistenceService -> {
                     persistenceService.remove(emailSchedulingData.getId());
-                    scheduleBatch(persistenceService.getNextBatch(1));
+
+                    final int currentlyInMemory = currentlyInMemory();
+                    if (currentlyInMemory < batchSize) {
+                        final int expectedFromPersistenceLayer = batchSize - currentlyInMemory;
+                        final Collection<EmailSchedulingData> emailSchedulingDataCollection =
+                                persistenceService.getNextBatch(expectedFromPersistenceLayer);
+                        if (!emailSchedulingDataCollection.isEmpty()) {
+                            scheduleBatch(emailSchedulingDataCollection);
+                        }
+                    }
                 }
         );
     }
@@ -182,12 +210,14 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         EmailSchedulingData lastEmailSchedulingData = null;
         for (final EmailSchedulingData emailSchedulingData : sortedEmailSchedulingData) {
             lastEmailSchedulingData = emailSchedulingData;
-            queues[emailSchedulingData.getAssignedPriority() - 1].add(emailSchedulingData);
+            queues[queueIndex(emailSchedulingData)].add(emailSchedulingData);
             log.debug("Scheduled email {} at UTC time {} with assigned priority {}.",
                     emailSchedulingData.getEmail(),
                     emailSchedulingData.getScheduledDateTime(),
                     emailSchedulingData.getAssignedPriority());
         }
+
+        setLastLoadedFromPersistenceLayer();
 
         if (isNull(timeOfNextScheduledMessage) || lastEmailSchedulingData.getScheduledDateTime().toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
             notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
@@ -239,11 +269,64 @@ public class PriorityQueueSchedulerService implements SchedulerService {
             }
         }
         //here emailSchedulingData is the message to send
-        return Optional.ofNullable(emailSchedulingData);
+        return ofNullable(emailSchedulingData);
     }
 
     private void checkPriorityLevel(int priorityLevel) {
         checkArgument(priorityLevel > 0, "The priority level index cannot be negative");
+    }
+
+    private int queueIndex(final EmailSchedulingData emailSchedulingData) {
+        return emailSchedulingData.getAssignedPriority() - 1;
+    }
+
+    private void setLastLoadedFromPersistenceLayer() {
+        IntStream.range(0, queues.length)
+                .forEach(
+                        i ->
+                                lastLoadedFromPersistenceLayer[i] = queues[i].isEmpty() ?
+                                        null : queues[i].last()
+                );
+    }
+
+    private boolean canAddOneInMemory() {
+        return !persistenceServiceOptional.isPresent() || currentlyInMemory() < maxInMemory;
+    }
+
+    private int currentlyInMemory() {
+        return IntStream.range(0, queues.length)
+                .map(
+                        queueIndex -> queues[queueIndex].size()
+                )
+                .sum();
+    }
+
+
+    private boolean isBeforeAllLastLoadedFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
+        return !IntStream.range(0, queues.length)
+                .filter(
+                        queueIndex ->
+                                emailSchedulingData.compareTo(lastLoadedFromPersistenceLayer[queueIndex]) >= 0
+                )
+                .findAny()
+                .isPresent();
+    }
+
+    private int queueIndexOfLatestOfAllLast() {
+        final TreeSet<EmailSchedulingData> sortedLastLoadedFromPersistenceLayer =
+                new TreeSet<>(EmailSchedulingData::compareTo);
+
+        return !sortedLastLoadedFromPersistenceLayer.isEmpty() ?
+                Arrays.binarySearch(lastLoadedFromPersistenceLayer, sortedLastLoadedFromPersistenceLayer.last()) :
+                -1;
+    }
+
+    private boolean afterLastLoadedFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
+        if (!persistenceServiceOptional.isPresent()) {
+            return false;
+        }
+        final int queueIndex = queueIndex(emailSchedulingData);
+        return emailSchedulingData.compareTo(lastLoadedFromPersistenceLayer[queueIndex]) > 0;
     }
 
     @PreDestroy
