@@ -8,7 +8,6 @@ Revise unit testing by only using AssertJ and JUnit5
 
 ## [Unreleased]
 
-
 ## [0.4.0] - 2017-XX-XX
 ### Added
 - Persistence has been introduced with optional `PersistenceService`: default implementation relies on embedded-REDIS. 
@@ -17,6 +16,11 @@ Revise unit testing by only using AssertJ and JUnit5
 - All the classes ending with `Impl` are now renamed by removing the suffic and by starting with `Default`. Moreover, 
  the package containing these classes has been renamed from `impl` to `defaultimpl`.
 - Using Pebble _2.3.0.RELEASE_
+
+
+## [0.3.8] - 2017-02-03
+### Fixed
+- Fixed NPE when attachments were missing (issue 19)
 
 ## [0.3.7] - 2017-01-09
 ### Fixed

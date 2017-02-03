@@ -98,6 +98,36 @@ public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
     }
 
     @Test
+    public void sendMailWithoutTemplateAndWithoutAttachmentsShouldCallJavaMailSender() throws Exception {
+        //Arrange
+//        doNothing().when(javaMailSender).send(any(MimeMessage.class));
+
+        final Email email = getSimpleMail();
+
+        //Act
+        MimeMessage givenMessage = emailService.send(email);
+
+        //Assert
+        assertThat(givenMessage, not(nullValue()));
+        verify(javaMailSender).send(givenMessage);
+    }
+
+    @Test
+    public void sendMailWithTemplateAndWithoutAttachmentsShouldCallJavaMailSender() throws Exception {
+        //Arrange
+//        doNothing().when(javaMailSender).send(any(MimeMessage.class));
+
+        final Email email = getSimpleMail();
+
+        //Act
+        MimeMessage givenMessage = emailService.send(email, TemplatingTestUtils.TEMPLATE, TemplatingTestUtils.MODEL_OBJECT);
+
+        //Assert
+        assertThat(givenMessage, not(nullValue()));
+        verify(javaMailSender).send(givenMessage);
+    }
+
+    @Test
     public void sendMailWithoutTemplateButWithAttachmentsShouldCallJavaMailSender() throws Exception {
         //Arrange
 //        doNothing().when(javaMailSender).send(any(MimeMessage.class));

@@ -120,7 +120,7 @@ public class DefaultEmailToMimeMessageTest {
                 .subject("Laelius de amicitia")
                 .body("Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
                 .encoding(StandardCharsets.UTF_8.name());
-        if(nonNull(emailAttachments)){
+        if(nonNull(emailAttachments) && emailAttachments.length > 0){
             builder.attachments(asList(emailAttachments));
         }
         return builder.build();

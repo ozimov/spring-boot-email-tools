@@ -44,6 +44,7 @@ public class DefaultEmail implements Email {
 
     private InternetAddress replyTo;
 
+    @NonNull
     private Collection<InternetAddress> to;
 
     private Collection<InternetAddress> cc;
@@ -56,6 +57,8 @@ public class DefaultEmail implements Email {
     @NonNull
     private String body;
 
+    @NonNull
+    @Singular
     private Collection<EmailAttachment> attachments;
 
     private String encoding = StandardCharsets.UTF_8.name();

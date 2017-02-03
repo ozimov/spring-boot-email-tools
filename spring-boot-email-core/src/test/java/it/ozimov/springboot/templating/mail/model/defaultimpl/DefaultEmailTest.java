@@ -16,6 +16,7 @@
 
 package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
+import com.google.common.collect.ImmutableList;
 import it.ozimov.springboot.templating.mail.UnitTest;
 import org.junit.Rule;
 import org.junit.Test;
@@ -84,6 +85,7 @@ public class DefaultEmailTest implements UnitTest {
         //Act
         final DefaultEmail email = DefaultEmail.builder()
                 .from(new InternetAddress())
+                .to(ImmutableList.of(new InternetAddress()))
                 .subject("subject")
                 .body("body")
                 .build();

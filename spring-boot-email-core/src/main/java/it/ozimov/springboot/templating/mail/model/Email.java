@@ -16,6 +16,9 @@
 
 package it.ozimov.springboot.templating.mail.model;
 
+import com.google.common.collect.ImmutableList;
+import it.ozimov.springboot.templating.mail.utils.StringUtils;
+import lombok.NonNull;
 import javax.mail.internet.InternetAddress;
 import java.io.Serializable;
 import java.util.Collection;
@@ -24,25 +27,32 @@ import java.util.Locale;
 
 public interface Email extends Serializable {
 
+    @NonNull
     InternetAddress getFrom();
 
     InternetAddress getReplyTo();
 
-    Collection<InternetAddress> getTo();
+    @NonNull Collection<InternetAddress> getTo();
 
-    Collection<InternetAddress> getCc();
-
-    Collection<InternetAddress> getBcc();
-
-    default String getSubject() {
-        return "";
+    default @NonNull Collection<InternetAddress> getCc() {
+        return ImmutableList.of();
     }
 
-    default String getBody() {
-        return "";
+    default @NonNull Collection<InternetAddress> getBcc() {
+        return ImmutableList.of();
     }
 
-    Collection<EmailAttachment> getAttachments();
+    default @NonNull String getSubject() {
+        return StringUtils.EMPTY;
+    }
+
+    default @NonNull String getBody() {
+        return  StringUtils.EMPTY;
+    }
+
+    default @NonNull Collection<EmailAttachment> getAttachments() {
+        return ImmutableList.of();
+    }
 
     /**
      * Return the charset encoding. Default value is UTF-8
