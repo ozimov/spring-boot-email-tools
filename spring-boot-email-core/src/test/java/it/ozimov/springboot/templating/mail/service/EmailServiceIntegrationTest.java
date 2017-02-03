@@ -21,6 +21,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Map;
 
+import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.getSimpleMail;
 import static it.ozimov.springboot.templating.mail.utils.EmailToMimeMessageTest.getSimpleMailWithAttachments;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
@@ -56,6 +57,36 @@ public class EmailServiceIntegrationTest {
                         "</p>\n" +
                         "</body>\n" +
                         "</html>");
+    }
+
+    @Test
+    public void sendMailWithoutTemplateAndWithoutAttachmentsShouldCallJavaMailSender() throws Exception {
+        //Arrange
+        doNothing().when(javaMailSender).send(any(MimeMessage.class));
+
+        final Email email = getSimpleMail();
+
+        //Act
+        MimeMessage givenMessage = emailService.send(email);
+
+        //Assert
+        assertThat(givenMessage, not(nullValue()));
+        verify(javaMailSender).send(givenMessage);
+    }
+
+    @Test
+    public void sendMailWithTemplateAndWithoutAttachmentsShouldCallJavaMailSender() throws Exception {
+        //Arrange
+        doNothing().when(javaMailSender).send(any(MimeMessage.class));
+
+        final Email email = getSimpleMail();
+
+        //Act
+        MimeMessage givenMessage = emailService.send(email, TemplatingTestUtils.TEMPLATE, TemplatingTestUtils.MODEL_OBJECT);
+
+        //Assert
+        assertThat(givenMessage, not(nullValue()));
+        verify(javaMailSender).send(givenMessage);
     }
 
     @Test

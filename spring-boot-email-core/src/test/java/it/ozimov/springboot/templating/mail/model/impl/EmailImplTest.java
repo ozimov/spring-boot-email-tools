@@ -1,5 +1,6 @@
 package it.ozimov.springboot.templating.mail.model.impl;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -69,6 +70,7 @@ public class EmailImplTest {
         //Act
         final EmailImpl email = EmailImpl.builder()
                 .from(new InternetAddress())
+                .to(ImmutableList.of(new InternetAddress()))
                 .subject("subject")
                 .body("body")
                 .build();

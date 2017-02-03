@@ -18,12 +18,7 @@ package it.ozimov.springboot.templating.mail.model.impl;
 
 
 import it.ozimov.springboot.templating.mail.model.Email;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.mail.internet.InternetAddress;
 import java.io.Serializable;
@@ -51,6 +46,7 @@ public class EmailImpl implements Email, Serializable {
 
     private InternetAddress replyTo;
 
+    @NonNull
     private Collection<InternetAddress> to;
 
     private Collection<InternetAddress> cc;
@@ -63,6 +59,8 @@ public class EmailImpl implements Email, Serializable {
     @NonNull
     private String body;
 
+    @NonNull
+    @Singular
     private Collection<EmailAttachmentImpl> attachments;
 
     private Charset encoding = forName("UTF-8");

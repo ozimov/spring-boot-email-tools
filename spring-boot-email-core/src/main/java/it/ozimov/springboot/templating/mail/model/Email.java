@@ -16,7 +16,11 @@
 
 package it.ozimov.springboot.templating.mail.model;
 
+import com.google.common.collect.ImmutableList;
 import it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl;
+import it.ozimov.springboot.templating.mail.utils.StringUtils;
+import lombok.NonNull;
+
 
 import javax.mail.internet.InternetAddress;
 import java.nio.charset.Charset;
@@ -26,26 +30,33 @@ import java.util.Locale;
 
 public interface Email {
 
+    @NonNull
     InternetAddress getFrom();
 
     InternetAddress getReplyTo();
 
-    Collection<InternetAddress> getTo();
+    @NonNull Collection<InternetAddress> getTo();
 
-    Collection<InternetAddress> getCc();
-
-    Collection<InternetAddress> getBcc();
-
-    default String getSubject() {
-        return "";
+    default @NonNull Collection<InternetAddress> getCc() {
+        return ImmutableList.of();
     }
 
-    default String getBody() {
-        return "";
+    default @NonNull Collection<InternetAddress> getBcc() {
+        return ImmutableList.of();
+    }
+
+    default @NonNull String getSubject() {
+        return StringUtils.EMPTY;
+    }
+
+    default @NonNull String getBody() {
+        return  StringUtils.EMPTY;
     }
 
     //FIXME Release 0.4.0 will fix this bug to have Collection<EmailAttachment>
-    Collection<EmailAttachmentImpl> getAttachments();
+    default @NonNull Collection<EmailAttachmentImpl> getAttachments() {
+        return ImmutableList.of();
+    }
 
     Charset getEncoding();
 

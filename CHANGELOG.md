@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.8] - 2017-02-03
+### Fixed
+- Fixed NPE when attachments were missing (issue 19)
+
 ## [0.3.7] - 2017-01-09
 ### Fixed
 - Support to email attachment has been fixed by removing the content type of attachments (issue 15)
