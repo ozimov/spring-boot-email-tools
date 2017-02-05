@@ -17,12 +17,12 @@
 package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 import it.ozimov.springboot.templating.mail.ContextBasedTest;
-import it.ozimov.springboot.templating.mail.CoreTestApplication;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.service.EmailService;
 import it.ozimov.springboot.templating.mail.service.ServiceStatus;
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,7 +30,6 @@ import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -44,12 +43,9 @@ import java.util.concurrent.TimeUnit;
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = CoreTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
     @Rule
@@ -97,6 +93,13 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
     private static Email highPriority() throws UnsupportedEncodingException {
         return getSimpleMail(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone"));
+    }
+
+    @Before
+    public void setUp() {
+        when(schedulerProperties.getPriorityLevels()).thenReturn(1);
+        when(schedulerProperties.getPersistenceLayer()).thenReturn(
+                SchedulerProperties.PersistenceLayer.builder().desiredBatchSize(0).maxKeptInMemory(Integer.MAX_VALUE).build());
     }
 
     @Test

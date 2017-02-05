@@ -5,7 +5,6 @@ import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
-import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 

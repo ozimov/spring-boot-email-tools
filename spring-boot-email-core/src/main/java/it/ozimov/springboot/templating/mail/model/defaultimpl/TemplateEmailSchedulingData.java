@@ -18,6 +18,7 @@ package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.InlinePicture;
+import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -49,6 +50,10 @@ public class TemplateEmailSchedulingData extends DefaultEmailSchedulingData {
         this.template = template;
         this.modelObject = modelObject;
         this.inlinePictures = inlinePictures;
+    }
+
+    public static class TemplateEmailSchedulingDataBuilder {
+        protected OffsetDateTime scheduledDateTime = TimeUtils.offsetDateTimeNow();
     }
 
 }

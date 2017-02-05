@@ -25,11 +25,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.time.OffsetDateTime;
 
 import static com.danhaywood.java.assertjext.Conditions.matchedBy;
-import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
-import static it.ozimov.cirneco.hamcrest.java7.base.IsBetweenInclusive.betweenInclusive;
 import static it.ozimov.cirneco.hamcrest.java7.clazz.IsValidNoArgumentConstructor.hasNoArgumentConstructor;
 import static java.time.ZoneOffset.UTC;
-import static org.hamcrest.CoreMatchers.is;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TimeUtilsTest {

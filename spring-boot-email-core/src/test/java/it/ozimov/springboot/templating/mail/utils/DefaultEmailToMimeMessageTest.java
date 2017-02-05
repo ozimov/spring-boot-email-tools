@@ -120,7 +120,7 @@ public class DefaultEmailToMimeMessageTest {
                 .subject("Laelius de amicitia")
                 .body("Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
                 .encoding(StandardCharsets.UTF_8.name());
-        if(nonNull(emailAttachments) && emailAttachments.length > 0){
+        if (nonNull(emailAttachments) && emailAttachments.length > 0) {
             builder.attachments(asList(emailAttachments));
         }
         return builder.build();
@@ -175,7 +175,7 @@ public class DefaultEmailToMimeMessageTest {
     private static EmailAttachment getCsvAttachment(String filename) {
         final String testData = "col1,col2\n1,2\n3,4";
         final DefaultEmailAttachment attachment = DefaultEmailAttachment.builder()
-                .attachmentName(filename+".csv")
+                .attachmentName(filename + ".csv")
                 .attachmentData(testData.getBytes(Charset.forName("UTF-8")))
                 .mediaType(MediaType.TEXT_PLAIN).build();
         return attachment;

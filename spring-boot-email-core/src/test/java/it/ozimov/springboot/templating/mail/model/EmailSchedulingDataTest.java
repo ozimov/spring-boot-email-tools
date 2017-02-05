@@ -66,22 +66,6 @@ public class EmailSchedulingDataTest {
     }
 
     @Test
-    public void shouldGetScheduledDateTimeReturnDefaultValue() throws Exception {
-        //Arrange
-        OffsetDateTime timeBefore = TimeUtils.offsetDateTimeNow();
-        EmailSchedulingData emailSchedulingData = new DummyEmailSchedulingData();
-        OffsetDateTime timeAfter = TimeUtils.offsetDateTimeNow();
-
-        //Act
-        OffsetDateTime givenDefaultScheduledTime = emailSchedulingData.getScheduledDateTime();
-
-        //Assert
-        assertions.assertThat(givenDefaultScheduledTime)
-                .isAfterOrEqualTo(timeBefore)
-                .isBeforeOrEqualTo(timeAfter);
-    }
-
-    @Test
     public void shouldCompareToUseDefaultComparator() throws Exception {
         //Arrange
         TestUtils.makeFinalStatic(EmailSchedulingData.class.getField("DEFAULT_COMPARATOR"), mockedComparator);
@@ -103,6 +87,9 @@ public class EmailSchedulingDataTest {
 
     public class DummyEmailSchedulingData implements EmailSchedulingData {
 
+        private OffsetDateTime scheduledDateTime = TimeUtils.offsetDateTimeNow();
+
+
         @Override
         public String getId() {
             return null;
@@ -111,6 +98,11 @@ public class EmailSchedulingDataTest {
         @Override
         public Email getEmail() {
             return null;
+        }
+
+        @Override
+        public OffsetDateTime getScheduledDateTime() {
+            return scheduledDateTime;
         }
     }
 

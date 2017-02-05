@@ -1,8 +1,6 @@
 package it.ozimov.springboot.templating.mail.model;
 
 
-import it.ozimov.springboot.templating.mail.utils.TimeUtils;
-
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
@@ -33,9 +31,7 @@ public interface EmailSchedulingData extends Comparable<EmailSchedulingData>, Se
         return 1;
     }
 
-    default OffsetDateTime getScheduledDateTime() {
-        return TimeUtils.offsetDateTimeNow();
-    }
+    OffsetDateTime getScheduledDateTime();
 
     default int compareTo(EmailSchedulingData o) {
         return DEFAULT_COMPARATOR.compare(this, o);

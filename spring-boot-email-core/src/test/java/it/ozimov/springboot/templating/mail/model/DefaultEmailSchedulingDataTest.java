@@ -78,4 +78,24 @@ public class DefaultEmailSchedulingDataTest implements UnitTest {
         assertions.assertThat(before).isLessThan(smallerPrio);
     }
 
+    @Test
+    public void shouldGetScheduledDateTimeUseNowAsScheduledTime() throws Exception {
+        //Arrange
+        OffsetDateTime timeBefore = TimeUtils.offsetDateTimeNow();
+        final DefaultEmailSchedulingData emailSchedulingData = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
+                .email(getSimpleMail())
+                .assignedPriority(1)
+                .desiredPriority(1)
+                .build();
+        OffsetDateTime timeAfter = TimeUtils.offsetDateTimeNow();
+
+        //Act
+        OffsetDateTime givenDefaultScheduledTime = emailSchedulingData.getScheduledDateTime();
+
+        //Assert
+        assertions.assertThat(givenDefaultScheduledTime)
+                .isAfterOrEqualTo(timeBefore)
+                .isBeforeOrEqualTo(timeAfter);
+    }
+
 }

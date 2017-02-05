@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import redis.embedded.RedisServer;
@@ -11,7 +12,10 @@ import redis.embedded.RedisServer;
 import javax.annotation.PreDestroy;
 
 @Component
-@ConditionalOnProperty(prefix = "spring.mail.persistence.redis", name = {"enabled", "embedded"})
+@ConditionalOnExpression(
+        "'${spring.mail.persistence.enabled:false}' == 'true'" +
+        " && '${spring.mail.persistence.redis.enabled:false}' == 'true'" +
+                " && '${spring.mail.persistence.redis.embedded:false}' == 'true'")
 @Slf4j
 public class EmailEmbeddedRedis {
 

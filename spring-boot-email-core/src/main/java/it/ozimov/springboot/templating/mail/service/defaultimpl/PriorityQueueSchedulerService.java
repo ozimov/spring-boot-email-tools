@@ -72,11 +72,11 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     @Autowired
     public PriorityQueueSchedulerService(
-            final EmailService emailService,
-            final SchedulerProperties schedulerProperties,
-            final Optional<PersistenceService> persistenceServiceOptional) {
+            @NonNull final EmailService emailService,
+            @NonNull final SchedulerProperties schedulerProperties,
+            @NonNull final Optional<PersistenceService> persistenceServiceOptional) {
 
-        this.emailService = requireNonNull(emailService);
+        this.emailService = emailService;
         this.persistenceServiceOptional = persistenceServiceOptional;
 
         batchSize = nonNull(schedulerProperties.getPersistenceLayer()) ?

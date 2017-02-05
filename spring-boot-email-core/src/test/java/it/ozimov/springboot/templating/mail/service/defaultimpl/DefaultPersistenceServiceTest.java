@@ -50,12 +50,11 @@ import java.util.concurrent.TimeUnit;
 import static com.danhaywood.java.assertjext.Conditions.matchedBy;
 import static it.ozimov.cirneco.hamcrest.java7.javautils.IsUUID.UUID;
 import static it.ozimov.springboot.templating.mail.service.defaultimpl.EmailSchedulingDataUtils.createDefaultEmailSchedulingDataWithPriority;
-import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static org.mockito.Mockito.inOrder;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {BaseRedisTest.ContextConfiguration.class})
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(classes = BaseRedisTest.ContextConfiguration.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
     @Rule
@@ -444,7 +443,7 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
         defaultPersistenceService.addAll(emailSchedulingDataCollection);
 
         int availableBatchSize = emailSchedulingDataCollection.size();
-        int desiredBatchSize = availableBatchSize+2;
+        int desiredBatchSize = availableBatchSize + 2;
         assertions.assertThat(desiredBatchSize).isGreaterThan(availableBatchSize);
 
         //Act
@@ -460,7 +459,7 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
     public void shouldGetNextBatchThrowExceptionGivenNonPositiveBatchSize() throws Exception {
         //Arrange
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Batch size should be a positive integer.");
+        expectedException.expectMessage("Batch size should be a positive integer, while 0 given.");
 
         //Act
         defaultPersistenceService.getNextBatch(0);
@@ -520,7 +519,7 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
         defaultPersistenceService.addAll(emailSchedulingDataCollection);
 
         int availableBatchSize = emailSchedulingDataCollection.size();
-        int desiredBatchSize = availableBatchSize+2;
+        int desiredBatchSize = availableBatchSize + 2;
         assertions.assertThat(desiredBatchSize).isGreaterThan(availableBatchSize);
 
         //Act
@@ -563,10 +562,10 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
             }
         });
         defaultPersistenceService.addAll(ImmutableList.of(defaultEmailSchedulingData_1_1,
-                                                            defaultEmailSchedulingData_1_2,
-                                                            defaultEmailSchedulingData_1_3,
-                                                            defaultEmailSchedulingData_2_1,
-                                                            defaultEmailSchedulingData_2_2));
+                defaultEmailSchedulingData_1_2,
+                defaultEmailSchedulingData_1_3,
+                defaultEmailSchedulingData_2_1,
+                defaultEmailSchedulingData_2_2));
 
         //Act
         defaultPersistenceService.removeAll();

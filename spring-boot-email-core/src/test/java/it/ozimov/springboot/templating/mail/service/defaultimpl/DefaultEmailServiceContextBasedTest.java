@@ -25,34 +25,40 @@ import it.ozimov.springboot.templating.mail.service.EmailService;
 import it.ozimov.springboot.templating.mail.service.TemplateService;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMailWithAttachments;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(locations = "classpath:base-test.properties", inheritProperties=false)
+@TestPropertySource(locations = "classpath:base-test.properties", properties = "spring.mail.port=3025")
 public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
+
+    @Rule
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @SpyBean
     public JavaMailSender javaMailSender;
@@ -60,15 +66,15 @@ public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
     private GreenMail testSmtp;
 
     @MockBean
-    public TemplateService templateService;
+    private TemplateService templateService;
 
     @Autowired
-    public EmailService emailService;
+    private EmailService emailService;
 
     @Before
     public void setUp() throws Exception {
         when(templateService.mergeTemplateIntoString(anyString(), any(Map.class)))
-                .thenReturn( "<!doctype html>\n" +
+                .thenReturn("<!doctype html>\n" +
                         "<html>\n" +
                         "<body>\n" +
                         "<p>\n" +
@@ -80,28 +86,19 @@ public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
         testSmtp = new GreenMail(ServerSetupTest.SMTP);
         testSmtp.start();
 
-        System.out.println(
-                ((JavaMailSenderImpl)javaMailSender).getPassword()
-        );
-        System.out.println(
-        ((JavaMailSenderImpl)javaMailSender).getJavaMailProperties()
-        );
-
         //don't forget to set the test port!
-        ((JavaMailSenderImpl)javaMailSender).setPort(3025);
-        ((JavaMailSenderImpl)javaMailSender).setHost("localhost");
+        ((JavaMailSenderImpl) javaMailSender).setPort(ServerSetupTest.SMTP.getPort());
+        ((JavaMailSenderImpl) javaMailSender).setHost("localhost");
     }
 
     @After
-    public void cleanup(){
+    public void cleanup() {
         testSmtp.stop();
     }
 
     @Test
     public void sendMailWithoutTemplateAndWithoutAttachmentsShouldCallJavaMailSender() throws Exception {
         //Arrange
-//        doNothing().when(javaMailSender).send(any(MimeMessage.class));
-
         final Email email = getSimpleMail();
 
         //Act
@@ -115,8 +112,6 @@ public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
     @Test
     public void sendMailWithTemplateAndWithoutAttachmentsShouldCallJavaMailSender() throws Exception {
         //Arrange
-//        doNothing().when(javaMailSender).send(any(MimeMessage.class));
-
         final Email email = getSimpleMail();
 
         //Act
@@ -130,8 +125,6 @@ public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
     @Test
     public void sendMailWithoutTemplateButWithAttachmentsShouldCallJavaMailSender() throws Exception {
         //Arrange
-//        doNothing().when(javaMailSender).send(any(MimeMessage.class));
-
         final Email email = getSimpleMailWithAttachments();
 
         //Act
@@ -145,8 +138,6 @@ public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
     @Test
     public void sendMailWithTemplateButWithAttachmentsShouldCallJavaMailSender() throws Exception {
         //Arrange
-    //    doNothing().when(javaMailSender).send(any(MimeMessage.class));
-
         final Email email = getSimpleMailWithAttachments();
 
         //Act

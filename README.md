@@ -75,11 +75,11 @@ and for _Thymeleaf_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-thymeleaf-email</artifactId>
-    <version>0.3.6</version>
+    <version>0.4.0</version>
 </dependency>
 ```
 
-Remember that if you import the templatefull module, the core module is not required.
+Remember that if you import the template-full module, the core module is not required.
 
 
 ## Usage

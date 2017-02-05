@@ -21,6 +21,8 @@ import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.service.PersistenceService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.BoundZSetOperations;
@@ -43,13 +45,16 @@ import static java.lang.Math.min;
 import static java.util.Objects.nonNull;
 
 @Service("defaultEmailPersistenceService")
-@ConditionalOnProperty(prefix = "spring.mail.persistence.redis", name = "enabled")
+@ConditionalOnExpression("'${spring.mail.persistence.enabled:false}' == 'true'")
 public class DefaultPersistenceService implements PersistenceService {
 
     private static final String MATCH_ALL = "*";
 
     private final StringRedisTemplate orderingTemplate;
     private final RedisTemplate<String, EmailSchedulingData> valueTemplate;
+
+    @Value("${spring.mail.persistence.enabled:false}")
+    boolean val;
 
     @Autowired
     public DefaultPersistenceService(@NonNull final StringRedisTemplate orderingTemplate,
@@ -150,7 +155,7 @@ public class DefaultPersistenceService implements PersistenceService {
 
     @Override
     public Collection<EmailSchedulingData> getNextBatch(final int batchMaxSize) {
-        Preconditions.checkArgument(batchMaxSize > 0, "Batch size should be a positive integer.");
+        Preconditions.checkArgument(batchMaxSize > 0, "Batch size should be a positive integer, while %s given.", batchMaxSize);
 
         final Set<String> keys = new TreeSet<>(orderingTemplate.keys(RedisBasedPersistenceServiceConstants.orderingKeyPrefix() + MATCH_ALL));
 

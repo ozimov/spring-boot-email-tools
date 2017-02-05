@@ -22,7 +22,6 @@ import it.ozimov.springboot.templating.mail.service.defaultimpl.SchedulerPropert
 import lombok.NonNull;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,8 +38,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.SocketUtils;
 import redis.clients.jedis.JedisShardInfo;
 import redis.embedded.RedisServer;
 
@@ -48,6 +45,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import static it.ozimov.springboot.templating.mail.PortUtils.randomFreePort;
 import static java.util.Objects.nonNull;
 import static org.mockito.Mockito.mock;
 
@@ -63,7 +61,7 @@ public abstract class BaseRedisTest implements ContextBasedTest {
     private RedisConnectionFactory connectionFactory;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         cleanDataStore();
         additionalSetUp();
     }
@@ -74,7 +72,7 @@ public abstract class BaseRedisTest implements ContextBasedTest {
         connection.close();
     }
 
-    public void additionalSetUp(){
+    public void additionalSetUp() {
     }
 
     protected AfterTransactionAssertion getAfterTransactionAssertion() {
@@ -194,8 +192,15 @@ public abstract class BaseRedisTest implements ContextBasedTest {
             return emailEmbeddedRedis;
         }
 
-        private static int randomFreePort() throws IOException {
-            return SocketUtils.findAvailableTcpPort();
+        @Bean
+        public SchedulerProperties schedulerProperties() {
+            return SchedulerProperties.builder()
+                    .priorityLevels(1)
+                    .persistenceLayer(SchedulerProperties.PersistenceLayer.builder()
+                            .desiredBatchSize(1)
+                            .maxKeptInMemory(1)
+                            .build())
+                    .build();
         }
 
     }

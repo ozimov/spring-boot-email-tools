@@ -25,7 +25,7 @@ public class ImageTypeTest {
     @Parameters
     public static Collection<Object[]> data() {
         Collection<Object[]> params = new ArrayList<>();
-        for(ImageType imageType : ImageType.values()){
+        for (ImageType imageType : ImageType.values()) {
             params.add(new Object[]{imageType});
         }
         return params;

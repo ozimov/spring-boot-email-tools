@@ -18,6 +18,7 @@ package it.ozimov.springboot.templating.mail.model.defaultimpl;
 
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
+import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -53,6 +54,10 @@ public class DefaultEmailSchedulingData implements EmailSchedulingData {
         this.scheduledDateTime = scheduledDateTime;
         this.desiredPriority = desiredPriority;
         this.assignedPriority = assignedPriority;
+    }
+
+    public static class DefaultEmailSchedulingDataBuilder {
+        protected OffsetDateTime scheduledDateTime = TimeUtils.offsetDateTimeNow();
     }
 
 }
