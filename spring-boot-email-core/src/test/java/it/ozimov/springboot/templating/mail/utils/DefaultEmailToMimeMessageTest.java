@@ -81,7 +81,7 @@ public class DefaultEmailToMimeMessageTest {
     public static void validateTo(final Email email, final MimeMessage sentMessage)
             throws MessagingException, IOException {
         final List<Address> tos = asList(sentMessage.getRecipients(TO));
-        assertThat(tos.get(0), is((Address) (new ArrayList<>(email.getTo()).get(0))));
+        assertThat(tos.get(0), is((new ArrayList<>(email.getTo()).get(0))));
         assertThat(tos, everyItem(is(in(toAddress(email.getTo())))));
     }
 

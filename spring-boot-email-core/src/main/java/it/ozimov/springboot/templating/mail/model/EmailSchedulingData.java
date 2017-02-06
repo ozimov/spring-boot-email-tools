@@ -15,7 +15,12 @@ public interface EmailSchedulingData extends Comparable<EmailSchedulingData>, Se
         } else if (o1ScheduledDateTime.isAfter(o2ScheduledDateTime)) {
             return 1;
         } else {
-            return Integer.compare(o1.getDesiredPriority(), o2.getDesiredPriority());
+            int priorityComparison = Integer.compare(o1.getAssignedPriority(), o2.getAssignedPriority());
+            if (priorityComparison != 0) {
+                return priorityComparison;
+            } else {
+                return o1.getId().compareTo(o2.getId());
+            }
         }
     };
 

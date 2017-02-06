@@ -55,15 +55,11 @@ public abstract class BaseRedisTest implements ContextBasedTest {
     protected BeforeTransactionAssertion beforeTransactionAssertion;
 
     @Autowired
-    private RedisServer redisServer;
-
-    @Autowired
     private RedisConnectionFactory connectionFactory;
 
     @Before
     public void setUp() {
         cleanDataStore();
-        additionalSetUp();
     }
 
     public final void cleanDataStore() {
@@ -72,8 +68,6 @@ public abstract class BaseRedisTest implements ContextBasedTest {
         connection.close();
     }
 
-    public void additionalSetUp() {
-    }
 
     protected AfterTransactionAssertion getAfterTransactionAssertion() {
         return afterTransactionAssertion;

@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableList;
 import it.ozimov.springboot.templating.mail.BaseRedisTest;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
+import it.ozimov.springboot.templating.mail.model.defaultimpl.TemplateEmailSchedulingData;
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
@@ -50,7 +51,9 @@ import java.util.concurrent.TimeUnit;
 import static com.danhaywood.java.assertjext.Conditions.matchedBy;
 import static it.ozimov.cirneco.hamcrest.java7.javautils.IsUUID.UUID;
 import static it.ozimov.springboot.templating.mail.service.defaultimpl.EmailSchedulingDataUtils.createDefaultEmailSchedulingDataWithPriority;
+import static it.ozimov.springboot.templating.mail.service.defaultimpl.EmailSchedulingDataUtils.createTemplateEmailSchedulingDataWithPriority;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.reset;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = BaseRedisTest.ContextConfiguration.class)
@@ -93,13 +96,26 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
     }
 
     @Test
-    public void shouldAddInsertNewEmailSchedulingData() throws Exception {
-        //Arrange
+    public void shouldAddInsertNewDefaultEmailSchedulingData() throws Exception {
         final int assignedPriority = 1;
         final DefaultEmailSchedulingData defaultEmailSchedulingData = createDefaultEmailSchedulingDataWithPriority(assignedPriority);
 
+        shouldAddInsertNewSpecificTypeOfEmailSchedulingData(defaultEmailSchedulingData);
+    }
+
+    @Test
+    public void shouldAddInsertNewTemplateEmailSchedulingData() throws Exception {
+        final int assignedPriority = 1;
+        final TemplateEmailSchedulingData templateEmailSchedulingData = createTemplateEmailSchedulingDataWithPriority(assignedPriority);
+
+        shouldAddInsertNewSpecificTypeOfEmailSchedulingData(templateEmailSchedulingData);
+    }
+
+    private void shouldAddInsertNewSpecificTypeOfEmailSchedulingData(EmailSchedulingData emailSchedulingData) {
+        //Arrange
+        final int assignedPriority = emailSchedulingData.getAssignedPriority();
         final String expectedOrderingKey = RedisBasedPersistenceServiceConstants.orderingKey(assignedPriority);
-        final String expectedValueKey = defaultEmailSchedulingData.getId();
+        final String expectedValueKey = emailSchedulingData.getId();
 
         setBeforeTransactionAssertion(connection -> {
             assertions.assertThat(connection.exists(expectedOrderingKey.getBytes())).isFalse();
@@ -115,7 +131,7 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
         });
 
         //Act
-        defaultPersistenceService.add(defaultEmailSchedulingData);
+        defaultPersistenceService.add(emailSchedulingData);
 
         //Assert
         InOrder inOrder = inOrder(orderingTemplate, valueTemplate);
@@ -128,6 +144,7 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
         String valueKey = valueTemplateKeyArgumentCaptor.getValue();
         assertions.assertThat(valueKey).is(matchedBy(UUID()));
     }
+
 
     @Test
     public void shouldAddReplaceEmailSchedulingDataWhenTheValueKeyWasAlreadySet() throws Exception {
@@ -217,22 +234,36 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
     @Test
     @Rollback(false)
-    public void shouldGetReturnEmailSchedulingDataWhenPresent() throws Exception {
+    public void shouldGetReturnDefaultEmailSchedulingDataWhenPresent() throws Exception {
         //Arrange
         final int assignedPriority = 1;
         final DefaultEmailSchedulingData defaultEmailSchedulingData = createDefaultEmailSchedulingDataWithPriority(assignedPriority);
 
-        defaultPersistenceService.add(defaultEmailSchedulingData);
+        shouldGetReturnSpecificTypeEmailSchedulingDataWhenPresent(defaultEmailSchedulingData);
+    }
+
+    @Test
+    @Rollback(false)
+    public void shouldGetReturnTemplateEmailSchedulingDataWhenPresent() throws Exception {
+        //Arrange
+        final int assignedPriority = 1;
+        final TemplateEmailSchedulingData templateEmailSchedulingData = createTemplateEmailSchedulingDataWithPriority(assignedPriority);
+
+        shouldGetReturnSpecificTypeEmailSchedulingDataWhenPresent(templateEmailSchedulingData);
+    }
+
+    private void shouldGetReturnSpecificTypeEmailSchedulingDataWhenPresent(EmailSchedulingData emailSchedulingData) {
+        defaultPersistenceService.add(emailSchedulingData);
 
         //Act
         Optional<EmailSchedulingData> givenOptionalEmailSchedulingData =
-                defaultPersistenceService.get(defaultEmailSchedulingData.getId());
+                defaultPersistenceService.get(emailSchedulingData.getId());
 
         //Assert
         assertions.assertThat(givenOptionalEmailSchedulingData)
                 .isNotEmpty()
-                .containsInstanceOf(DefaultEmailSchedulingData.class)
-                .contains(defaultEmailSchedulingData);
+                .containsInstanceOf(emailSchedulingData.getClass())
+                .contains(emailSchedulingData);
     }
 
     @Test

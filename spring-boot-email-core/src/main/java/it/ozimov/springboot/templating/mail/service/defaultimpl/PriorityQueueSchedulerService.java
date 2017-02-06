@@ -40,12 +40,16 @@ import java.util.stream.IntStream;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static java.util.Objects.*;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-//TODO create a scheduler service that compiles the template as soon as possible by balancing the template engine
-//load to minimize the response time
+/**
+ * The class provides a {@linkplain SchedulerService} implementation with priority queues and persistence.
+ * <p>
+ * Main logic for the thread wait-notify mechanism comes from {@see http://stackoverflow.com/a/8980307/1339429 }
+ */
 @Service
 @Slf4j
 public class PriorityQueueSchedulerService implements SchedulerService {
@@ -53,9 +57,10 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     /**
      * millisecs elapsed form the call of the send method and the actual sending by SMTP server
      */
-    private static final long DELTA = SECONDS.toMillis(1);
+    protected static final long CYCLE_LENGTH_IN_MILLIS = SECONDS.toMillis(1);
 
     private final int batchSize;
+    private final int minInMemory;
     private final int maxInMemory;
 
     private ServiceStatus serviceStatus = ServiceStatus.CREATED;
@@ -81,6 +86,8 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
         batchSize = nonNull(schedulerProperties.getPersistenceLayer()) ?
                 schedulerProperties.getPersistenceLayer().getDesiredBatchSize() : 0;
+        minInMemory = nonNull(schedulerProperties.getPersistenceLayer()) ?
+                schedulerProperties.getPersistenceLayer().getMinKeptInMemory() : 1;
         maxInMemory = nonNull(schedulerProperties.getPersistenceLayer()) ?
                 schedulerProperties.getPersistenceLayer().getMaxKeptInMemory() : Integer.MAX_VALUE;
 
@@ -90,44 +97,67 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         for (int i = 0; i < numberOfPriorityLevels; i++) {
             queues[i] = new TreeSet<>();
         }
-        consumer = new Consumer();
 
-        synchronized (this) {
+        consumer = new Consumer();
+        synchronized (consumer) {
             consumer.start();
-            loadBatchFromPersistenceLayer();
+            try {
+                consumer.wait();
+            } catch (final InterruptedException e) {
+                log.error("Email scheduler consumer interrupted", e);
+            }
+        }
+        loadBatchFromPersistenceLayer();
+    }
+
+    @Override
+    public void schedule(@NonNull final Email mimeEmail, @NonNull final OffsetDateTime scheduledDateTime,
+                         final int desiredPriorityLevel) {
+        checkPriorityLevel(desiredPriorityLevel);
+
+        final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);
+        final EmailSchedulingData emailSchedulingData = buildEmailSchedulingData(mimeEmail, scheduledDateTime, desiredPriorityLevel, assignedPriorityLevel);
+        schedule(emailSchedulingData);
+        log.info("Scheduled email {} at UTC time {} with priority {}", mimeEmail, scheduledDateTime, desiredPriorityLevel);
+        if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
+            synchronized (consumer) {
+                consumer.notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
+            }
         }
     }
 
     @Override
-    public synchronized void schedule(@NonNull final Email mimeEmail, @NonNull final OffsetDateTime scheduledDateTime,
-                                      final int desiredPriorityLevel) {
+    public void schedule(@NonNull final Email mimeEmail,
+                         @NonNull final OffsetDateTime scheduledDateTime,
+                         final int desiredPriorityLevel,
+                         @NonNull final String template,
+                         @NonNull final Map<String, Object> modelObject,
+                         final InlinePicture... inlinePictures) throws CannotSendEmailException {
         checkPriorityLevel(desiredPriorityLevel);
 
         final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);
-        final EmailSchedulingData emailSchedulingData = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
+        final EmailSchedulingData emailTemplateSchedulingData = buildEmailSchedulingData(mimeEmail, scheduledDateTime, desiredPriorityLevel, template, modelObject, assignedPriorityLevel, inlinePictures);
+        schedule(emailTemplateSchedulingData);
+        log.info("Scheduled email {} at UTC time {} with priority {} with template", mimeEmail, scheduledDateTime, desiredPriorityLevel);
+        if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
+            synchronized (consumer) {
+                consumer.notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
+            }
+        }
+    }
+
+
+    protected EmailSchedulingData buildEmailSchedulingData(@NonNull Email mimeEmail, @NonNull OffsetDateTime scheduledDateTime, int desiredPriorityLevel, int assignedPriorityLevel) {
+        return DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
                 .email(mimeEmail)
                 .scheduledDateTime(scheduledDateTime)
                 .assignedPriority(assignedPriorityLevel)
                 .desiredPriority(desiredPriorityLevel)
                 .build();
-        schedule(emailSchedulingData);
-        log.info("Scheduled email {} at UTC time {} with priority {}", mimeEmail, scheduledDateTime, desiredPriorityLevel);
-        if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
-            notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
-        }
     }
 
-    @Override
-    public synchronized void schedule(@NonNull final Email mimeEmail,
-                                      @NonNull final OffsetDateTime scheduledDateTime,
-                                      final int desiredPriorityLevel,
-                                      @NonNull final String template,
-                                      @NonNull final Map<String, Object> modelObject,
-                                      final InlinePicture... inlinePictures) throws CannotSendEmailException {
-        checkPriorityLevel(desiredPriorityLevel);
-
-        final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);
-        final EmailSchedulingData emailTemplateSchedulingData = TemplateEmailSchedulingData.templateEmailSchedulingDataBuilder()
+    protected EmailSchedulingData buildEmailSchedulingData(@NonNull Email mimeEmail, @NonNull OffsetDateTime scheduledDateTime, int desiredPriorityLevel, @NonNull String template, @NonNull Map<String, Object> modelObject, int assignedPriorityLevel, InlinePicture[] inlinePictures) {
+        return TemplateEmailSchedulingData.templateEmailSchedulingDataBuilder()
                 .email(mimeEmail)
                 .scheduledDateTime(scheduledDateTime)
                 .assignedPriority(assignedPriorityLevel)
@@ -136,73 +166,77 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                 .modelObject(modelObject)
                 .inlinePictures(inlinePictures)
                 .build();
-        schedule(emailTemplateSchedulingData);
-        log.info("Scheduled email {} at UTC time {} with priority {} with template", mimeEmail, scheduledDateTime, desiredPriorityLevel);
-        if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
-            notify();
-        }
     }
 
-    protected synchronized void schedule(final EmailSchedulingData emailSchedulingData) {
-        final int queueIndex = queueIndex(emailSchedulingData);
-        final boolean canAddOneInMemory = canAddOneInMemory();
-        final boolean isAfterLastLoadedFromPersistenceLayer = afterLastLoadedFromPersistenceLayer(emailSchedulingData);
-        if (canAddOneInMemory && !isAfterLastLoadedFromPersistenceLayer) {
-            queues[queueIndex].add(emailSchedulingData);
-        } else if (!canAddOneInMemory && !isAfterLastLoadedFromPersistenceLayer) {
-            //We cannot exceed the total size, but if the newly scheduled email is before all the
-            //last then we need to keep it and push out one of those in the queues.
-            if (isBeforeAllLastLoadedFromPersistenceLayer(emailSchedulingData)) {
+    protected void schedule(final EmailSchedulingData emailSchedulingData) {
+        synchronized (this) {
+            final int queueIndex = queueIndex(emailSchedulingData);
+            final boolean canAddOneInMemory = canAddOneInMemory();
+            final boolean isAfterLastLoadedFromPersistenceLayer = afterLastLoadedFromPersistenceLayer(emailSchedulingData);
+            if (canAddOneInMemory && !isAfterLastLoadedFromPersistenceLayer) {
+                queues[queueIndex].add(emailSchedulingData);
+            } else if (!canAddOneInMemory && !isAfterLastLoadedFromPersistenceLayer &&
+                    //We cannot exceed the total size, but if the newly scheduled email is before one of the
+                    //last then we need to keep it and push out one of those in the queues.
+                    isBeforeOneLastLoadedFromPersistenceLayer(emailSchedulingData)) {
                 queues[queueIndex].add(emailSchedulingData);
                 int queueIndexOfLatestOfAllLast = queueIndexOfLatestOfAllLast();
-                TreeSet<EmailSchedulingData> queue = queues[queueIndexOfLatestOfAllLast];
-                if (!queue.isEmpty()) {
-                    queue.remove(queue.last());
-                    lastLoadedFromPersistenceLayer[queueIndexOfLatestOfAllLast] = queue.last();
-                }
-            }
-        }
-        addToPersistenceLayer(emailSchedulingData);
-    }
-
-    protected synchronized void loadBatchFromPersistenceLayer() {
-        persistenceServiceOptional.ifPresent(
-                persistenceService -> {
-                    Collection<EmailSchedulingData> emailSchedulingDataList =
-                            persistenceService.getNextBatch(batchSize);
-                    if (!emailSchedulingDataList.isEmpty()) {
-                        scheduleBatch(emailSchedulingDataList);
+                if (queueIndexOfLatestOfAllLast != -1) {
+                    TreeSet<EmailSchedulingData> queue = queues[queueIndexOfLatestOfAllLast];
+                    if (!queue.isEmpty()) {
+                        queue.remove(queue.last());
+                        if (!queue.isEmpty()) {
+                            lastLoadedFromPersistenceLayer[queueIndexOfLatestOfAllLast] = queue.last();
+                        }
                     }
                 }
-        );
+            }
+            addToPersistenceLayer(emailSchedulingData);
+        }
     }
 
-    protected synchronized void addToPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
+    protected void loadBatchFromPersistenceLayer() {
+        synchronized (this) {
+            persistenceServiceOptional.ifPresent(
+                    persistenceService -> {
+                        Collection<EmailSchedulingData> emailSchedulingDataList =
+                                persistenceService.getNextBatch(batchSize);
+                        if (!emailSchedulingDataList.isEmpty()) {
+                            scheduleBatch(emailSchedulingDataList);
+                        }
+                    }
+            );
+        }
+    }
+
+    protected void addToPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
         persistenceServiceOptional.ifPresent(
                 persistenceService ->
                         persistenceService.add(emailSchedulingData)
         );
     }
 
-    protected synchronized void deleteFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
-        persistenceServiceOptional.ifPresent(
-                persistenceService -> {
-                    persistenceService.remove(emailSchedulingData.getId());
+    protected void deleteFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
+        synchronized (this) {
+            persistenceServiceOptional.ifPresent(
+                    persistenceService -> {
+                        persistenceService.remove(emailSchedulingData.getId());
 
-                    final int currentlyInMemory = currentlyInMemory();
-                    if (currentlyInMemory < batchSize) {
-                        final int expectedFromPersistenceLayer = batchSize - currentlyInMemory;
-                        final Collection<EmailSchedulingData> emailSchedulingDataCollection =
-                                persistenceService.getNextBatch(expectedFromPersistenceLayer);
-                        if (!emailSchedulingDataCollection.isEmpty()) {
-                            scheduleBatch(emailSchedulingDataCollection);
+                        final int currentlyInMemory = currentlyInMemory();
+                        if (currentlyInMemory < minInMemory) {
+                            final int expectedFromPersistenceLayer = batchSize - currentlyInMemory;
+                            final Collection<EmailSchedulingData> emailSchedulingDataList =
+                                    persistenceService.getNextBatch(expectedFromPersistenceLayer);
+                            if (!emailSchedulingDataList.isEmpty()) {
+                                scheduleBatch(emailSchedulingDataList);
+                            }
                         }
                     }
-                }
-        );
+            );
+        }
     }
 
-    protected synchronized void scheduleBatch(final Collection<EmailSchedulingData> emailSchedulingDataCollection) {
+    protected void scheduleBatch(final Collection<EmailSchedulingData> emailSchedulingDataCollection) {
         checkArgument(!emailSchedulingDataCollection.isEmpty(), "Collection of EmailSchedulingData should not be empty.");
 
         Set<EmailSchedulingData> sortedEmailSchedulingData = new TreeSet<>(EmailSchedulingData.DEFAULT_COMPARATOR);
@@ -220,7 +254,9 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         setLastLoadedFromPersistenceLayer();
 
         if (isNull(timeOfNextScheduledMessage) || lastEmailSchedulingData.getScheduledDateTime().toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
-            notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
+            synchronized (consumer) {
+                consumer.notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
+            }
         }
     }
 
@@ -238,32 +274,41 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         return max(1, min(priorityLevel, maxLevel));
     }
 
-    private synchronized Optional<EmailSchedulingData> dequeue() throws InterruptedException {
+    private Optional<EmailSchedulingData> dequeue() throws InterruptedException {
         EmailSchedulingData emailSchedulingData = null;
         timeOfNextScheduledMessage = null;
-        while (consumer.enabled() && isNull(emailSchedulingData)) {
+        boolean consumerEnabled;
+        synchronized (consumer) {
+            consumerEnabled = consumer.enabled();
+        }
+        while (consumerEnabled && isNull(emailSchedulingData)) {
             //try to find a message in queue
             final long now = TimeUtils.now();
-            for (final TreeSet<EmailSchedulingData> queue : queues) {
-                if (!queue.isEmpty()) {
-                    final long time = queue.first().getScheduledDateTime().toInstant().toEpochMilli();
-                    if (time - now <= DELTA) {
-                        //message found!
-                        emailSchedulingData = queue.pollFirst();
-                        break;
-                    } else if (isNull(timeOfNextScheduledMessage) || time < timeOfNextScheduledMessage) {
-                        timeOfNextScheduledMessage = time;
+            synchronized (this) {
+                for (final TreeSet<EmailSchedulingData> queue : queues) {
+                    if (!queue.isEmpty()) {
+                        final long time = queue.first().getScheduledDateTime().toInstant().toEpochMilli();
+                        if (time - now <= CYCLE_LENGTH_IN_MILLIS) {
+                            //message found!
+                            emailSchedulingData = queue.pollFirst();
+                            break;
+                        } else if (isNull(timeOfNextScheduledMessage) || time < timeOfNextScheduledMessage) {
+                            timeOfNextScheduledMessage = time;
+                        }
                     }
                 }
             }
             if (isNull(emailSchedulingData)) {
                 //no message was found, let's sleep, some message may arrive in the meanwhile
-                if (isNull(timeOfNextScheduledMessage)) { //all the queues are empty
-                    wait(); //the consumer starts waiting for a new email to be scheduled
-                } else {
-                    final long waitTime = timeOfNextScheduledMessage - TimeUtils.now() - DELTA;
-                    if (waitTime > 0) {
-                        wait(waitTime); //wait before sending the most imminent scheduled email
+                synchronized (consumer) {
+                    if (isNull(timeOfNextScheduledMessage)) { //all the queues are empty
+                        consumer.wait(); //the consumer starts waiting for a new email to be scheduled
+                        System.out.println();
+                    } else {
+                        final long waitTime = timeOfNextScheduledMessage - TimeUtils.now() - CYCLE_LENGTH_IN_MILLIS;
+                        if (waitTime > 0) {
+                            consumer.wait(waitTime); //wait before sending the most imminent scheduled email
+                        }
                     }
                 }
             }
@@ -294,31 +339,35 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     }
 
     private int currentlyInMemory() {
-        return IntStream.range(0, queues.length)
-                .map(
-                        queueIndex -> queues[queueIndex].size()
-                )
-                .sum();
+        synchronized (this) {
+            return IntStream.range(0, queues.length)
+                    .map(
+                            queueIndex -> queues[queueIndex].size()
+                    )
+                    .sum();
+        }
     }
 
-
-    private boolean isBeforeAllLastLoadedFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
-        return !IntStream.range(0, queues.length)
-                .filter(
-                        queueIndex ->
-                                emailSchedulingData.compareTo(lastLoadedFromPersistenceLayer[queueIndex]) >= 0
-                )
-                .findAny()
-                .isPresent();
+    private boolean isBeforeOneLastLoadedFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
+        boolean found = false;
+        boolean allNull = true;
+        for (EmailSchedulingData lastOfPriorityLevel : lastLoadedFromPersistenceLayer) {
+            if (nonNull(lastOfPriorityLevel)) {
+                allNull = false;
+                if (emailSchedulingData.compareTo(lastOfPriorityLevel) < 0) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        return found || allNull;
     }
 
     private int queueIndexOfLatestOfAllLast() {
-        final TreeSet<EmailSchedulingData> sortedLastLoadedFromPersistenceLayer =
-                new TreeSet<>(EmailSchedulingData::compareTo);
+        final Optional<EmailSchedulingData> latest =
+                Arrays.stream(lastLoadedFromPersistenceLayer).filter(Objects::nonNull).max(EmailSchedulingData::compareTo);
 
-        return !sortedLastLoadedFromPersistenceLayer.isEmpty() ?
-                Arrays.binarySearch(lastLoadedFromPersistenceLayer, sortedLastLoadedFromPersistenceLayer.last()) :
-                -1;
+        return latest.isPresent() ? latest.get().getAssignedPriority() - 1 : -1;
     }
 
     private boolean afterLastLoadedFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
@@ -326,14 +375,16 @@ public class PriorityQueueSchedulerService implements SchedulerService {
             return false;
         }
         final int queueIndex = queueIndex(emailSchedulingData);
-        return emailSchedulingData.compareTo(lastLoadedFromPersistenceLayer[queueIndex]) > 0;
+        return !isNull(lastLoadedFromPersistenceLayer[queueIndex]) && emailSchedulingData.compareTo(lastLoadedFromPersistenceLayer[queueIndex]) > 0;
     }
 
     @PreDestroy
     protected synchronized void cleanUp() throws Exception {
         consumer.close();
         serviceStatus = ServiceStatus.CLOSED;
-        notify(); //the consumer, if waiting, is notified and can try to close
+        synchronized (consumer) {
+            notify(); //the consumer, if waiting, is notified and can try to close
+        }
     }
 
     class Consumer extends Thread {
@@ -341,35 +392,37 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         private boolean canRun = true;
 
         public void run() {
-            log.info("DefaultEmail scheduler consumer started");
-            while (canRun) {
-                try {
-                    final Optional<EmailSchedulingData> emailSchedulingWrapperOptional = dequeue();
-                    if (canRun && emailSchedulingWrapperOptional.isPresent()) {
-                        final EmailSchedulingData emailSchedulingData = emailSchedulingWrapperOptional.get();
-                        if (emailSchedulingData instanceof TemplateEmailSchedulingData) {
-                            final TemplateEmailSchedulingData emailTemplateSchedulingData =
-                                    (TemplateEmailSchedulingData) emailSchedulingData;
-                            try {
-                                emailService.send(emailTemplateSchedulingData.getEmail(),
-                                        emailTemplateSchedulingData.getTemplate(),
-                                        emailTemplateSchedulingData.getModelObject(),
-                                        emailTemplateSchedulingData.getInlinePictures());
-                            } catch (final CannotSendEmailException e) {
-                                log.error("An error occurred while sending the email", e);
+            log.info("Email scheduler consumer started");
+            synchronized (this) {
+                notify();
+                while (canRun) {
+                    try {
+                        final Optional<EmailSchedulingData> emailSchedulingWrapperOptional = dequeue();
+                        if (canRun && emailSchedulingWrapperOptional.isPresent()) {
+                            final EmailSchedulingData emailSchedulingData = emailSchedulingWrapperOptional.get();
+                            if (emailSchedulingData instanceof TemplateEmailSchedulingData) {
+                                final TemplateEmailSchedulingData emailTemplateSchedulingData = (TemplateEmailSchedulingData) emailSchedulingData;
+                                try {
+                                    emailService.send(emailTemplateSchedulingData.getEmail(),
+                                            emailTemplateSchedulingData.getTemplate(),
+                                            emailTemplateSchedulingData.getModelObject(),
+                                            emailTemplateSchedulingData.getInlinePictures());
+                                } catch (final CannotSendEmailException e) {
+                                    log.error("An error occurred while sending the email", e);
+                                }
+                            } else {
+                                emailService.send(emailSchedulingData.getEmail());
                             }
-                        } else {
-                            emailService.send(emailSchedulingData.getEmail());
                             deleteFromPersistenceLayer(emailSchedulingData);
+                        } else {
+                            log.info("Email scheduler consumer stopped");
                         }
-                    } else {
-                        log.info("DefaultEmail scheduler consumer stopped");
+                    } catch (final InterruptedException e) {
+                        log.error("Email scheduler consumer interrupted", e);
                     }
-                } catch (final InterruptedException e) {
-                    log.error("DefaultEmail scheduler consumer interrupted", e);
                 }
             }
-            log.info("DefaultEmail scheduler consumer stopped");
+            log.info("Email scheduler consumer stopped");
         }
 
         public synchronized boolean enabled() {

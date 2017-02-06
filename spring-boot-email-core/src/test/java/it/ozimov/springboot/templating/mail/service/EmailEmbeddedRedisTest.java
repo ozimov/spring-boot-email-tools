@@ -93,6 +93,7 @@ public class EmailEmbeddedRedisTest extends BaseRedisTest {
         }
 
         public synchronized void stop() throws EmbeddedRedisException {
+            //Do nothing
         }
 
         public boolean isActive() {

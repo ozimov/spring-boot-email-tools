@@ -43,8 +43,9 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
                             "spring.mail.persistence.redis.embedded=false",
                             "spring.mail.persistence.redis.enabled=false",
                             "spring.mail.scheduler.priorityLevels=123",
-                            "spring.mail.scheduler.persistenceLayer.desiredBatchSize=0",
-                            "spring.mail.scheduler.persistenceLayer.maxKeptInMemory=0"
+                            "spring.mail.scheduler.persistenceLayer.desiredBatchSize=1",
+                            "spring.mail.scheduler.persistenceLayer.minKeptInMemory=1",
+                            "spring.mail.scheduler.persistenceLayer.maxKeptInMemory=1"
                     })
     public static class SchedulerPropertiesWithoutPersistenceContextBasedTest implements ContextBasedTest {
 
@@ -64,7 +65,7 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
                     .isNotNull()
                     .hasFieldOrPropertyWithValue("priorityLevels", 123)
                     .hasFieldOrPropertyWithValue("persistenceLayer", SchedulerProperties.PersistenceLayer.builder()
-                            .desiredBatchSize(0).maxKeptInMemory(0).build());
+                            .desiredBatchSize(1).minKeptInMemory(1).maxKeptInMemory(1).build());
         }
 
     }
@@ -80,6 +81,7 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
                             "spring.mail.persistence.redis.enabled=false",
                             "spring.mail.scheduler.priorityLevels=321",
                             "spring.mail.scheduler.persistenceLayer.desiredBatchSize=125",
+                            "spring.mail.scheduler.persistenceLayer.minKeptInMemory=25",
                             "spring.mail.scheduler.persistenceLayer.maxKeptInMemory=123456"
                     })
     public static class SchedulerPropertiesWithPeristenceContextBasedTest implements ContextBasedTest {
@@ -100,7 +102,7 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
                     .isNotNull()
                     .hasFieldOrPropertyWithValue("priorityLevels", 321)
                     .hasFieldOrPropertyWithValue("persistenceLayer", SchedulerProperties.PersistenceLayer.builder()
-                            .desiredBatchSize(125).maxKeptInMemory(123456).build());
+                            .desiredBatchSize(125).minKeptInMemory(25).maxKeptInMemory(123456).build());
         }
 
     }

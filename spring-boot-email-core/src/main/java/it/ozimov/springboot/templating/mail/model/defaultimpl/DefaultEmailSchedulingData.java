@@ -27,7 +27,7 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(of = {"id", "scheduledDateTime", "assignedPriority", "desiredPriority"})
 @ToString(of = {
         "id",
         "scheduledDateTime",

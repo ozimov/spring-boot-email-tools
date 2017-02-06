@@ -11,6 +11,7 @@ Revise unit testing by only using AssertJ and JUnit5
 ## [0.4.0] - 2017-XX-XX
 ### Added
 - Persistence has been introduced with optional `PersistenceService`: default implementation relies on embedded-REDIS. 
+- GreenMail is used for integration tests with `EmailService` in order to increase the coverage after recent bugs.
 
 ### Changed
 - All the classes ending with `Impl` are now renamed by removing the suffic and by starting with `Default`. Moreover, 

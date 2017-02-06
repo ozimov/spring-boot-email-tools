@@ -21,9 +21,7 @@ import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.service.PersistenceService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.BoundZSetOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -36,7 +34,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.temporal.ChronoField;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -52,9 +49,6 @@ public class DefaultPersistenceService implements PersistenceService {
 
     private final StringRedisTemplate orderingTemplate;
     private final RedisTemplate<String, EmailSchedulingData> valueTemplate;
-
-    @Value("${spring.mail.persistence.enabled:false}")
-    boolean val;
 
     @Autowired
     public DefaultPersistenceService(@NonNull final StringRedisTemplate orderingTemplate,

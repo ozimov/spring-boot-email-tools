@@ -112,6 +112,12 @@ spring.mail.properties.mail.smtp.starttls.enable: true
 spring.mail.properties.mail.smtp.starttls.required: true
 ```
 
+Plus, the additional properties must be added to prevent using the persistence layer
+```yml
+spring.mail.persistence.enabled: false
+spring.mail.persistence.redis.embedded: false
+spring.mail.persistence.redis.enabled: false
+```
 
 To send an email, use the ``EmailService`` in your Spring Boot application. E.g.
 
@@ -121,7 +127,7 @@ To send an email, use the ``EmailService`` in your Spring Boot application. E.g.
 public EmailService emailService;
 
 public void sendEmailWithoutTemplating(){
-   final Email email = EmailImpl.builder()
+   final Email email = DefaultEmail.builder()
         .from(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone "))
         .to(Lists.newArrayList(new InternetAddress("titus@de-rerum.natura", "Pomponius Attĭcus")))
         .subject("Laelius de amicitia")
@@ -156,7 +162,7 @@ public void sendEmailWithTemplating(){
    Arrays.asList(new Cospirator("cassius@sic-semper.tyrannis", "Gaius Cassius Longinus"),
             new Cospirator("brutus@sic-semper.tyrannis", "Marcus Iunius Brutus Caepio"))
         .stream.forEach(tyrannicida -> {
-       final Email email = EmailImpl.builder()
+       final Email email = DefaultEmail.builder()
             .from(new InternetAddress("divus.iulius@mala-tempora.currunt", "Gaius Iulius Caesar"))
             .to(Lists.newArrayList(new InternetAddress(tyrannicida.getEmail(), tyrannicida.getName())))
             .subject("Idus Martii")
@@ -204,7 +210,7 @@ The following example shows how to send and email that includes an inline image.
 public EmailService emailService;
 
 public void sendEmailWithTemplatingAndInlineImage(){
-       final Email email = EmailImpl.builder()
+       final Email email = DefaultEmail.builder()
             .from(new InternetAddress("divus.iulius@mala-tempora.currunt", "Gaius Iulius Caesar"))
             .to(Lists.newArrayList(new InternetAddress("brutus@sic-semper.tyrannis", "Marcus Iunius Brutus Caepio")))
             .subject("Idus Martii")
@@ -215,7 +221,7 @@ public void sendEmailWithTemplatingAndInlineImage(){
        final File imageFile = //load your picture here, e.g. "my_image.jpg"
        modelObject.put("tyrannicida", tyrannicida.getName());
 
-       final InlinePicture inlinePicture = InlinePictureImpl.builder()
+       final InlinePicture inlinePicture = DefaultInlinePicture.builder()
                                .file(imageFile)
                                .imageType(ImageType.JPG)
                                .templateName("my_image.jpg").build());
@@ -245,7 +251,7 @@ any was set. This means that if in the template you have ``<img src="images/my_i
 changed as follows:
 
 ```java
-final InlinePicture inlinePicture = InlinePictureImpl.builder()
+final InlinePicture inlinePicture = DefaultInlinePicture.builder()
         .file(imageFile)
         .imageType(ImageType.JPG)
         .templateName("images/my_image.jpg").build());
@@ -298,23 +304,46 @@ schedule(final Email mimeEmail,
 ```
 
 ## Persistence
-Persistence has been introduced in version `0.4.0`. Persistence is maily of interest if the scheduler is used.
+Persistence has been introduced in version `0.4.0`. Persistence is mainly of interest if the scheduler is used.
 Whenever an email is scheduled, it can happen that the application crashes and the in-memory scheduled emails get lost forever (forever ever).
+Moreover, memory issues could arise as well, when thousands of emails get stored.
 
 For this reason, on optional persistence layer has been added based on REDIS. 
-To enable the persistence layer just add the additional properties in your `application.properties` file:
+To enable the persistence layer just add the additional properties in your `application.yml` file:
 
+```yml
+spring.mail.persistence.enabled: true
+spring.mail.persistence.redis.embedded: true
+spring.mail.persistence.redis.enabled: true
+spring.mail.persistence.redis.host: localhost
+spring.mail.persistence.redis.port: 6381
 ```
-spring.mail.persistence.enabled=true
-spring.mail.persistence.redis.embedded=true
-spring.mail.persistence.redis.enabled=true
-spring.mail.persistence.redis.host=localhost
-spring.mail.persistence.redis.port=6381
-```
+
 Clearly, you can provide your own persistence layer. However the `SchedulerService` needs to use it. 
 Luckily, the default implementation provided in this tool calls the `PersistenceService`, so just 
 provide the one you want.
 
+
+Observe that the persistence layer makes email being stored to be reloaded on application startup, i.e. when the default bean 
+for the scheduler is initialized. 
+
+###Impact of the Persistence layer on the default priority-based scheduler
+The default scheduler is `PriorityQueueSchedulerService`, which by default stores everything in memory. Clerarly, having
+thousands email being scheduled, storing everything in memory could drive to a potential `OutOfMemoryException`. 
+Enabling the persistence layer should allow to use REDIS for persisting scheduled emails. Anyway, you may want to
+customize the behavior of the scheduler when interacting with the persistence layer, you can use the following params:
+
+```yml
+spring.mail.scheduler.persistenceLayer.desiredBatchSize: 200
+spring.mail.scheduler.persistenceLayer.minKeptInMemory: 100
+spring.mail.scheduler.persistenceLayer.maxKeptInMemory: 1000
+```
+
+The first defines the maximum amount of emails being loaded from the persistence layer when a slot is available in the
+priority queues; the second amount is the wish for the minimum amount of emails available in memory: the third defines 
+the amount of emails to be kept in memory. Clearly, these two values impact the response time of the scheduler. 
+The less you store in memory, the more it takes to send the next email. The smaller
+is the batch size, the higher the times you interact with the persistence layer.
 
 ## Future plans
 

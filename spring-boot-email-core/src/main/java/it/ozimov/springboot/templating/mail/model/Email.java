@@ -19,6 +19,7 @@ package it.ozimov.springboot.templating.mail.model;
 import com.google.common.collect.ImmutableList;
 import it.ozimov.springboot.templating.mail.utils.StringUtils;
 import lombok.NonNull;
+
 import javax.mail.internet.InternetAddress;
 import java.io.Serializable;
 import java.util.Collection;
@@ -32,25 +33,36 @@ public interface Email extends Serializable {
 
     InternetAddress getReplyTo();
 
-    @NonNull Collection<InternetAddress> getTo();
+    @NonNull
+    Collection<InternetAddress> getTo();
 
-    default @NonNull Collection<InternetAddress> getCc() {
+    default
+    @NonNull
+    Collection<InternetAddress> getCc() {
         return ImmutableList.of();
     }
 
-    default @NonNull Collection<InternetAddress> getBcc() {
+    default
+    @NonNull
+    Collection<InternetAddress> getBcc() {
         return ImmutableList.of();
     }
 
-    default @NonNull String getSubject() {
+    default
+    @NonNull
+    String getSubject() {
         return StringUtils.EMPTY;
     }
 
-    default @NonNull String getBody() {
-        return  StringUtils.EMPTY;
+    default
+    @NonNull
+    String getBody() {
+        return StringUtils.EMPTY;
     }
 
-    default @NonNull Collection<EmailAttachment> getAttachments() {
+    default
+    @NonNull
+    Collection<EmailAttachment> getAttachments() {
         return ImmutableList.of();
     }
 

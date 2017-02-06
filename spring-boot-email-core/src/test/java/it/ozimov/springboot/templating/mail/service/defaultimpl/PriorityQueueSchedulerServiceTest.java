@@ -52,7 +52,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     public final ExpectedException expectedException = ExpectedException.none();
 
     @Rule
-    public final Timeout timeout = new Timeout(60, TimeUnit.SECONDS);
+    public final Timeout timeout = new Timeout(60, SECONDS);
 
     @MockBean
     private EmailService emailService;

@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 import java.io.IOException;
 import java.util.Map;

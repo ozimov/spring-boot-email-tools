@@ -1,6 +1,10 @@
 package it.ozimov.springboot.templating.mail.model;
 
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.After;
 import org.junit.Before;
@@ -13,6 +17,7 @@ import testutils.TestUtils;
 
 import java.time.OffsetDateTime;
 import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
@@ -38,7 +43,6 @@ public class EmailSchedulingDataTest {
     public void tierDown() throws Exception {
         TestUtils.makeFinalStatic(EmailSchedulingData.class.getField("DEFAULT_COMPARATOR"), originalComparator);
     }
-
 
     @Test
     public void shouldGetDesiredPriorityReturnDefaultValue() throws Exception {
@@ -85,14 +89,97 @@ public class EmailSchedulingDataTest {
         assertions.assertThat(givenCompareResult).isEqualTo(expectedCompareResult);
     }
 
-    public class DummyEmailSchedulingData implements EmailSchedulingData {
+    ////////////////////////////////////////////////////////////////
+    //// DEFAULT COMPARATOR TESTS
+    ////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
+
+    @Test
+    public void shouldDefaultComparatorCompareFirstBasedOnScheduledTime() throws Exception {
+        //Arrange
+        EmailSchedulingData emailSchedulingData_1 = new DummyEmailSchedulingData();
+        TimeUnit.NANOSECONDS.sleep(10);
+        EmailSchedulingData emailSchedulingData_2 = new DummyEmailSchedulingData();
+
+        //Act
+        int givenBeforeResult = EmailSchedulingData.DEFAULT_COMPARATOR.compare(emailSchedulingData_1, emailSchedulingData_2);
+        int givenAfterResult = EmailSchedulingData.DEFAULT_COMPARATOR.compare(emailSchedulingData_2, emailSchedulingData_1);
+        int givenSameResult = EmailSchedulingData.DEFAULT_COMPARATOR.compare(emailSchedulingData_1, emailSchedulingData_1);
+
+        //Assert
+        assertions.assertThat(givenBeforeResult).isEqualTo(-1);
+        assertions.assertThat(givenAfterResult).isEqualTo(1);
+        assertions.assertThat(givenSameResult).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldDefaultComparatorCompareFirstBasedOnScheduledTimeThenOnPriority() throws Exception {
+        //Arrange
+        final OffsetDateTime scheduledDateTime = TimeUtils.offsetDateTimeNow();
+
+        EmailSchedulingData emailSchedulingData_1 = new DummyEmailSchedulingData().toBuilder()
+                .scheduledDateTime(scheduledDateTime).assignedPriority(1).build();
+        EmailSchedulingData emailSchedulingData_2 = new DummyEmailSchedulingData().toBuilder()
+                .scheduledDateTime(scheduledDateTime).assignedPriority(100).build();
+
+        assertions.assertThat(emailSchedulingData_1).hasFieldOrPropertyWithValue("scheduledDateTime", scheduledDateTime);
+        assertions.assertThat(emailSchedulingData_2).hasFieldOrPropertyWithValue("scheduledDateTime", scheduledDateTime);
+
+        //Act
+        int givenBeforeResult = EmailSchedulingData.DEFAULT_COMPARATOR.compare(emailSchedulingData_1, emailSchedulingData_2);
+        int givenAfterResult = EmailSchedulingData.DEFAULT_COMPARATOR.compare(emailSchedulingData_2, emailSchedulingData_1);
+        int givenSameResult = EmailSchedulingData.DEFAULT_COMPARATOR.compare(emailSchedulingData_1, emailSchedulingData_1);
+
+        //Assert
+        assertions.assertThat(givenBeforeResult).isEqualTo(-1);
+        assertions.assertThat(givenAfterResult).isEqualTo(1);
+        assertions.assertThat(givenSameResult).isEqualTo(0);
+    }
+
+
+    @Test
+    public void shouldDefaultComparatorCompareFirstBasedOnScheduledTimeThenOnPriorityAndFinalyOnId() throws Exception {
+        //Arrange
+        final OffsetDateTime scheduledDateTime = TimeUtils.offsetDateTimeNow();
+        final int assignedPriority = 2;
+
+        EmailSchedulingData emailSchedulingData_1 = new DummyEmailSchedulingData().toBuilder()
+                .scheduledDateTime(scheduledDateTime).assignedPriority(assignedPriority).id("id1").build();
+        EmailSchedulingData emailSchedulingData_2 = new DummyEmailSchedulingData().toBuilder()
+                .scheduledDateTime(scheduledDateTime).assignedPriority(assignedPriority).id("id2").build();
+
+        assertions.assertThat(emailSchedulingData_1).hasFieldOrPropertyWithValue("scheduledDateTime", scheduledDateTime);
+        assertions.assertThat(emailSchedulingData_2).hasFieldOrPropertyWithValue("scheduledDateTime", scheduledDateTime);
+
+        assertions.assertThat(emailSchedulingData_1).hasFieldOrPropertyWithValue("assignedPriority", assignedPriority);
+        assertions.assertThat(emailSchedulingData_2).hasFieldOrPropertyWithValue("assignedPriority", assignedPriority);
+
+        //Act
+        int givenBeforeResult = EmailSchedulingData.DEFAULT_COMPARATOR.compare(emailSchedulingData_1, emailSchedulingData_2);
+        int givenAfterResult = EmailSchedulingData.DEFAULT_COMPARATOR.compare(emailSchedulingData_2, emailSchedulingData_1);
+        int givenSameResult = EmailSchedulingData.DEFAULT_COMPARATOR.compare(emailSchedulingData_1, emailSchedulingData_1);
+
+        //Assert
+        assertions.assertThat(givenBeforeResult).isEqualTo(-1);
+        assertions.assertThat(givenAfterResult).isEqualTo(1);
+        assertions.assertThat(givenSameResult).isEqualTo(0);
+    }
+
+    @Data
+    @Builder(toBuilder = true)
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DummyEmailSchedulingData implements EmailSchedulingData {
 
         private OffsetDateTime scheduledDateTime = TimeUtils.offsetDateTimeNow();
 
+        private int assignedPriority = 1;
+
+        private String id = "default-id";
 
         @Override
         public String getId() {
-            return null;
+            return id;
         }
 
         @Override
