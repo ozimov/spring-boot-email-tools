@@ -12,15 +12,20 @@ public class TemplatingTestUtils {
 
     public static final String TEMPLATE = "email_template.html";
     public static final String NAME = "Titus";
+    public static final String URL = "http://www.something.com/segment?key=val";
+
     public static final Map<String, Object> MODEL_OBJECT = new ImmutableMap.Builder<String, Object>()
             .put("name", NAME)
+            .put("activationLink", URL)
             .build();
 
     public static String getExpectedBody() throws IOException {
         final File file = new File(ThymeleafTemplateServiceTest.class.getClassLoader()
                 .getResource("templates" + File.separator + TEMPLATE).getFile());
         final String template = readFile(file);
-        return template.replace("<em th:text=\"${{name}}\">", "<em>" + NAME);
+        return template
+                .replace("<em th:text=\"${name}\">", "<em>" + NAME)
+                .replace("<a th:href=\"${activationLink}\">", "<a href=\"" + URL + "\">");
     }
 
     private static String readFile(final File file) throws IOException {
