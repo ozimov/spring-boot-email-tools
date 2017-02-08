@@ -34,7 +34,7 @@ import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.Is.is;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = FreemarkerTestApplication.class, webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = FreemarkerTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FreemarkerTemplateServiceTest {
 
     @Rule
@@ -58,8 +58,7 @@ public class FreemarkerTemplateServiceTest {
     @Test
     public void testCannotAcceptEmptyTemplateName() throws Exception {
         //Arrange
-        final Map<String, Object> modelObject = new ImmutableMap.Builder<String, Object>()
-                .build();
+        final Map<String, Object> modelObject = new ImmutableMap.Builder<String, Object>().build();
         expectedException.expect(IllegalArgumentException.class);
 
         //Act

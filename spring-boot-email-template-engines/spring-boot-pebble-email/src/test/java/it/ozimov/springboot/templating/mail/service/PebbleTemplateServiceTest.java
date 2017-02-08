@@ -34,7 +34,7 @@ import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.Is.is;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = PebbleTestApplication.class, webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = PebbleTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PebbleTemplateServiceTest {
 
     @Rule

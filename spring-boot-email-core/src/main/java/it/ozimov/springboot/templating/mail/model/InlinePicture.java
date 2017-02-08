@@ -17,8 +17,9 @@
 package it.ozimov.springboot.templating.mail.model;
 
 import java.io.File;
+import java.io.Serializable;
 
-public interface InlinePicture {
+public interface InlinePicture extends Serializable {
 
     ImageType getImageType();
 

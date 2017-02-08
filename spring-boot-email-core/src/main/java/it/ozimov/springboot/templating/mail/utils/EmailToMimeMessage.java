@@ -16,9 +16,8 @@
 
 package it.ozimov.springboot.templating.mail.utils;
 
-import it.ozimov.springboot.templating.mail.exceptions.EmailConversionException;
 import it.ozimov.springboot.templating.mail.model.Email;
-import it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl;
+import it.ozimov.springboot.templating.mail.model.EmailAttachment;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,7 @@ import org.springframework.stereotype.Component;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 import static com.google.common.base.Optional.fromNullable;
@@ -41,7 +39,7 @@ import static java.util.Optional.ofNullable;
 public class EmailToMimeMessage implements Function<Email, MimeMessage> {
 
     private static final String EMPTY_STRING = "";
-    
+
     private JavaMailSender javaMailSender;
 
     @Autowired
@@ -57,7 +55,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
         try {
             final MimeMessageHelperExt messageHelper = new MimeMessageHelperExt(mimeMessage,
                     isMultipart,
-                    fromNullable(email.getEncoding()).or(Charset.forName("UTF-8")).displayName());
+                    fromNullable(email.getEncoding()).or(StandardCharsets.UTF_8.name()));
 
             messageHelper.setFrom(email.getFrom());
             if (nonNull(email.getReplyTo())) {
@@ -79,7 +77,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                 }
             }
             if (isMultipart) {
-                for (final EmailAttachmentImpl attachment : email.getAttachments()) {
+                for (final EmailAttachment attachment : email.getAttachments()) {
                     messageHelper.addAttachment(attachment.getAttachmentName(), attachment.getInputStream());
                 }
             }
@@ -99,7 +97,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
             }
 
         } catch (MessagingException e) {
-            log.error("Error while converting Email to MimeMessage");
+            log.error("Error while converting DefaultEmail to MimeMessage");
             throw new EmailConversionException(e);
         }
 

@@ -17,48 +17,60 @@
 package it.ozimov.springboot.templating.mail.model;
 
 import com.google.common.collect.ImmutableList;
-import it.ozimov.springboot.templating.mail.model.impl.EmailAttachmentImpl;
 import it.ozimov.springboot.templating.mail.utils.StringUtils;
 import lombok.NonNull;
 
-
 import javax.mail.internet.InternetAddress;
-import java.nio.charset.Charset;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
-public interface Email {
+public interface Email extends Serializable {
 
     @NonNull
     InternetAddress getFrom();
 
     InternetAddress getReplyTo();
 
-    @NonNull Collection<InternetAddress> getTo();
+    @NonNull
+    Collection<InternetAddress> getTo();
 
-    default @NonNull Collection<InternetAddress> getCc() {
+    default
+    @NonNull
+    Collection<InternetAddress> getCc() {
         return ImmutableList.of();
     }
 
-    default @NonNull Collection<InternetAddress> getBcc() {
+    default
+    @NonNull
+    Collection<InternetAddress> getBcc() {
         return ImmutableList.of();
     }
 
-    default @NonNull String getSubject() {
+    default
+    @NonNull
+    String getSubject() {
         return StringUtils.EMPTY;
     }
 
-    default @NonNull String getBody() {
-        return  StringUtils.EMPTY;
+    default
+    @NonNull
+    String getBody() {
+        return StringUtils.EMPTY;
     }
 
-    //FIXME Release 0.4.0 will fix this bug to have Collection<EmailAttachment>
-    default @NonNull Collection<EmailAttachmentImpl> getAttachments() {
+    default
+    @NonNull
+    Collection<EmailAttachment> getAttachments() {
         return ImmutableList.of();
     }
 
-    Charset getEncoding();
+    /**
+     * Return the charset encoding. Default value is UTF-8
+     */
+    //Observe that Charset does not guarantee that the object is Serializable, therefore we may break serialization
+    String getEncoding();
 
     Locale getLocale();
 

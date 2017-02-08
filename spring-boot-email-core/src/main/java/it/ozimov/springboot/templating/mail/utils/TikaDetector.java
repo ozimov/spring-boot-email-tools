@@ -67,7 +67,7 @@ public class TikaDetector {
         return toSpringMediaType(mediaType);
     }
 
-    public static class TikaDetectorSingletonHolder {
+    private static class TikaDetectorSingletonHolder {
         public static TikaDetector tikaDetector = new TikaDetector();
     }
 

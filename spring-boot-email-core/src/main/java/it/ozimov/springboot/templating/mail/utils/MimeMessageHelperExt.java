@@ -54,6 +54,7 @@ public class MimeMessageHelperExt extends MimeMessageHelper {
     public void setHeaderReturnReceipt(String emailToNotification) throws MessagingException {
         getMimeMessage().setHeader(HEADER_RETURN_RECEIPT, emailToNotification);
     }
+
     public void setHeaderDepositionNotificationTo(String emailToNotification) throws MessagingException {
         getMimeMessage().setHeader(HEADER_DEPOSITION_NOTIFICATION_TO, emailToNotification);
     }

@@ -2,7 +2,23 @@
 All notable changes to Spring-Boot-Email-Tools project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## [Planned]
+Revise unit testing by only using AssertJ and JUnit5
+
 ## [Unreleased]
+
+## [0.4.0] - 2017-XX-XX
+### Added
+- Persistence has been introduced with optional `PersistenceService`: default implementation relies on embedded-REDIS. 
+- GreenMail is used for integration tests with `EmailService` in order to increase the coverage after recent bugs.
+
+### Changed
+- All the classes ending with `Impl` are now renamed by removing the suffic and by starting with `Default`. Moreover, 
+ the package containing these classes has been renamed from `impl` to `defaultimpl`.
+- Using Spring Boot _1.5.1.RELEASE_
+- Using Pebble _2.3.0.RELEASE_
+
 
 ## [0.3.8] - 2017-02-03
 ### Fixed
@@ -11,12 +27,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.3.7] - 2017-01-09
 ### Fixed
 - Support to email attachment has been fixed by removing the content type of attachments (issue 15)
-
-## [0.3.7] - 2017-01-09
-### Fixed
-- Support to email attachment has been fixed by removing the content type of attachments (issue 15)
-### Changed
-- Removed Apache Tika dependency
 
 ## [0.3.6] - 2017-01-05
 ### Changed
@@ -59,7 +69,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.2.0] - 2016-05-12
 ### Added
-- Added implementation of a scheduler service with class `PriorityQyeyeSchedulerService`
+- Added implementation of a scheduler service with class `PriorityQueueSchedulerService`
 
 ### Changed
 - Using Spring Boot _1.3.4.RELEASE_
