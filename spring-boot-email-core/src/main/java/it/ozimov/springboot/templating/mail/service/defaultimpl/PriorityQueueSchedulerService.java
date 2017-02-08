@@ -224,9 +224,10 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
                         final int currentlyInMemory = currentlyInMemory();
                         if (currentlyInMemory < minInMemory) {
-                            final int expectedFromPersistenceLayer = batchSize - currentlyInMemory;
+                            final int expectedFromPersistenceLayer = Math.min(batchSize, maxInMemory - currentlyInMemory);
                             final Collection<EmailSchedulingData> emailSchedulingDataList =
                                     persistenceService.getNextBatch(expectedFromPersistenceLayer);
+                            System.out.println("LOADED "+emailSchedulingDataList.size());
                             if (!emailSchedulingDataList.isEmpty()) {
                                 scheduleBatch(emailSchedulingDataList);
                             }
@@ -303,7 +304,6 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                 synchronized (consumer) {
                     if (isNull(timeOfNextScheduledMessage)) { //all the queues are empty
                         consumer.wait(); //the consumer starts waiting for a new email to be scheduled
-                        System.out.println();
                     } else {
                         final long waitTime = timeOfNextScheduledMessage - TimeUtils.now() - CYCLE_LENGTH_IN_MILLIS;
                         if (waitTime > 0) {

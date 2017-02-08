@@ -122,8 +122,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
 
         final int assignedPriority = 1;
         final DefaultEmailSchedulingData defaultEmailSchedulingData1 = createDefaultEmailSchedulingDataWithPriority(assignedPriority);
-        final DefaultEmailSchedulingData defaultEmailSchedulingData2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority,
-                TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingData2 = createDefaultEmailSchedulingDataWithPriority(assignedPriority, TimeUnit.DAYS.toNanos(1));
 
         createScheduler();
 
@@ -140,6 +139,8 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     @Test
     public void shouldGetBatchIfMinInMemoryIsNotSatisfied() throws Exception {
         //Arrange
+        desiredBatchSize = 100;
+        maxKeptInMemory = desiredBatchSize;
         minKeptInMemory = 3;
         mockSetUp();
 
@@ -160,7 +161,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
         int currentlyInMemory = 1;
         InOrder inOrder = inOrder(defaultPersistenceService);
         inOrder.verify(defaultPersistenceService).getNextBatch(desiredBatchSize);//On startup
-        inOrder.verify(defaultPersistenceService).getNextBatch(desiredBatchSize - currentlyInMemory);//after sending one (one buck is free now)
+        inOrder.verify(defaultPersistenceService).getNextBatch(maxKeptInMemory - 1);//after sending one (one buck is free now)
     }
 
     @Test
@@ -415,11 +416,124 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
         verify(defaultPersistenceService).remove(defaultEmailSchedulingData.getId());
     }
 
+    @Test
+    public void shouldHaveTheExpectedNumberOfEmailsInMemoryWhenPersistenceLayerIsEmpty() throws Exception {
+        //Arrange
+        priorityLevels = 3;
+
+        desiredBatchSize = 4;
+        minKeptInMemory = 2;
+        maxKeptInMemory = 4;
+        mockSetUp();
+
+        final int assignedLowPriority = 3;
+        final int assignedMidPriority = 2;
+        final int assignedHighPriority = 1;
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataHigh1 = createDefaultEmailSchedulingDataWithPriority(assignedHighPriority);
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataHigh2 = createDefaultEmailSchedulingDataWithPriority(assignedHighPriority);
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataHigh3 = createDefaultEmailSchedulingDataWithPriority(assignedHighPriority);
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataMid1 = createDefaultEmailSchedulingDataWithPriority(assignedMidPriority, TimeUnit.HOURS.toNanos(6));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataMid2 = createDefaultEmailSchedulingDataWithPriority(assignedMidPriority, TimeUnit.HOURS.toNanos(6));
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow1 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow2 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow3 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow4 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+
+        createScheduler();
+
+
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataHigh1);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataHigh2);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataHigh3);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataMid1);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataMid2);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow1);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow2);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow3);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow4);
+
+        //Act
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh1);//1) -- Should fire asap
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh2);//2) -- Should fire asap
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh3);//3) -- Should fire asap
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataMid1);//4) --
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataMid2);//5) -- this could be not in memory
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataLow1);//6) -- this could be not in memory
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataLow2);//7) -- this could be not in memory
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataLow3);//8) -- this MUST NOT be in memory
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataLow4);//9) -- this MUST NOT be in memory
+
+        TimeUnit.SECONDS.sleep(5);
+
+        //Assert
+        TreeSet<EmailSchedulingData>[] queues = getPriorityQueues();
+        assertions.assertThat(queues[assignedHighPriority - 1]).as("High priority emails queue should be emtpy").isEmpty();
+        assertions.assertThat(queues[assignedMidPriority - 1]).as("Mid priority emails queue should have two emails").hasSize(2);
+        assertions.assertThat(queues[assignedLowPriority - 1]).as("Low priority emails queue should have two emails").hasSize(2);
+    }
+
+    @Test
+    public void shouldHaveTheExpectedNumberOfEmailsInMemoryWhenPersistenceLayerIsNotEmpty() throws Exception {
+        //Arrange
+        priorityLevels = 3;
+
+        desiredBatchSize = 4;
+        minKeptInMemory = 2;
+        maxKeptInMemory = 4;
+        mockSetUp();
+
+        final int assignedLowPriority = 3;
+        final int assignedMidPriority = 2;
+        final int assignedHighPriority = 1;
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataHigh1 = createDefaultEmailSchedulingDataWithPriority(assignedHighPriority);
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataHigh2 = createDefaultEmailSchedulingDataWithPriority(assignedHighPriority);
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataHigh3 = createDefaultEmailSchedulingDataWithPriority(assignedHighPriority);
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataMid1 = createDefaultEmailSchedulingDataWithPriority(assignedMidPriority, TimeUnit.HOURS.toNanos(6));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataMid2 = createDefaultEmailSchedulingDataWithPriority(assignedMidPriority, TimeUnit.HOURS.toNanos(6));
+
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow1 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow2 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow3 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow4 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+
+        List<EmailSchedulingData> emailSchedulingDataList = ImmutableList.of(defaultEmailSchedulingDataLow1, defaultEmailSchedulingDataLow2, defaultEmailSchedulingDataLow3, defaultEmailSchedulingDataLow4);
+        defaultPersistenceService.addAll(emailSchedulingDataList);
+
+        createScheduler();
+
+
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataHigh1);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataHigh2);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataHigh3);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataMid1);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataMid2);
+
+        //Act
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh1);//1) -- Should fire asap so is put in memory and one from the low priority sent out
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh2);//2) -- Should fire asap so is put in memory and one from the low priority sent out
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh3);//3) -- Should fire asap so is put in memory and one from the low priority sent out
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataMid1);//4) -- Mid priority, so is put in memory and one from the low priority sent out
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataMid2);//5) -- this could be not in memory
+
+        TimeUnit.SECONDS.sleep(5);
+
+        //Assert
+        TreeSet<EmailSchedulingData>[] queues = getPriorityQueues();
+        assertions.assertThat(queues[assignedHighPriority - 1]).as("High priority emails queue should be emtpy").isEmpty();
+        assertions.assertThat(queues[assignedMidPriority - 1]).as("Mid priority emails queue should have two emails").hasSize(2);
+        assertions.assertThat(queues[assignedLowPriority - 1]).as("Low priority emails queue should have two emails").hasSize(2);
+    }
+
+
     private TreeSet<EmailSchedulingData>[] getPriorityQueues() {
         return (TreeSet<EmailSchedulingData>[]) ReflectionTestUtils.getField(priorityQueueSchedulerService, "queues");
     }
 
     private void scheduleEmailSchedulingData(DefaultEmailSchedulingData defaultEmailSchedulingData) {
+        System.out.println(defaultEmailSchedulingData.getId());
         priorityQueueSchedulerService.schedule(defaultEmailSchedulingData.getEmail(), defaultEmailSchedulingData.getScheduledDateTime(), defaultEmailSchedulingData.getAssignedPriority());
     }
 
@@ -430,6 +544,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
 
     protected void createScheduler() {
         SchedulerProperties.PersistenceLayer persistenceLayer = SchedulerProperties.PersistenceLayer.builder()
+                .minKeptInMemory(minKeptInMemory)
                 .maxKeptInMemory(maxKeptInMemory)
                 .desiredBatchSize(desiredBatchSize)
                 .build();

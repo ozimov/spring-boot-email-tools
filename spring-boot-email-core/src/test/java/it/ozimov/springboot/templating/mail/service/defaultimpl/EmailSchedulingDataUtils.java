@@ -10,16 +10,18 @@ import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
+import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 
 public class EmailSchedulingDataUtils {
 
-    public static DefaultEmailSchedulingData createDefaultEmailSchedulingDataWithPriority(final int assignedPriority) throws UnsupportedEncodingException {
+    public static DefaultEmailSchedulingData createDefaultEmailSchedulingDataWithPriority(final int assignedPriority) throws UnsupportedEncodingException, InterruptedException {
         return createDefaultEmailSchedulingDataWithPriority(assignedPriority, 0);
     }
 
-    public static DefaultEmailSchedulingData createDefaultEmailSchedulingDataWithPriority(final int assignedPriority, final long nanosFromNow) throws UnsupportedEncodingException {
+    public static DefaultEmailSchedulingData createDefaultEmailSchedulingDataWithPriority(final int assignedPriority, final long nanosFromNow) throws UnsupportedEncodingException, InterruptedException {
+        TimeUnit.NANOSECONDS.sleep(1);
         final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow().plusNanos(nanosFromNow);
 
         final DefaultEmailSchedulingData defaultEmailSchedulingData = DefaultEmailSchedulingData.defaultEmailSchedulingDataBuilder()
