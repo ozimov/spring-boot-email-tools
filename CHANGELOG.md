@@ -16,6 +16,7 @@ Revise unit testing by only using AssertJ and JUnit5
 ### Changed
 - All the classes ending with `Impl` are now renamed by removing the suffic and by starting with `Default`. Moreover, 
  the package containing these classes has been renamed from `impl` to `defaultimpl`.
+- Using Spring Boot _1.5.1.RELEASE_
 - Using Pebble _2.3.0.RELEASE_
 
 
@@ -68,7 +69,7 @@ Revise unit testing by only using AssertJ and JUnit5
 
 ## [0.2.0] - 2016-05-12
 ### Added
-- Added implementation of a scheduler service with class `PriorityQueyeSchedulerService`
+- Added implementation of a scheduler service with class `PriorityQueueSchedulerService`
 
 ### Changed
 - Using Spring Boot _1.3.4.RELEASE_
