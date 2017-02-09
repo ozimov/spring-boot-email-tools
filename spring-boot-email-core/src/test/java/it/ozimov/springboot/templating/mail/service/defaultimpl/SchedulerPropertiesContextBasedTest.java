@@ -30,6 +30,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.TimeUnit;
 
+import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.*;
+
 
 @RunWith(Enclosed.class)
 public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
@@ -39,13 +41,13 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
     @TestPropertySource(locations = "classpath:base-test.properties",
             properties =
                     {
-                            "spring.mail.persistence.enabled=false",
-                            "spring.mail.persistence.redis.embedded=false",
-                            "spring.mail.persistence.redis.enabled=false",
-                            "spring.mail.scheduler.priorityLevels=123",
-                            "spring.mail.scheduler.persistenceLayer.desiredBatchSize=1",
-                            "spring.mail.scheduler.persistenceLayer.minKeptInMemory=1",
-                            "spring.mail.scheduler.persistenceLayer.maxKeptInMemory=1"
+                            SPRING_MAIL_PERSISTENCE_ENABLED + "=false",
+                            SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED + "=false",
+                            SPRING_MAIL_PERSISTENCE_REDIS_ENABLED + "=false",
+                            SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS + "=123",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_LAYER_DESIRED_BATCH_SIZE + "=1",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_LAYER_MIN_KEPT_IN_MEMORY + "=1",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_LAYER_MAX_KEPT_IN_MEMORY + "=1"
                     })
     public static class SchedulerPropertiesWithoutPersistenceContextBasedTest implements ContextBasedTest {
 
@@ -76,13 +78,13 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
     @TestPropertySource(locations = "classpath:redis-test.properties",
             properties =
                     {
-                            "spring.mail.persistence.enabled=true",
-                            "spring.mail.persistence.redis.embedded=false",
-                            "spring.mail.persistence.redis.enabled=false",
-                            "spring.mail.scheduler.priorityLevels=321",
-                            "spring.mail.scheduler.persistenceLayer.desiredBatchSize=125",
-                            "spring.mail.scheduler.persistenceLayer.minKeptInMemory=25",
-                            "spring.mail.scheduler.persistenceLayer.maxKeptInMemory=123456"
+                            SPRING_MAIL_PERSISTENCE_ENABLED + "=true",
+                            SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED + "=false",
+                            SPRING_MAIL_PERSISTENCE_REDIS_ENABLED + "=false",
+                            SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS + "=321",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_LAYER_DESIRED_BATCH_SIZE + "=125",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_LAYER_MIN_KEPT_IN_MEMORY + "=25",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_LAYER_MAX_KEPT_IN_MEMORY + "=123456"
                     })
     public static class SchedulerPropertiesWithPeristenceContextBasedTest implements ContextBasedTest {
 

@@ -227,7 +227,6 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                             final int expectedFromPersistenceLayer = Math.min(batchSize, maxInMemory - currentlyInMemory);
                             final Collection<EmailSchedulingData> emailSchedulingDataList =
                                     persistenceService.getNextBatch(expectedFromPersistenceLayer);
-                            System.out.println("LOADED "+emailSchedulingDataList.size());
                             if (!emailSchedulingDataList.isEmpty()) {
                                 scheduleBatch(emailSchedulingDataList);
                             }
