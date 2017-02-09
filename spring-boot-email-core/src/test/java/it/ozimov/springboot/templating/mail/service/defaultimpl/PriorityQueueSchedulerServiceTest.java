@@ -38,7 +38,6 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;

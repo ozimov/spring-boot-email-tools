@@ -1,10 +1,8 @@
 package it.ozimov.springboot.templating.mail.service.defaultimpl;
 
 import com.google.common.collect.ImmutableMap;
-import it.ozimov.springboot.templating.mail.model.ImageType;
 import it.ozimov.springboot.templating.mail.model.InlinePicture;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailSchedulingData;
-import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultInlinePicture;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.TemplateEmailSchedulingData;
 import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 
@@ -51,5 +49,5 @@ public class EmailSchedulingDataUtils {
                 .build();
         return templateEmailSchedulingData;
     }
-    
+
 }

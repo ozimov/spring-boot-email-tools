@@ -53,7 +53,6 @@ import static it.ozimov.cirneco.hamcrest.java7.javautils.IsUUID.UUID;
 import static it.ozimov.springboot.templating.mail.service.defaultimpl.EmailSchedulingDataUtils.createDefaultEmailSchedulingDataWithPriority;
 import static it.ozimov.springboot.templating.mail.service.defaultimpl.EmailSchedulingDataUtils.createTemplateEmailSchedulingDataWithPriority;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.reset;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = BaseRedisTest.ContextConfiguration.class)

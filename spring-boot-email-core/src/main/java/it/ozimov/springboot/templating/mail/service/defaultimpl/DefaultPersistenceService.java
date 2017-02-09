@@ -37,12 +37,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.PERSISTENCE_ENABLED_IS_TRUE;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Objects.nonNull;
 
 @Service("defaultEmailPersistenceService")
-@ConditionalOnExpression("'${spring.mail.persistence.enabled:false}' == 'true'")
+@ConditionalOnExpression(PERSISTENCE_ENABLED_IS_TRUE)
 public class DefaultPersistenceService implements PersistenceService {
 
     private static final String MATCH_ALL = "*";

@@ -31,14 +31,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 import static com.google.common.base.Optional.fromNullable;
+import static it.ozimov.springboot.templating.mail.utils.StringUtils.EMPTY;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
 @Component
 @Slf4j
 public class EmailToMimeMessage implements Function<Email, MimeMessage> {
-
-    private static final String EMPTY_STRING = "";
 
     private JavaMailSender javaMailSender;
 
@@ -81,8 +80,8 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                     messageHelper.addAttachment(attachment.getAttachmentName(), attachment.getInputStream());
                 }
             }
-            messageHelper.setSubject(ofNullable(email.getSubject()).orElse(EMPTY_STRING));
-            messageHelper.setText(ofNullable(email.getBody()).orElse(EMPTY_STRING));
+            messageHelper.setSubject(ofNullable(email.getSubject()).orElse(EMPTY));
+            messageHelper.setText(ofNullable(email.getBody()).orElse(EMPTY));
 
             if (nonNull(email.getSentAt())) {
                 messageHelper.setSentDate(email.getSentAt());
@@ -103,6 +102,5 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
 
         return mimeMessage;
     }
-
 
 }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @Builder
 @Data

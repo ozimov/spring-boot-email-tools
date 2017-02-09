@@ -10,13 +10,15 @@ import redis.embedded.RedisServer;
 
 import javax.annotation.PreDestroy;
 
+import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.SPRING_MAIL_PERSISTENCE_REDIS_PORT;
+import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.PERSISTENCE_WITH_EMBEDDED_REDIS_ENABLED_IS_TRUE;
+
 @Component
-@ConditionalOnExpression(
-        "'${spring.mail.persistence.enabled:false}' == 'true'" +
-                " && '${spring.mail.persistence.redis.enabled:false}' == 'true'" +
-                " && '${spring.mail.persistence.redis.embedded:false}' == 'true'")
+@ConditionalOnExpression(PERSISTENCE_WITH_EMBEDDED_REDIS_ENABLED_IS_TRUE)
 @Slf4j
 public class EmailEmbeddedRedis {
+
+    private static final String REDIS_PORT = "${" + SPRING_MAIL_PERSISTENCE_REDIS_PORT + "}";
 
     @Getter
     private final int redisPort;
@@ -24,7 +26,7 @@ public class EmailEmbeddedRedis {
     private final RedisServer redisServer;
 
     @Autowired
-    public EmailEmbeddedRedis(@Value("${spring.mail.persistence.redis.port}") final int redisPort) {
+    public EmailEmbeddedRedis(@Value(REDIS_PORT) final int redisPort) {
         this.redisPort = redisPort;
         redisServer = createStartedRedis();
     }
