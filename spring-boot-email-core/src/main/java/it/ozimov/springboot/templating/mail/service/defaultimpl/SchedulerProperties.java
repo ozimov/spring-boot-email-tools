@@ -18,10 +18,10 @@ import static java.util.Objects.isNull;
 public class SchedulerProperties {
 
     // spring.mail.scheduler.priorityLevels
-    private int priorityLevels;
+    private int priorityLevels = 10;
 
     // spring.mail.scheduler.persistenceLayer.*
-    private PersistenceLayer persistenceLayer;
+    private PersistenceLayer persistenceLayer = new PersistenceLayer();
 
     public static class SchedulerPropertiesBuilder {
         private int priorityLevels = 10;
