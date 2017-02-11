@@ -79,7 +79,7 @@ and for _Thymeleaf_:
 </dependency>
 ```
 
-Remember that if you import the template-full module, the core module is not required.
+Remember that if you import the template-full module, the core module should not be required.
 
 
 ## Usage
@@ -114,9 +114,9 @@ spring.mail.properties.mail.smtp.starttls.required: true
 
 Plus, the additional properties must be added to prevent using the persistence layer
 ```yml
-spring.mail.persistence.enabled: false
-spring.mail.persistence.redis.embedded: false
-spring.mail.persistence.redis.enabled: false
+spring.mail.scheduler.persistence.enabled: false
+spring.mail.scheduler.persistence.redis.embedded: false
+spring.mail.scheduler.persistence.redis.enabled: false
 ```
 
 To send an email, use the ``EmailService`` in your Spring Boot application. E.g.
@@ -312,11 +312,11 @@ For this reason, on optional persistence layer has been added based on REDIS.
 To enable the persistence layer just add the additional properties in your `application.yml` file:
 
 ```yml
-spring.mail.persistence.enabled: true
-spring.mail.persistence.redis.embedded: true
-spring.mail.persistence.redis.enabled: true
-spring.mail.persistence.redis.host: localhost
-spring.mail.persistence.redis.port: 6381
+spring.mail.scheduler.persistence.enabled: true
+spring.mail.scheduler.persistence.redis.embedded: true
+spring.mail.scheduler.persistence.redis.enabled: true
+spring.mail.scheduler.persistence.redis.host: localhost
+spring.mail.scheduler.persistence.redis.port: 6381
 ```
 
 Clearly, you can provide your own persistence layer. However the `SchedulerService` needs to use it. 
@@ -334,9 +334,9 @@ Enabling the persistence layer should allow to use REDIS for persisting schedule
 customize the behavior of the scheduler when interacting with the persistence layer, you can use the following params:
 
 ```yml
-spring.mail.scheduler.persistenceLayer.desiredBatchSize: 200
-spring.mail.scheduler.persistenceLayer.minKeptInMemory: 100
-spring.mail.scheduler.persistenceLayer.maxKeptInMemory: 1000
+spring.mail.scheduler.persistence.desiredBatchSize: 200
+spring.mail.scheduler.persistence.minKeptInMemory: 100
+spring.mail.scheduler.persistence.maxKeptInMemory: 1000
 ```
 
 The first defines the maximum amount of emails being loaded from the persistence layer when a slot is available in the

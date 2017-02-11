@@ -21,6 +21,7 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import it.ozimov.springboot.templating.mail.ContextBasedTest;
 import it.ozimov.springboot.templating.mail.model.Email;
+import it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants;
 import it.ozimov.springboot.templating.mail.service.EmailService;
 import it.ozimov.springboot.templating.mail.service.TemplateService;
 import org.junit.After;
@@ -42,6 +43,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.SPRING_MAIL_PORT;
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static it.ozimov.springboot.templating.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMailWithAttachments;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -54,7 +56,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(locations = "classpath:base-test.properties", properties = "spring.mail.port=3025")
+@TestPropertySource(locations = "classpath:application.properties",
+        properties = SPRING_MAIL_PORT+"=3025")
 public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
 
     @Rule

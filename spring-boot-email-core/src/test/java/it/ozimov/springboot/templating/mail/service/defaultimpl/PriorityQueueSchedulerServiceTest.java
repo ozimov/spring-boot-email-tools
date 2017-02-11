@@ -97,8 +97,8 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     @Before
     public void setUp() {
         when(schedulerProperties.getPriorityLevels()).thenReturn(1);
-        when(schedulerProperties.getPersistenceLayer()).thenReturn(
-                SchedulerProperties.PersistenceLayer.builder().desiredBatchSize(0).maxKeptInMemory(Integer.MAX_VALUE).build());
+        when(schedulerProperties.getPersistence()).thenReturn(
+                SchedulerProperties.Persistence.builder().desiredBatchSize(0).maxKeptInMemory(Integer.MAX_VALUE).build());
     }
 
     @Test
