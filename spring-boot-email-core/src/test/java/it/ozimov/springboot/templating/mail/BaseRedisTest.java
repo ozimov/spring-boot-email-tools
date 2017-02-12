@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -35,6 +34,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import static it.ozimov.springboot.templating.mail.PortUtils.randomFreePort;
+import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.*;
 import static java.util.Objects.nonNull;
 import static org.mockito.Mockito.mock;
 
@@ -116,7 +117,20 @@ public abstract class BaseRedisTest implements ContextBasedTest {
     }
 
     @Configuration
-    @PropertySource("classpath:redis-test.properties")
+    @TestPropertySource(locations = "classpath:application.properties",
+            properties =
+                    {
+                            SPRING_MAIL_SCHEDULER_ENABLED + "=true",
+                            SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS + "=321",
+                            SPRING_MAIL_PERSISTENCE_ENABLED + "=true",
+                            SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED + "=false",
+                            SPRING_MAIL_PERSISTENCE_REDIS_ENABLED + "=false",
+                            SPRING_MAIL_PERSISTENCE_REDIS_HOST + "=localhost",
+                            SPRING_MAIL_PERSISTENCE_REDIS_PORT + "=6381",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_DESIRED_BATCH_SIZE + "=125",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_MIN_KEPT_IN_MEMORY + "=25",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY + "=123456"
+                    })
     @ComponentScan(basePackages = {"it.ozimov.springboot.templating.mail"})
     public static class ContextConfiguration {
 
@@ -190,7 +204,7 @@ public abstract class BaseRedisTest implements ContextBasedTest {
         public SchedulerProperties schedulerProperties() {
             return SchedulerProperties.builder()
                     .priorityLevels(1)
-                    .persistenceLayer(SchedulerProperties.PersistenceLayer.builder()
+                    .persistence(SchedulerProperties.Persistence.builder()
                             .desiredBatchSize(1)
                             .maxKeptInMemory(1)
                             .build())

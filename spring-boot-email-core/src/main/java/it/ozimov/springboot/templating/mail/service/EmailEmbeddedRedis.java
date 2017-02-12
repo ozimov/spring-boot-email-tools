@@ -11,10 +11,10 @@ import redis.embedded.RedisServer;
 import javax.annotation.PreDestroy;
 
 import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.SPRING_MAIL_PERSISTENCE_REDIS_PORT;
-import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.PERSISTENCE_WITH_EMBEDDED_REDIS_ENABLED_IS_TRUE;
+import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.PERSISTENCE_IS_ENABLED_WITH_EMBEDDED_REDIS;
 
 @Component
-@ConditionalOnExpression(PERSISTENCE_WITH_EMBEDDED_REDIS_ENABLED_IS_TRUE)
+@ConditionalOnExpression(PERSISTENCE_IS_ENABLED_WITH_EMBEDDED_REDIS)
 @Slf4j
 public class EmailEmbeddedRedis {
 

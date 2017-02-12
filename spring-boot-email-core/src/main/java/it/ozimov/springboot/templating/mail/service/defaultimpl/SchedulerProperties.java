@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.__SPRING_MAIL_SCHEDULER;
 import static java.util.Objects.isNull;
 
 @Builder
@@ -14,71 +15,68 @@ import static java.util.Objects.isNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-@ConfigurationProperties(prefix = "spring.mail.scheduler")
+@ConfigurationProperties(prefix = __SPRING_MAIL_SCHEDULER)
 public class SchedulerProperties {
 
+    @Getter(AccessLevel.NONE)
+    private boolean enabled;
+
     // spring.mail.scheduler.priorityLevels
-    private int priorityLevels;
+    private Integer priorityLevels = 10;
 
-    // spring.mail.scheduler.persistenceLayer.*
-    private PersistenceLayer persistenceLayer;
-
-    public static class SchedulerPropertiesBuilder {
-        private int priorityLevels = 10;
-
-        private PersistenceLayer persistenceLayer = new PersistenceLayer();
-    }
+    // spring.mail.scheduler.persistence.*
+    private Persistence persistence = new Persistence();
 
     @Builder
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PersistenceLayer {
+    public static class Persistence {
 
-        // spring.mail.scheduler.persistenceLayer.desiredBatchSize
-        @Getter
+        // spring.mail.scheduler.persistence.desiredBatchSize
         private int desiredBatchSize = 500;
 
-        // spring.mail.scheduler.persistenceLayer.minKeptInMemory
-        @Getter
+        // spring.mail.scheduler.persistence.minKeptInMemory
         private int minKeptInMemory = 250;
 
-        // spring.mail.scheduler.persistenceLayer.maxKeptInMemory
-        @Getter
+        // spring.mail.scheduler.persistence.maxKeptInMemory
         private int maxKeptInMemory = 2000;
-
-        public static class PersistenceLayerBuilder {
-            private int desiredBatchSize = 500;
-            private int minKeptInMemory = 250;
-            private int maxKeptInMemory = 2000;
-        }
 
     }
 
     @PostConstruct
     boolean validate() {
-        Preconditions.checkState(priorityLevels > 0,
-                "Expected at least one priority level. Review property 'spring.mail.scheduler.priorityLevels'.");
+        if (enabled) {
+            Preconditions.checkState(priorityLevels > 0,
+                    "Expected at least one priority level. Review property 'spring.mail.scheduler.priorityLevels'.");
 
-        Preconditions.checkState(isNull(persistenceLayer) || persistenceLayer.getDesiredBatchSize() > 0,
-                "Expected at least a batch of size one, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistenceLayer.desiredBatchSize'.");
+            Preconditions.checkState(isNull(persistence) || persistence.getDesiredBatchSize() > 0,
+                    "Expected at least a batch of size one, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistence.desiredBatchSize'.");
 
-        Preconditions.checkState(isNull(persistenceLayer) || persistenceLayer.getMinKeptInMemory() >= 0,
-                "Expected a non negative amount of email to be kept in memory. Review property 'spring.mail.scheduler.persistenceLayer.minKeptInMemory'.");
+            Preconditions.checkState(isNull(persistence) || persistence.getMinKeptInMemory() >= 0,
+                    "Expected a non negative amount of email to be kept in memory. Review property 'spring.mail.scheduler.persistence.minKeptInMemory'.");
 
-        Preconditions.checkState(isNull(persistenceLayer) || persistenceLayer.getMaxKeptInMemory() > 0,
-                "Expected at least one email to be available in memory, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistenceLayer.maxKeptInMemory'.");
+            Preconditions.checkState(isNull(persistence) || persistence.getMaxKeptInMemory() > 0,
+                    "Expected at least one email to be available in memory, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistence.maxKeptInMemory'.");
 
-        Preconditions.checkState(isNull(persistenceLayer) ||
-                        (persistenceLayer.getMaxKeptInMemory() >= persistenceLayer.getMinKeptInMemory()),
-                "The application properties key '%s' should not have a value smaller than the value in property '%s'.",
-                "spring.mail.scheduler.persistenceLayer.maxKeptInMemory", "spring.mail.scheduler.persistenceLayer.minKeptInMemory");
+            Preconditions.checkState(isNull(persistence) ||
+                            (persistence.getMaxKeptInMemory() >= persistence.getMinKeptInMemory()),
+                    "The application properties key '%s' should not have a value smaller than the value in property '%s'.",
+                    "spring.mail.scheduler.persistence.maxKeptInMemory", "spring.mail.scheduler.persistence.minKeptInMemory");
 
-        Preconditions.checkState(isNull(persistenceLayer) ||
-                        (persistenceLayer.getMaxKeptInMemory() >= persistenceLayer.getDesiredBatchSize()),
-                "The application properties key '%s' should not have a value smaller than the value in property '%s'.",
-                "spring.mail.scheduler.persistenceLayer.maxKeptInMemory", "spring.mail.scheduler.persistenceLayer.desiredBatchSize");
+            Preconditions.checkState(isNull(persistence) ||
+                            (persistence.getMaxKeptInMemory() >= persistence.getDesiredBatchSize()),
+                    "The application properties key '%s' should not have a value smaller than the value in property '%s'.",
+                    "spring.mail.scheduler.persistence.maxKeptInMemory", "spring.mail.scheduler.persistence.desiredBatchSize");
+        } else {
+            setValuesToNull();
+        }
         return true;
+    }
+
+    private void setValuesToNull() {
+        priorityLevels = null;
+        persistence = null;
     }
 
 }

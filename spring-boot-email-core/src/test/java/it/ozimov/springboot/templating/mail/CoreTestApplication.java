@@ -24,7 +24,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@TestPropertySource("classpath:base-test.properties")
+@TestPropertySource("classpath:application.properties")
 @ComponentScan(basePackages = {"it.ozimov.springboot.templating.mail"})
 public class CoreTestApplication {
 

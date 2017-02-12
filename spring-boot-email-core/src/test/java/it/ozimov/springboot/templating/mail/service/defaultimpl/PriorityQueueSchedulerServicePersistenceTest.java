@@ -93,7 +93,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldAddBatchFromPersistenceLayerWhenCreated() throws Exception {
+    public void shouldAddBatchFromPersistenceWhenCreated() throws Exception {
         //Arrange
         mockSetUp();
 
@@ -165,7 +165,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldAddToPersistenceLayerWhenBeforeLastFromPersistenceLayerAndBelowMaxKeptInMemory() throws Exception {
+    public void shouldAddToPersistenceWhenBeforeLastFromPersistenceAndBelowMaxKeptInMemory() throws Exception {
         //Arrange
         mockSetUp();
 
@@ -197,7 +197,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldNotAddToPersistenceLayerWhenAfterLastFromPersistenceLayerAndBelowMaxKeptInMemory() throws Exception {
+    public void shouldNotAddToPersistenceWhenAfterLastFromPersistenceAndBelowMaxKeptInMemory() throws Exception {
         //Arrange
         mockSetUp();
 
@@ -230,7 +230,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldNotAddToPersistenceLayerWhenAfterLastFromPersistenceLayerAndAboveMaxKeptInMemory() throws Exception {
+    public void shouldNotAddToPersistenceWhenAfterLastFromPersistenceAndAboveMaxKeptInMemory() throws Exception {
         //Arrange
         maxKeptInMemory = 1;
         mockSetUp();
@@ -261,7 +261,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldAddToPersistenceLayerWhenBeforeLastFromPersistenceLayerAndAboveMaxKeptInMemory() throws Exception {
+    public void shouldAddToPersistenceWhenBeforeLastFromPersistenceAndAboveMaxKeptInMemory() throws Exception {
         //Arrange
         minKeptInMemory = 1;
         maxKeptInMemory = 1;
@@ -295,7 +295,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldAddToPersistenceLayerWhenBeforeLastFromPersistenceLayerAndAboveMaxKeptInMemoryWithEmailInOtherPriorityLevels() throws Exception {
+    public void shouldAddToPersistenceWhenBeforeLastFromPersistenceAndAboveMaxKeptInMemoryWithEmailInOtherPriorityLevels() throws Exception {
         //Arrange
         minKeptInMemory = 1;
         maxKeptInMemory = 3;
@@ -341,7 +341,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldAddToPersistenceLayerAndNewPriorityQueueWhenBeforeLastFromPersistenceLayerAndAboveMaxKeptInMemoryWithEmailInOtherPriorityLevels() throws Exception {
+    public void shouldAddToPersistenceAndNewPriorityQueueWhenBeforeLastFromPersistenceAndAboveMaxKeptInMemoryWithEmailInOtherPriorityLevels() throws Exception {
         //Arrange
         minKeptInMemory = 1;
         maxKeptInMemory = 3;
@@ -390,7 +390,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldRemoveFromPersistenceLayerAfterSendingEmail() throws Exception {
+    public void shouldRemoveFromPersistenceAfterSendingEmail() throws Exception {
         //Arrange
         minKeptInMemory = 1;
         maxKeptInMemory = 3;
@@ -417,7 +417,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldHaveTheExpectedNumberOfEmailsInMemoryWhenPersistenceLayerIsEmpty() throws Exception {
+    public void shouldHaveTheExpectedNumberOfEmailsInMemoryWhenPersistenceIsEmpty() throws Exception {
         //Arrange
         priorityLevels = 3;
 
@@ -475,7 +475,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     @Test
-    public void shouldHaveTheExpectedNumberOfEmailsInMemoryWhenPersistenceLayerIsNotEmpty() throws Exception {
+    public void shouldHaveTheExpectedNumberOfEmailsInMemoryWhenPersistenceIsNotEmpty() throws Exception {
         //Arrange
         priorityLevels = 3;
 
@@ -543,13 +543,13 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     protected void createScheduler() {
-        SchedulerProperties.PersistenceLayer persistenceLayer = SchedulerProperties.PersistenceLayer.builder()
+        SchedulerProperties.Persistence Persistence = SchedulerProperties.Persistence.builder()
                 .minKeptInMemory(minKeptInMemory)
                 .maxKeptInMemory(maxKeptInMemory)
                 .desiredBatchSize(desiredBatchSize)
                 .build();
         when(schedulerProperties.getPriorityLevels()).thenReturn(priorityLevels);
-        when(schedulerProperties.getPersistenceLayer()).thenReturn(persistenceLayer);
+        when(schedulerProperties.getPersistence()).thenReturn(Persistence);
 
         priorityQueueSchedulerService = spy(new PriorityQueueSchedulerService(emailService, schedulerProperties, Optional.of(defaultPersistenceService)));
     }
