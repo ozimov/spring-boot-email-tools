@@ -27,7 +27,6 @@ import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
@@ -36,7 +35,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.mail.internet.MimeMessage;
 import java.util.concurrent.TimeUnit;
 
-import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.SPRING_MAIL_PERSISTENCE_ENABLED;
 import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.SPRING_MAIL_SCHEDULER_ENABLED;
 import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS;
 

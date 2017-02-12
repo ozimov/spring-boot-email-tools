@@ -19,6 +19,9 @@ Revise unit testing by only using AssertJ and JUnit5
 - The `SchedulerService` is not enabled by default anymore, it needs to be activated via `application.properties`.
 - The `PersistenceService` is becomes enabled if the proper properties are provided plus if the `SchedulerService` 
     is enabled as well.
+- The application properties `spring.mail.persistence.*` are now renamed into `spring.mail.scheduler.persistence.*`, 
+    since they can work only with the scheduler.
+- The application properties `spring.mail.scheduler.persistenceLayer.*` are now renamed into `spring.mail.scheduler.persistence.*`.
 
 ## [0.4.0] - 2017-02-08
 ### Added

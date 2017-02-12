@@ -43,7 +43,7 @@ public class ApplicationPropertiesConstants {
 
     public static final String SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS = __SPRING_MAIL_SCHEDULER + DOT + "priorityLevels";
 
-    public static final String SPRING_MAIL_PERSISTENCE_ENABLED = __SPRING_MAIL_SCHEDULER + DOT +"persistence.enabled";
+    public static final String SPRING_MAIL_PERSISTENCE_ENABLED = __SPRING_MAIL_SCHEDULER + DOT + "persistence.enabled";
 
     public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_DESIRED_BATCH_SIZE = __SPRING_MAIL_SCHEDULER + DOT + "persistence.desiredBatchSize";
 
@@ -51,12 +51,12 @@ public class ApplicationPropertiesConstants {
 
     public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY = __SPRING_MAIL_SCHEDULER + DOT + "persistence.maxKeptInMemory";
 
-    public static final String SPRING_MAIL_PERSISTENCE_REDIS_ENABLED = __SPRING_MAIL_SCHEDULER + DOT +"persistence.redis.enabled";
+    public static final String SPRING_MAIL_PERSISTENCE_REDIS_ENABLED = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.enabled";
 
-    public static final String SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED = __SPRING_MAIL_SCHEDULER + DOT +"persistence.redis.embedded";
+    public static final String SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.embedded";
 
-    public static final String SPRING_MAIL_PERSISTENCE_REDIS_HOST = __SPRING_MAIL_SCHEDULER + DOT +"persistence.redis.host";
+    public static final String SPRING_MAIL_PERSISTENCE_REDIS_HOST = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.host";
 
-    public static final String SPRING_MAIL_PERSISTENCE_REDIS_PORT = __SPRING_MAIL_SCHEDULER + DOT +"persistence.redis.port";
+    public static final String SPRING_MAIL_PERSISTENCE_REDIS_PORT = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.port";
 
 }

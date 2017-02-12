@@ -81,10 +81,10 @@ public class SchedulerPropertiesTest implements UnitTest {
                 .enabled(false)
                 .priorityLevels(negativeInt)
                 .persistence(SchedulerProperties.Persistence.builder()
-                                    .desiredBatchSize(negativeInt)
-                                    .minKeptInMemory(negativeInt)
-                                    .maxKeptInMemory(negativeInt)
-                                 .build())
+                        .desiredBatchSize(negativeInt)
+                        .minKeptInMemory(negativeInt)
+                        .maxKeptInMemory(negativeInt)
+                        .build())
                 .build();
 
         //Act
@@ -120,7 +120,7 @@ public class SchedulerPropertiesTest implements UnitTest {
         schedulerProperties.validate();
     }
 
-    
+
     @Test
     public void shouldValidateThrowExceptionWhenDesiredBatchSizeIsZeroAndSchedulerIsEnabled() throws Exception {
         //Arrange

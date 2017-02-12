@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -48,7 +47,6 @@ import java.sql.SQLException;
 
 import static it.ozimov.springboot.templating.mail.PortUtils.randomFreePort;
 import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.*;
-import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY;
 import static java.util.Objects.nonNull;
 import static org.mockito.Mockito.mock;
 
@@ -127,8 +125,8 @@ public abstract class BaseRedisTest implements ContextBasedTest {
                             SPRING_MAIL_PERSISTENCE_ENABLED + "=true",
                             SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED + "=false",
                             SPRING_MAIL_PERSISTENCE_REDIS_ENABLED + "=false",
-                            SPRING_MAIL_PERSISTENCE_REDIS_HOST+"=localhost",
-                            SPRING_MAIL_PERSISTENCE_REDIS_PORT+"=6381",
+                            SPRING_MAIL_PERSISTENCE_REDIS_HOST + "=localhost",
+                            SPRING_MAIL_PERSISTENCE_REDIS_PORT + "=6381",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_DESIRED_BATCH_SIZE + "=125",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MIN_KEPT_IN_MEMORY + "=25",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY + "=123456"
