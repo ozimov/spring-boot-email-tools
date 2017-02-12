@@ -30,6 +30,7 @@ import it.ozimov.springboot.templating.mail.utils.TimeUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
@@ -38,6 +39,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.SCHEDULER_IS_ENABLED;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Objects.isNull;
@@ -50,7 +52,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * <p>
  * Main logic for the thread wait-notify mechanism comes from {@see http://stackoverflow.com/a/8980307/1339429 }
  */
-@Service
+@Service("priorityQueueSchedulerService")
+@ConditionalOnExpression(SCHEDULER_IS_ENABLED)
 @Slf4j
 public class PriorityQueueSchedulerService implements SchedulerService {
 
@@ -66,14 +69,14 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     private ServiceStatus serviceStatus = ServiceStatus.CREATED;
     private Long timeOfNextScheduledMessage;
 
-    private TreeSet<EmailSchedulingData>[] queues;
-    private EmailSchedulingData[] lastLoadedFromPersistenceLayer;
+    private final TreeSet<EmailSchedulingData>[] queues;
+    private final EmailSchedulingData[] lastLoadedFromPersistenceLayer;
 
-    private EmailService emailService;
+    private final EmailService emailService;
 
-    private Consumer consumer;
+    private final Consumer consumer;
 
-    private Optional<PersistenceService> persistenceServiceOptional;
+    private final Optional<PersistenceService> persistenceServiceOptional;
 
     @Autowired
     public PriorityQueueSchedulerService(
@@ -84,12 +87,12 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         this.emailService = emailService;
         this.persistenceServiceOptional = persistenceServiceOptional;
 
-        batchSize = nonNull(schedulerProperties.getPersistenceLayer()) ?
-                schedulerProperties.getPersistenceLayer().getDesiredBatchSize() : 0;
-        minInMemory = nonNull(schedulerProperties.getPersistenceLayer()) ?
-                schedulerProperties.getPersistenceLayer().getMinKeptInMemory() : 1;
-        maxInMemory = nonNull(schedulerProperties.getPersistenceLayer()) ?
-                schedulerProperties.getPersistenceLayer().getMaxKeptInMemory() : Integer.MAX_VALUE;
+        batchSize = nonNull(schedulerProperties.getPersistence()) ?
+                schedulerProperties.getPersistence().getDesiredBatchSize() : 0;
+        minInMemory = nonNull(schedulerProperties.getPersistence()) ?
+                schedulerProperties.getPersistence().getMinKeptInMemory() : 1;
+        maxInMemory = nonNull(schedulerProperties.getPersistence()) ?
+                schedulerProperties.getPersistence().getMaxKeptInMemory() : Integer.MAX_VALUE;
 
         final int numberOfPriorityLevels = schedulerProperties.getPriorityLevels();
         queues = new TreeSet[numberOfPriorityLevels];

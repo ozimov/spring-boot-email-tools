@@ -79,7 +79,7 @@ and for _Thymeleaf_:
 </dependency>
 ```
 
-Remember that if you import the template-full module, the core module is not required.
+Remember that if you import the template-full module, the core module should not be required.
 
 
 ## Usage
@@ -99,24 +99,24 @@ public class MainApplication  {
 }
 ```
 
-in you `application.yml` set the configuration needed to send the emails, e.g. if you want to send
+in you `application.properties` set the configuration needed to send the emails, e.g. if you want to send
 the emails using a Gmail account you can set:
 
-```yml
-spring.mail.host: smtp.gmail.com
-spring.mail.port: 587
-spring.mail.username: name.surname@gmail.com
-spring.mail.password: V3ry_Str0ng_Password
-spring.mail.properties.mail.smtp.auth: true
-spring.mail.properties.mail.smtp.starttls.enable: true
-spring.mail.properties.mail.smtp.starttls.required: true
+```properties
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=name.surname@gmail.com
+spring.mail.password=V3ry_Str0ng_Password
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
 ```
 
 Plus, the additional properties must be added to prevent using the persistence layer
-```yml
-spring.mail.persistence.enabled: false
-spring.mail.persistence.redis.embedded: false
-spring.mail.persistence.redis.enabled: false
+```properties
+spring.mail.scheduler.persistence.enabled=false
+spring.mail.scheduler.persistence.redis.embedded=false
+spring.mail.scheduler.persistence.redis.enabled=false
 ```
 
 To send an email, use the ``EmailService`` in your Spring Boot application. E.g.
@@ -228,9 +228,6 @@ public void sendEmailWithTemplatingAndInlineImage(){
 
        emailService.send(email, "idus_martii.ftl", modelObject, inlinePicture);
 }
-
-  //getters
-}
 ```
 
 where the template ``idus_martii.ftl`` is a Freemarker file like:
@@ -261,71 +258,116 @@ This is required to set the a proper content-id.
 
 ## Email scheduling
 
-The library supports email scheduling. Email can be set in different queues, from the one with
+The library supports email scheduling, but since version _0.4.1_ the scheduler is disabled by default. To enable 
+email scheduling, the following property has to be provided:
+ 
+```properties
+spring.mail.scheduler.enabled=true
+```
+
+Email can be set in different queues, from the one with
  highest priority to the least important. Priority 1 is the highest.
 
-To define the number of priority levels, just add in the `application.properties` the following line:
+To define the number of priority levels to be used in the scheduler, 
+just add in the `application.properties` the following line:
 
 ```properties
-spring.mail.scheduler.priorityLevels=10
+spring.mail.scheduler.priorityLevels=5
 ```
 
-Scheduling an email is actually easy. To schedule an email, just resort to the service
-`PriorityQueueSchedulerService`. The service allows to schedule an email with or without
-the use of a template engine...
+If not provided, by default 10 priority levels are considered.
+
+Scheduling an email is actually easy and the `SchedulerService` allows to schedule an email with or without
+the use of a template engine.
+
+In order to schedule a plain text email, just create your service (or controller) where you autowire 
+the service `SchedulerService` and call a method `scheduleEmail` defined as in the following example
 
 ```java
-@Autowired
-private PriorityQueueSchedulerService scheduler;
+@Service
+public void MyEmailSenderService {
 
-
-public void schedule (final Email mimeEmail, final OffsetDateTime scheduledDateTime, final int priorityLevel) throws CannotSendEmailException {
-  scheduler.schedule(mimeEmail, scheduledDateTime, priorityLevel);
+    @Autowired
+    private SchedulerService schedulerService;
+    
+    
+    public void scheduleEmail() throws CannotSendEmailException {
+        final Email mimeEmail = DefaultEmail.builder()
+                                  .from(new InternetAddress("divus.iulius@mala-tempora.currunt", "Gaius Iulius Caesar"))
+                                  .to(Lists.newArrayList(new InternetAddress(tyrannicida.getEmail(), tyrannicida.getName())))
+                                  .subject("Idus Martii")
+                                  .body("Sic semper...")
+                                  .encoding(Charset.forName("UTF-8"))
+                                  .build();
+        final OffsetDateTime scheduledDateTime = OffsetDateTime.now().plusDays(1);
+        final int priorityLevel = 1;
+      schedulerService.schedule(mimeEmail, scheduledDateTime, priorityLevel);
+    }
 }
 ```
-Here we go, an email has been scheduled.
+
+Here we go, by calling schedulerEmail() an email has been scheduled to be sent after one day.
 When scheduling emails, observe that **`OffsetDateTime` must be** used with **UTC**, so do not forget to convert it if you
 use a different zone offset.
 
-To schedule an email with a template and inline images, just do
+To schedule an email with a template and inline images, just call a new method called `scheduleEmailWithTemplate()`
+
 ```java
-@Autowired
-private PriorityQueueSchedulerService scheduler;
+@Service
+public void MyEmailWithTemplateSenderService {
 
+    @Autowired
+    private SchedulerService schedulerService;
+    
+    
+    public void scheduleEmailWithTemplate() throws CannotSendEmailException {
+        final Email mimeEmail = DefaultEmail.builder()
+                                  .from(new InternetAddress("divus.iulius@mala-tempora.currunt", "Gaius Iulius Caesar"))
+                                  .to(Lists.newArrayList(new InternetAddress(tyrannicida.getEmail(), tyrannicida.getName())))
+                                  .subject("Idus Martii")
+                                  .body("")//Empty body
+                                  .encoding(Charset.forName("UTF-8"))
+                                  .build();
+       //Defining the model object for the given Freemarker template
+       final Map<String, Object> modelObject = new HashMap<>();
+       final File imageFile = //load your picture here, e.g. "my_image.jpg"
+       modelObject.put("tyrannicida", tyrannicida.getName());
 
-schedule(final Email mimeEmail,
-                  final OffsetDateTime scheduledDateTime,
-                  final int priorityLevel,
-                  final String template,
-                  final Map<String, Object> modelObject,
-                  final InlinePicture... inlinePictures) throws CannotSendEmailException {
-  scheduler.schedule(mimeEmail, scheduledDateTime, priorityLevel, template, modelObject, inlinePictures);
+       final InlinePicture inlinePicture = DefaultInlinePicture.builder()
+                               .file(imageFile)
+                               .imageType(ImageType.JPG)
+                               .templateName("my_image.jpg").build());
+        final OffsetDateTime scheduledDateTime = OffsetDateTime.now().plusDays(1);
+        final int priorityLevel = 1;
+      
+        schedulerService.schedule(mimeEmail, scheduledDateTime, priorityLevel, 
+            "idus_martii.ftl", modelObject, inlinePicture);
+    }
+    
 }
 ```
 
 ## Persistence
-Persistence has been introduced in version `0.4.0`. Persistence is mainly of interest if the scheduler is used.
-Whenever an email is scheduled, it can happen that the application crashes and the in-memory scheduled emails get lost forever (forever ever).
-Moreover, memory issues could arise as well, when thousands of emails get stored.
+Persistence has been introduced in version `0.4.0`. Persistence is mainly of interest if the scheduler is used, therefore
+it can be enabled only if the scheduler is enabled.
 
-For this reason, on optional persistence layer has been added based on REDIS. 
-To enable the persistence layer just add the additional properties in your `application.yml` file:
+The persistence layer is optional, thus needs to be activated. The default implementation is fully based on embedded REDIS.
+To enable the default persistence layer just add the additional properties in your `application.properties` file:
 
-```yml
-spring.mail.persistence.enabled: true
-spring.mail.persistence.redis.embedded: true
-spring.mail.persistence.redis.enabled: true
-spring.mail.persistence.redis.host: localhost
-spring.mail.persistence.redis.port: 6381
+```properties
+spring.mail.scheduler.persistence.enabled=true
+spring.mail.scheduler.persistence.redis.enabled=true
+spring.mail.scheduler.persistence.redis.embedded=true
+spring.mail.scheduler.persistence.redis.host=localhost
+spring.mail.scheduler.persistence.redis.port=6381
 ```
 
-Clearly, you can provide your own persistence layer. However the `SchedulerService` needs to use it. 
-Luckily, the default implementation provided in this tool calls the `PersistenceService`, so just 
-provide the one you want.
+Clearly, you can provide your own persistence layer by implementing the `PersistenceService` interface. You can also
+ use your REDIS implementation, but this will require extra coding on your side.
 
 
-Observe that the persistence layer makes email being stored to be reloaded on application startup, i.e. when the default bean 
-for the scheduler is initialized. 
+Observe that the persistence layer makes the emails being stored to be reloaded on application startup if not yet sent.
+In particular, the emails are loaded when scheduler is constructed. 
 
 ###Impact of the Persistence layer on the default priority-based scheduler
 The default scheduler is `PriorityQueueSchedulerService`, which by default stores everything in memory. Clerarly, having
@@ -333,10 +375,10 @@ thousands email being scheduled, storing everything in memory could drive to a p
 Enabling the persistence layer should allow to use REDIS for persisting scheduled emails. Anyway, you may want to
 customize the behavior of the scheduler when interacting with the persistence layer, you can use the following params:
 
-```yml
-spring.mail.scheduler.persistenceLayer.desiredBatchSize: 200
-spring.mail.scheduler.persistenceLayer.minKeptInMemory: 100
-spring.mail.scheduler.persistenceLayer.maxKeptInMemory: 1000
+```properties
+spring.mail.scheduler.persistence.desiredBatchSize=200
+spring.mail.scheduler.persistence.minKeptInMemory=100
+spring.mail.scheduler.persistence.maxKeptInMemory=1000
 ```
 
 The first defines the maximum amount of emails being loaded from the persistence layer when a slot is available in the
@@ -348,7 +390,9 @@ is the batch size, the higher the times you interact with the persistence layer.
 ## Future plans
 
 Here are listed the backlog for the features to be added to the library in the near future:
-* Optimizations for scheduled emails that require the use of a template engine
+* Optimizations for scheduled emails that require the use of a template engine.
+* Add a listener to notify for the sending of an email. 
+* More examples.
 
 **Any contribution is welcome (and warmly encouraged).**
 

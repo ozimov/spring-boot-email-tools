@@ -39,22 +39,24 @@ public class ApplicationPropertiesConstants {
 
     public static final String SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED = "spring.mail.properties.mail.smtp.starttls.required";
 
+    public static final String SPRING_MAIL_SCHEDULER_ENABLED = __SPRING_MAIL_SCHEDULER + DOT + "enabled";
+
     public static final String SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS = __SPRING_MAIL_SCHEDULER + DOT + "priorityLevels";
 
-    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_LAYER_DESIRED_BATCH_SIZE = __SPRING_MAIL_SCHEDULER + DOT + "persistenceLayer.desiredBatchSize";
+    public static final String SPRING_MAIL_PERSISTENCE_ENABLED = __SPRING_MAIL_SCHEDULER + DOT + "persistence.enabled";
 
-    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_LAYER_MIN_KEPT_IN_MEMORY = __SPRING_MAIL_SCHEDULER + DOT + "persistenceLayer.minKeptInMemory";
+    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_DESIRED_BATCH_SIZE = __SPRING_MAIL_SCHEDULER + DOT + "persistence.desiredBatchSize";
 
-    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_LAYER_MAX_KEPT_IN_MEMORY = __SPRING_MAIL_SCHEDULER + DOT + "persistenceLayer.maxKeptInMemory";
+    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_MIN_KEPT_IN_MEMORY = __SPRING_MAIL_SCHEDULER + DOT + "persistence.minKeptInMemory";
 
-    public static final String SPRING_MAIL_PERSISTENCE_ENABLED = "spring.mail.persistence.enabled";
+    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY = __SPRING_MAIL_SCHEDULER + DOT + "persistence.maxKeptInMemory";
 
-    public static final String SPRING_MAIL_PERSISTENCE_REDIS_ENABLED = "spring.mail.persistence.redis.enabled";
+    public static final String SPRING_MAIL_PERSISTENCE_REDIS_ENABLED = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.enabled";
 
-    public static final String SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED = "spring.mail.persistence.redis.embedded";
+    public static final String SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.embedded";
 
-    public static final String SPRING_MAIL_PERSISTENCE_REDIS_HOST = "spring.mail.persistence.redis.host";
+    public static final String SPRING_MAIL_PERSISTENCE_REDIS_HOST = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.host";
 
-    public static final String SPRING_MAIL_PERSISTENCE_REDIS_PORT = "spring.mail.persistence.redis.port";
+    public static final String SPRING_MAIL_PERSISTENCE_REDIS_PORT = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.port";
 
 }

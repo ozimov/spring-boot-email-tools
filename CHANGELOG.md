@@ -8,7 +8,22 @@ Revise unit testing by only using AssertJ and JUnit5
 
 ## [Unreleased]
 
-## [0.4.0] - 2017-XX-XX
+### Added
+- The property to enable the `SchedulerService` class is the boolean one `spring.mail.scheduler.enabled`.
+- The application property `spring.mail.scheduler.enabled.priorityLevels` for the default scheduler 
+    class `PriorityQueueSchedulerService` is required on if `spring.mail.scheduler.enabled=true`.
+- The main properties in `application.properties` required by the extension are now hardcoded 
+    in class `ApplicationPropertiesConstants`.
+
+### Changed
+- The `SchedulerService` is not enabled by default anymore, it needs to be activated via `application.properties`.
+- The `PersistenceService` is becomes enabled if the proper properties are provided plus if the `SchedulerService` 
+    is enabled as well.
+- The application properties `spring.mail.persistence.*` are now renamed into `spring.mail.scheduler.persistence.*`, 
+    since they can work only with the scheduler.
+- The application properties `spring.mail.scheduler.persistenceLayer.*` are now renamed into `spring.mail.scheduler.persistence.*`.
+
+## [0.4.0] - 2017-02-08
 ### Added
 - Persistence has been introduced with optional `PersistenceService`: default implementation relies on embedded-REDIS. 
 - GreenMail is used for integration tests with `EmailService` in order to increase the coverage after recent bugs.
@@ -18,7 +33,7 @@ Revise unit testing by only using AssertJ and JUnit5
  the package containing these classes has been renamed from `impl` to `defaultimpl`.
 - Using Spring Boot _1.5.1.RELEASE_
 - Using Pebble _2.3.0.RELEASE_
-
+- The default scheduler class `PriorityQueueSchedulerService` requires the property `spring.mail.scheduler.enabled.priorityLevels`.
 
 ## [0.3.8] - 2017-02-03
 ### Fixed

@@ -4,8 +4,7 @@ import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.PERSISTENCE_ENABLED_IS_TRUE;
-import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.PERSISTENCE_WITH_EMBEDDED_REDIS_ENABLED_IS_TRUE;
+import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.*;
 
 public class ConditionalExpressionTest {
 
@@ -14,12 +13,19 @@ public class ConditionalExpressionTest {
 
     @Test
     public void shouldConstantsRemainUnchanged() {
-        assertions.assertThat(PERSISTENCE_ENABLED_IS_TRUE)
-                .isEqualTo("'${spring.mail.persistence.enabled:false}' == 'true'");
-        assertions.assertThat(PERSISTENCE_WITH_EMBEDDED_REDIS_ENABLED_IS_TRUE)
-                .isEqualTo("'${spring.mail.persistence.enabled:false}' == 'true'" +
-                        " && '${spring.mail.persistence.redis.enabled:false}' == 'true'" +
-                        " && '${spring.mail.persistence.redis.embedded:false}' == 'true'");
+        assertions.assertThat(SCHEDULER_IS_ENABLED)
+                .as("The condition for enabling the scheduler should not change")
+                .isEqualTo("'${spring.mail.scheduler.enabled:false}' == 'true'");
+        assertions.assertThat(PERSISTENCE_IS_ENABLED)
+                .as("The condition for enabling the persistence layer should not change")
+                .isEqualTo("'${spring.mail.scheduler.enabled:false}' == 'true'" +
+                        " && '${spring.mail.scheduler.persistence.enabled:false}' == 'true'");
+        assertions.assertThat(PERSISTENCE_IS_ENABLED_WITH_EMBEDDED_REDIS)
+                .as("The condition for enabling the persistence layer using embedded redis should not change")
+                .isEqualTo("'${spring.mail.scheduler.enabled:false}' == 'true'" +
+                        " && '${spring.mail.scheduler.persistence.enabled:false}' == 'true'" +
+                        " && '${spring.mail.scheduler.persistence.redis.enabled:false}' == 'true'" +
+                        " && '${spring.mail.scheduler.persistence.redis.embedded:false}' == 'true'");
     }
 
 }
