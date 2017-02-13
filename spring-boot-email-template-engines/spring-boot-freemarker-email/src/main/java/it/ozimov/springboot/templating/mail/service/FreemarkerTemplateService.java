@@ -45,13 +45,13 @@ public class FreemarkerTemplateService implements TemplateService {
             throws IOException, TemplateException {
         checkArgument(!isNullOrEmpty(templateReference.trim()), "The given template is null, empty or blank");
         checkArgument(Objects.equals(getFileExtension(templateReference), expectedTemplateExtension()),
-                "Expected a Freemarker template file with extension ftl, while %s was given",
+                "Expected a Freemarker template file with extension 'ftl', while '%s' was given",
                 getFileExtension(templateReference));
 
         try {
             return FreeMarkerTemplateUtils.processTemplateIntoString(
                     freemarkerConfiguration.getTemplate(templateReference, Charset.forName("UTF-8").name()), model);
-        } catch (freemarker.template.TemplateException e) {
+        } catch (Exception e) {
             throw new TemplateException(e);
         }
     }

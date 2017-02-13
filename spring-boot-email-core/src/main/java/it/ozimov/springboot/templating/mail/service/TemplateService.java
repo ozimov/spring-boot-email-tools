@@ -35,7 +35,7 @@ public interface TemplateService {
      *                          be explicitly reported. E.g., a template {@code template.html} under the folder
      *                          {@code resources/templates/module} must be reported as {@code "module/template"}
      * @param model             the model object to process the templateReference
-     * @return a processed template (an HTML, or XML, or wathever the templateReference engine can process)
+     * @return a processed template (an HTML, or XML, or whatever the templateReference engine can process)
      * @throws IOException       thrown if the templateReference file is not found or cannot be accessed
      * @throws TemplateException if the templateReference cannot be processed with the given model object
      */

@@ -9,8 +9,9 @@
     <version>0.4.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Spring Boot Email - EmailService Plain Text Email Sending Test</name>
-    <description>Sample module to test sending plain text emails with EmailService only in a Spring Boot application</description>
+    <name>Spring Boot Email - Plain Text Email Sending Test</name>
+    <description>Sample module to test sending plain text emails with EmailService only in a Spring Boot application
+    </description>
 
 
     <parent>
@@ -27,8 +28,21 @@
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>spring-boot-email-core</artifactId>
-            <version>0.4.0</version>
+            <version>0.4.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

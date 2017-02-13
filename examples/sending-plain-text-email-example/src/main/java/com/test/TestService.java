@@ -1,6 +1,5 @@
 package com.test;
 
-import com.google.common.collect.Lists;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmail;
 import it.ozimov.springboot.templating.mail.service.EmailService;
@@ -24,7 +23,7 @@ public class TestService {
                         "Hari Seldon"))
                 .to(newArrayList(
                         new InternetAddress("the-real-cleon@trantor.gov",
-                        "Cleon I")))
+                                "Cleon I")))
                 .subject("You shall die! It's not me, it's Psychohistory")
                 .body("Hello Planet!")
                 .encoding("UTF-8").build();

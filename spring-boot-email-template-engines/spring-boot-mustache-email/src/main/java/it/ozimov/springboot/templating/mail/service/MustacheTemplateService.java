@@ -49,7 +49,7 @@ public class MustacheTemplateService implements TemplateService {
             throws IOException, TemplateException {
         checkArgument(!isNullOrEmpty(templateReference.trim()), "The given templateName is null, empty or blank");
         checkArgument(Objects.equals(getFileExtension(templateReference), expectedTemplateExtension()),
-                "Expected a Mustache template file with extension %s, while %s was given. To check " +
+                "Expected a Mustache template file with extension '%s', while '%s' was given. To check " +
                         "the default extension look at 'spring.mustache.suffix' in your application.properties file",
                 expectedTemplateExtension(), getFileExtension(templateReference));
 
@@ -61,8 +61,8 @@ public class MustacheTemplateService implements TemplateService {
             return mustacheAutoConfiguration.mustacheCompiler(mustacheAutoConfiguration.mustacheTemplateLoader())
                     .compile(template)
                     .execute(model);
-        } catch (Throwable t) {
-            throw new TemplateException(t);
+        } catch (Exception e) {
+            throw new TemplateException(e);
         }
     }
 

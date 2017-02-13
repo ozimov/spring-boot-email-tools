@@ -14,9 +14,9 @@
 
 
     <parent>
-        <groupId>it.ozimov</groupId>
-        <artifactId>spring-boot-email-build</artifactId>
-        <version>0.4.1-SNAPSHOT</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.1.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -30,5 +30,18 @@
             <version>0.4.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

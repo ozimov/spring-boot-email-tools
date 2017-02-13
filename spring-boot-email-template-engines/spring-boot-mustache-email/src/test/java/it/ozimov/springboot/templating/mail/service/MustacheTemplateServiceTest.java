@@ -18,6 +18,7 @@ package it.ozimov.springboot.templating.mail.service;
 
 import com.google.common.collect.ImmutableMap;
 import it.ozimov.springboot.templating.mail.MustacheTestApplication;
+import it.ozimov.springboot.templating.mail.service.exception.TemplateException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -32,6 +33,7 @@ import java.util.UUID;
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MustacheTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -44,7 +46,7 @@ public class MustacheTemplateServiceTest {
     private TemplateService templateService;
 
     @Test
-    public void testMergeTemplateIntoString() throws Exception {
+    public void shouldMergeTemplateIntoString() throws Exception {
         //Arrange
         final String expectedBody = TemplatingTestUtils.getExpectedBody();
 
@@ -56,7 +58,7 @@ public class MustacheTemplateServiceTest {
     }
 
     @Test
-    public void testCannotAcceptEmptyTemplateName() throws Exception {
+    public void shouldNotAcceptEmptyTemplateName() throws Exception {
         //Arrange
         final Map<String, Object> modelObject = new ImmutableMap.Builder<String, Object>()
                 .build();
@@ -70,7 +72,7 @@ public class MustacheTemplateServiceTest {
     }
 
     @Test
-    public void testCannotAcceptTemplateNameWithoutSpecifiedExtension() throws Exception {
+    public void shouldNotAcceptTemplateNameWithoutSpecifiedExtension() throws Exception {
         //Arrange
         final Map<String, Object> modelObject = new ImmutableMap.Builder<String, Object>()
                 .build();
@@ -81,6 +83,19 @@ public class MustacheTemplateServiceTest {
 
         //Assert
         fail("IllegalArgumentException expected");
+    }
+
+    @Test
+    public void shouldThrowExceptionOnWrongTemplate() throws Exception {
+        //Arrange
+        final Map<String, Object> modelObject = new ImmutableMap.Builder<String, Object>().build();
+        expectedException.expect(TemplateException.class);
+
+        //Act
+        templateService.mergeTemplateIntoString(TemplatingTestUtils.WRONG_TEMPLATE, modelObject);
+
+        //Assert
+        fail("TemplateException expected");
     }
 
 }
