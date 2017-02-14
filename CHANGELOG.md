@@ -8,6 +8,7 @@ Revise unit testing by only using AssertJ and JUnit5
 
 ## [Unreleased]
 
+## [0.4.1] - 2017-02-14
 ### Added
 - The property to enable the `SchedulerService` class is the boolean one `spring.mail.scheduler.enabled`.
 - The application property `spring.mail.scheduler.enabled.priorityLevels` for the default scheduler 
