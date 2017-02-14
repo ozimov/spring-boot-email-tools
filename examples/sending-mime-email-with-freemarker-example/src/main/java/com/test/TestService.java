@@ -41,7 +41,7 @@ public class TestService {
                                 "Cleon I")))
                 .subject("You shall die! It's not me, it's Psychohistory")
                 .body("")//this will be overridden by the template, anyway
-                .attachment(getCsvForecastAttachment("forecast.csv"))
+                .attachment(getCsvForecastAttachment("forecast"))
                 .encoding("UTF-8").build();
 
         String template = "emailTemplate.ftl";
