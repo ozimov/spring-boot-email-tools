@@ -40,7 +40,7 @@ public class DefaultEmailAttachmentTest implements UnitTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void testEmailAttachmentImplMustHaveAttachmentName() throws Exception {
+    public void testDefaultEmailAttachmentMustHaveAttachmentName() throws Exception {
         //Arrange
         expectedException.expect(NullPointerException.class);
 
@@ -54,7 +54,7 @@ public class DefaultEmailAttachmentTest implements UnitTest {
     }
 
     @Test
-    public void testEmailAttachmentImplMustHaveAttachmentData() throws Exception {
+    public void testDefaultEmailAttachmentMustHaveAttachmentData() throws Exception {
         //Arrange
         expectedException.expect(NullPointerException.class);
 
@@ -68,11 +68,11 @@ public class DefaultEmailAttachmentTest implements UnitTest {
     }
 
     @Test
-    public void testEmailAttachmentImplValidWithRequiredFields() throws Exception {
+    public void testDefaultEmailAttachmentValidWithRequiredFields() throws Exception {
         //Arrange
 
         //Act
-        final DefaultEmailAttachment emailAttachment = getEmailAttachmentImpl();
+        final DefaultEmailAttachment emailAttachment = getDefaultEmailAttachment();
 
         //Assert
         assertThat(emailAttachment, not(is(nullValue())));
@@ -82,7 +82,7 @@ public class DefaultEmailAttachmentTest implements UnitTest {
     @Test
     public void testGetInputStream() throws Exception {
         //Arrange
-        final DefaultEmailAttachment emailAttachment = getEmailAttachmentImpl();
+        final DefaultEmailAttachment emailAttachment = getDefaultEmailAttachment();
 
         //Act
         final ByteArrayResource byteArrayResource = emailAttachment.getInputStream();
@@ -95,7 +95,7 @@ public class DefaultEmailAttachmentTest implements UnitTest {
     @Test
     public void testGetContentType() throws Exception {
         //Arrange
-        final DefaultEmailAttachment emailAttachment = getEmailAttachmentImpl();
+        final DefaultEmailAttachment emailAttachment = getDefaultEmailAttachment();
 
         //Act
         final MediaType mediaType = emailAttachment.getContentType();
@@ -105,7 +105,7 @@ public class DefaultEmailAttachmentTest implements UnitTest {
         assertThat(mediaType, is(IMAGE_JPEG));
     }
 
-    private DefaultEmailAttachment getEmailAttachmentImpl() throws IOException {
+    private DefaultEmailAttachment getDefaultEmailAttachment() throws IOException {
         return DefaultEmailAttachment.builder()
                 .attachmentName("Attachment.jpg")
                 .attachmentData(TestUtils.loadFileIntoByte(FILE_PATH))

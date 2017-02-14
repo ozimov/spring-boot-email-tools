@@ -50,12 +50,13 @@ public class ThymeleafTemplateService implements TemplateService {
             throws IOException, TemplateException {
         checkArgument(!isNullOrEmpty(templateReference.trim()), "The given template is null, empty or blank");
         checkArgument(Objects.equals(getNormalizedFileExtension(templateReference), expectedTemplateExtension()),
-                "Expected a Thymeleaf template file with extension %s, while %s was given. To check " +
+                "Expected a Thymeleaf template file with extension '%s', while '%s' was given. To check " +
                         "the default extension look at 'spring.thymeleaf.suffix' in your application.properties file",
                 expectedTemplateExtension(), getNormalizedFileExtension(templateReference));
 
         final Context context = new Context();
         context.setVariables(model);
+
         return thymeleafEngine.process(getNameWithoutExtension(templateReference), context);
     }
 

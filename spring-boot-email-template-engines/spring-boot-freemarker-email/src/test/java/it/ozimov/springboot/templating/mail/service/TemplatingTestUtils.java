@@ -27,6 +27,7 @@ import java.util.Map;
 public class TemplatingTestUtils {
 
     public static final String TEMPLATE = "email_template.ftl";
+    public static final String WRONG_TEMPLATE = "wrong_email_template.ftl";
     public static final String NAME = "Titus";
     public static final Map<String, Object> MODEL_OBJECT = new ImmutableMap.Builder<String, Object>()
             .put("name", NAME)

@@ -18,6 +18,7 @@ package it.ozimov.springboot.templating.mail.service;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.spring4.PebbleViewResolver;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import it.ozimov.springboot.templating.mail.service.exception.TemplateException;
 import lombok.NonNull;
@@ -39,6 +40,9 @@ import static com.google.common.io.Files.getFileExtension;
 public class PebbleTemplateService implements TemplateService {
 
     @Autowired
+    private PebbleViewResolver pebbleViewResolver;
+
+    @Autowired
     private PebbleEngine pebbleEngine;
 
     @Value("${pebble.suffix:pebble}")
@@ -52,7 +56,7 @@ public class PebbleTemplateService implements TemplateService {
             throws IOException, TemplateException {
         checkArgument(!isNullOrEmpty(templateReference.trim()), "The given templateName is null, empty or blank");
         checkArgument(Objects.equals(getFileExtension(templateReference), expectedTemplateExtension()),
-                "Expected a Pebble template file with extension %s, while %s was given. To check " +
+                "Expected a Pebble template file with extension '%s', while '%s' was given. To check " +
                         "the default extension look at 'pebble.suffix' in your application.properties file",
                 expectedTemplateExtension(), getFileExtension(templateReference));
 
@@ -61,7 +65,7 @@ public class PebbleTemplateService implements TemplateService {
             final Writer writer = new StringWriter();
             template.evaluate(writer, model);
             return writer.toString();
-        } catch (PebbleException e) {
+        } catch (Exception e) {
             throw new TemplateException(e);
         }
     }
