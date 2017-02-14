@@ -122,11 +122,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         final EmailSchedulingData emailSchedulingData = buildEmailSchedulingData(mimeEmail, scheduledDateTime, desiredPriorityLevel, assignedPriorityLevel);
         schedule(emailSchedulingData);
         log.info("Scheduled email {} at UTC time {} with priority {}", mimeEmail, scheduledDateTime, desiredPriorityLevel);
-        if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
-            synchronized (consumer) {
-                consumer.notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
-            }
-        }
+        notifyConsumerIfCouldFire(scheduledDateTime);
     }
 
     @Override
@@ -142,11 +138,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         final EmailSchedulingData emailTemplateSchedulingData = buildEmailSchedulingData(mimeEmail, scheduledDateTime, desiredPriorityLevel, template, modelObject, assignedPriorityLevel, inlinePictures);
         schedule(emailTemplateSchedulingData);
         log.info("Scheduled email {} at UTC time {} with priority {} with template", mimeEmail, scheduledDateTime, desiredPriorityLevel);
-        if (isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
-            synchronized (consumer) {
-                consumer.notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
-            }
-        }
+        notifyConsumerIfCouldFire(scheduledDateTime);
     }
 
 
@@ -256,7 +248,15 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
         setLastLoadedFromPersistenceLayer();
 
-        if (isNull(timeOfNextScheduledMessage) || lastEmailSchedulingData.getScheduledDateTime().toInstant().toEpochMilli() < timeOfNextScheduledMessage) {
+        notifyConsumerIfCouldFire(lastEmailSchedulingData.getScheduledDateTime());
+    }
+
+    private void notifyConsumerIfCouldFire(@NonNull OffsetDateTime scheduledDateTime) {
+        final boolean canFire;
+        synchronized (this) {
+            canFire = isNull(timeOfNextScheduledMessage) || scheduledDateTime.toInstant().toEpochMilli() < timeOfNextScheduledMessage;
+        }
+        if (canFire) {
             synchronized (consumer) {
                 consumer.notify(); //the consumer, if waiting, is notified and can try to send next scheduled message
             }

@@ -19,7 +19,6 @@ import javax.mail.internet.InternetAddress;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.nio.file.Paths;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;

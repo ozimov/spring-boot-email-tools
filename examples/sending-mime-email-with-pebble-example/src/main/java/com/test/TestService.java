@@ -2,7 +2,6 @@ package com.test;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.mitchellbosecke.pebble.spring4.PebbleViewResolver;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.EmailAttachment;
 import it.ozimov.springboot.templating.mail.model.ImageType;
@@ -11,7 +10,6 @@ import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmail;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailAttachment;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultInlinePicture;
 import it.ozimov.springboot.templating.mail.service.EmailService;
-import it.ozimov.springboot.templating.mail.service.TemplateService;
 import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,7 +19,6 @@ import javax.mail.internet.InternetAddress;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.nio.file.Paths;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;

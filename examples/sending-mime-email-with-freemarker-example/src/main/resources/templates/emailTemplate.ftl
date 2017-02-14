@@ -8,7 +8,7 @@
     I prepared a logo for your empire. Just have a look and give me a feedback.
 </p>
 <p style="align:center">
-    <img src="galaxy.jpeg" />
+    <img src="galaxy.jpeg"/>
 </p>
 <p>
     Uh, I almost forgot to tell you: <strong>oh emperor, you'll die soon! Assassinated!</strong>

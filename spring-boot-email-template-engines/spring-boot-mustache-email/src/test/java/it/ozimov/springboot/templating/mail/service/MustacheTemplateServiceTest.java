@@ -33,7 +33,6 @@ import java.util.UUID;
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MustacheTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

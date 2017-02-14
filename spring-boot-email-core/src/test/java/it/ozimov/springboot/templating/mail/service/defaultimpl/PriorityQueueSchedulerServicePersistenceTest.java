@@ -86,9 +86,10 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     private int minKeptInMemory = desiredBatchSize;
     private int maxKeptInMemory = Integer.MAX_VALUE;
 
-    public ResultCaptor<Collection<EmailSchedulingData>> nextBatchResultCaptor = new ResultCaptor<>();
+    public ResultCaptor<Collection<EmailSchedulingData>> nextBatchResultCaptor;
 
     public void mockSetUp() {
+        nextBatchResultCaptor = new ResultCaptor<>();
         doAnswer(nextBatchResultCaptor).when(defaultPersistenceService).getNextBatch(anyInt());
     }
 
@@ -440,6 +441,10 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
         final DefaultEmailSchedulingData defaultEmailSchedulingDataLow2 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
         final DefaultEmailSchedulingData defaultEmailSchedulingDataLow3 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
         final DefaultEmailSchedulingData defaultEmailSchedulingDataLow4 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow5 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow6 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow7 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
+        final DefaultEmailSchedulingData defaultEmailSchedulingDataLow8 = createDefaultEmailSchedulingDataWithPriority(assignedLowPriority, TimeUnit.DAYS.toNanos(1));
 
         createScheduler();
 
@@ -453,6 +458,10 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
         mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow2);
         mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow3);
         mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow4);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow5);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow6);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow7);
+        mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataLow8);
 
         //Act
         scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh1);//1) -- Should fire asap
@@ -464,6 +473,10 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
         scheduleEmailSchedulingData(defaultEmailSchedulingDataLow2);//7) -- this could be not in memory
         scheduleEmailSchedulingData(defaultEmailSchedulingDataLow3);//8) -- this MUST NOT be in memory
         scheduleEmailSchedulingData(defaultEmailSchedulingDataLow4);//9) -- this MUST NOT be in memory
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataLow5);//10) -- this MUST NOT be in memory
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataLow6);//11) -- this MUST NOT be in memory
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataLow7);//12) -- this MUST NOT be in memory
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataLow8);//13) -- this MUST NOT be in memory
 
         TimeUnit.SECONDS.sleep(5);
 
