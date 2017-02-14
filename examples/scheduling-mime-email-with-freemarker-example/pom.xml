@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>it.ozimov</groupId>
-    <artifactId>sending-mime-email-with-pebble-example</artifactId>
+    <artifactId>scheduling-mime-email-with-freemarker-example</artifactId>
     <version>0.4.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Spring Boot Email - Mime Email Sending with Pebble Test</name>
-    <description>Sample module to test sending mime emails using the Pebble template engine and
+    <name>Spring Boot Email - Mime Email Scheduling with Freemarker Test</name>
+    <description>Sample module to test scheudling of mime emails using the Freemarker template engine and
         with EmailService in a Spring Boot application
     </description>
 
@@ -25,16 +25,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>1.5.1.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>it.ozimov</groupId>
-            <artifactId>spring-boot-email-core</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>it.ozimov</groupId>
-            <artifactId>spring-boot-pebble-email</artifactId>
+            <artifactId>spring-boot-freemarker-email</artifactId>
             <version>0.4.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

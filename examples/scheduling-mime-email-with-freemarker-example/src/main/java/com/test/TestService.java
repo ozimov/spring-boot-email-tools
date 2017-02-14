@@ -29,11 +29,11 @@ public class TestService {
     @Autowired
     private EmailService emailService;
 
-    public void sendMimeEmailWithPebble() throws UnsupportedEncodingException, CannotSendEmailException {
+    public void sendMimeEmailWithFreemarker() throws UnsupportedEncodingException, CannotSendEmailException {
         InlinePicture inlinePicture = createGalaxyInlinePicture();
 
         final Email email = DefaultEmail.builder()
-                .from(new InternetAddress("hari.seldon@the-foundation.gal",
+                .from(new InternetAddress("hari.seldon@gmail.com",
                         "Hari Seldon"))
                 .to(newArrayList(
                         new InternetAddress("the-real-cleon@trantor.gov",
@@ -43,7 +43,7 @@ public class TestService {
                 .attachment(getCsvForecastAttachment("forecast"))
                 .encoding("UTF-8").build();
 
-        String template = "emailTemplate.html";
+        String template = "emailTemplate.ftl";
 
         Map<String, Object> modelObject = ImmutableMap.of(
                 "title", "Emperor",

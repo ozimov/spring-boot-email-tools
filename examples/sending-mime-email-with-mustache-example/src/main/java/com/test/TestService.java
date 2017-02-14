@@ -33,7 +33,7 @@ public class TestService {
         InlinePicture inlinePicture = createGalaxyInlinePicture();
 
         final Email email = DefaultEmail.builder()
-                .from(new InternetAddress("hari.seldon@gmail.com",
+                .from(new InternetAddress("hari.seldon@the-foundation.gal",
                         "Hari Seldon"))
                 .to(newArrayList(
                         new InternetAddress("the-real-cleon@trantor.gov",
