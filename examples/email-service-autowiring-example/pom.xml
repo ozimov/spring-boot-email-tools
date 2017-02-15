@@ -9,7 +9,7 @@
     <version>0.4.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Spring Boot Email - EmailService Autowiring Test</name>
+    <name>Spring Boot Email - EmailService Autowiring Example</name>
     <description>Sample module to test autowiring of EmailService only in a Spring Boot application</description>
 
 

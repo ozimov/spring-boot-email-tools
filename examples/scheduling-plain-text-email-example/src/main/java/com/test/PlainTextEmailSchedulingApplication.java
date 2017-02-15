@@ -1,6 +1,5 @@
 package com.test;
 
-import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,18 +13,18 @@ import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.test", "it.ozimov.springboot.templating.mail"})
-public class MimeEmailWithFreemarkerApplication {
+public class PlainTextEmailSchedulingApplication {
 
     @Autowired
     private TestService testService;
 
     public static void main(String[] args) {
-        SpringApplication.run(MimeEmailWithFreemarkerApplication.class, args);
+        SpringApplication.run(PlainTextEmailSchedulingApplication.class, args);
     }
 
     @PostConstruct
-    public void sendEmail() throws UnsupportedEncodingException, InterruptedException, CannotSendEmailException {
-        testService.sendMimeEmailWithFreemarker();
+    public void sendEmail() throws UnsupportedEncodingException, InterruptedException {
+        testService.scheduleSixEmails();
 
         close();
     }
@@ -38,7 +37,7 @@ public class MimeEmailWithFreemarkerApplication {
             }
         };
         Timer shutdownTimer = new Timer();
-        shutdownTimer.schedule(shutdownTask, TimeUnit.SECONDS.toMillis(3));
+        shutdownTimer.schedule(shutdownTask, TimeUnit.SECONDS.toMillis(20));
     }
 
 }

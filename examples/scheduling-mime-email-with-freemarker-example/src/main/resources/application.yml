@@ -5,4 +5,5 @@ spring.mail.password: Th3MuleWh0
 spring.mail.properties.mail.smtp.auth: true
 spring.mail.properties.mail.smtp.starttls.enable: true
 spring.mail.properties.mail.smtp.starttls.required: true
-spring.mail.scheduler.priorityLevels: 1
+spring.mail.scheduler.enabled: true
+spring.mail.scheduler.priorityLevels: 2
