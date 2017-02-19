@@ -83,18 +83,16 @@ Remember that if you import the template-full module, the core module should not
 
 
 ## Usage
-In your main Spring Boot application, you may need to add an explicit reference
-to scan for all the services and controllers defined in the Spring Boot Email module, e.g.:
+In your main Spring Boot application, you need to add the annotation `@EnableEmailTools` to
+  enable support for all the services and controllers defined in the Spring Boot Email module, e.g.:
 
 ```java
-package com.myapplication;
-
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.myapplication", "it.ozimov.springboot"})
+@EnableEmailTools
 public class MainApplication  {
 
-    public static void main(final String... args) {
-
+    public static void main(final String ... args) {
+        SpringApplication.run(MainApplication.class, args);
     }
 }
 ```

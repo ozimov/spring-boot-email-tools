@@ -1,11 +1,12 @@
 package com.test;
 
+import it.ozimov.springboot.templating.mail.configuration.EnableEmailTools;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.test", "it.ozimov.springboot.templating.mail"})
+@EnableEmailTools
 public class AutowireApplication {
 
     public static void main(String[] args) {

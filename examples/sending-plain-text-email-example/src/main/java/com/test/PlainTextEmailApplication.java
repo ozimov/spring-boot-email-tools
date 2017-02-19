@@ -1,5 +1,6 @@
 package com.test;
 
+import it.ozimov.springboot.templating.mail.configuration.EnableEmailTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +13,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.test", "it.ozimov.springboot.templating.mail"})
+@EnableEmailTools
 public class PlainTextEmailApplication {
 
     @Autowired
