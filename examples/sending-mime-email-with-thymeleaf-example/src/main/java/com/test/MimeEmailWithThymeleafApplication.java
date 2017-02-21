@@ -2,10 +2,14 @@ package com.test;
 
 import it.ozimov.springboot.templating.mail.configuration.EnableEmailTools;
 import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
@@ -15,13 +19,20 @@ import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 @EnableEmailTools
-public class MimeEmailWithThymeleafApplication {
+public class MimeEmailWithThymeleafApplication implements ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
 
     @Autowired
     private TestService testService;
 
     public static void main(String[] args) {
         SpringApplication.run(MimeEmailWithThymeleafApplication.class, args);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     @PostConstruct
@@ -35,7 +46,7 @@ public class MimeEmailWithThymeleafApplication {
         TimerTask shutdownTask = new TimerTask() {
             @Override
             public void run() {
-                System.exit(0);
+                ((AbstractApplicationContext) applicationContext).close();
             }
         };
         Timer shutdownTimer = new Timer();

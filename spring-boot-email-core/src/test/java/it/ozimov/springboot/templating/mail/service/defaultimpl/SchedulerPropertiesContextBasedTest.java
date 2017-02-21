@@ -75,8 +75,8 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
                             SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS + "=123",
                             SPRING_MAIL_PERSISTENCE_ENABLED + "=false",
                             SPRING_MAIL_PERSISTENCE_ENABLED + "=false",
-                            SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED + "=false",
-                            SPRING_MAIL_PERSISTENCE_REDIS_ENABLED + "=false",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_EMBEDDED + "=false",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_ENABLED + "=false",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_DESIRED_BATCH_SIZE + "=1",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MIN_KEPT_IN_MEMORY + "=1",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY + "=1"
@@ -114,8 +114,8 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
                             SPRING_MAIL_SCHEDULER_ENABLED + "=true",
                             SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS + "=321",
                             SPRING_MAIL_PERSISTENCE_ENABLED + "=true",
-                            SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED + "=false",
-                            SPRING_MAIL_PERSISTENCE_REDIS_ENABLED + "=false",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_EMBEDDED + "=false",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_ENABLED + "=false",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_DESIRED_BATCH_SIZE + "=125",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MIN_KEPT_IN_MEMORY + "=25",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY + "=123456"

@@ -6,7 +6,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.is;
 
 public class CannotSendEmailExceptionTest implements UnitTest {

@@ -16,33 +16,22 @@
 
 package it.ozimov.springboot.templating.mail.service;
 
-import it.ozimov.springboot.templating.mail.BaseRedisTest;
+import com.google.common.collect.ImmutableSet;
+import it.ozimov.springboot.templating.mail.UnitTest;
 import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-import redis.embedded.RedisServer;
-import redis.embedded.exceptions.EmbeddedRedisException;
 
-import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.*;
-
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {BaseRedisTest.ContextConfiguration.class})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class EmailEmbeddedRedisTest extends BaseRedisTest {
+public class EmailEmbeddedRedisTest implements UnitTest {
 
-    private static final String REDIS_SERVER_FIELD_NAME = "redisServer";
+    private static final Character WHITESPACE = ' ';
 
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -50,56 +39,44 @@ public class EmailEmbeddedRedisTest extends BaseRedisTest {
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
-    @Autowired
+    private static final int PORT = 123;
+
     public EmailEmbeddedRedis emailEmbeddedRedis;
 
-    private RedisServer redisServerOriginal;
-
-    @Before
-    public void copyOriginalRedisServer() {
-        redisServerOriginal = (RedisServer) ReflectionTestUtils.getField(emailEmbeddedRedis, REDIS_SERVER_FIELD_NAME);
-    }
-
-    @After
-    public void restoreOriginalRedisServer() {
-        ReflectionTestUtils.setField(emailEmbeddedRedis, REDIS_SERVER_FIELD_NAME, redisServerOriginal);
-    }
-
     @Test
-    public void shouldRedisHaveBeenStarted() throws Exception {
-        //Assert
-        assertions.assertThat(redisServerOriginal.ports()).containsOnly(emailEmbeddedRedis.getRedisPort());
-        assertions.assertThat(redisServerOriginal.isActive()).isTrue();
-    }
-
-    @Test
-    public void shouldStopRedis() throws Exception {
+    public void shouldGetSettingsReturnDefaultSettings() throws Exception {
         //Arrange
-        final RedisServer redisServerMock = mock(ForTestRedisServer.class);
-        ReflectionTestUtils.setField(emailEmbeddedRedis, REDIS_SERVER_FIELD_NAME, redisServerMock);
-        when(redisServerMock.isActive()).thenReturn(false);
+        emailEmbeddedRedis = new EmailEmbeddedRedis(PORT, ImmutableSet.of());
 
         //Act
-        emailEmbeddedRedis.stopRedis();
+        Set<String> givenSettings = emailEmbeddedRedis.getSettings();
 
         //Assert
-        verify(redisServerMock).stop();
-        assertions.assertThat(emailEmbeddedRedis.isActive()).isFalse();
+        assertions.assertThat(givenSettings).containsOnly("appendonly yes", "appendfsync everysec");
     }
 
-    public class ForTestRedisServer extends RedisServer {
+    @Test
+    public void shouldGetSettingsReturnOverriddenDefaultSettings() throws Exception {
+        //Arrange
+        emailEmbeddedRedis = new EmailEmbeddedRedis(PORT, ImmutableSet.of("appendonly no", "appendfsync" + WHITESPACE + WHITESPACE + "always"));
 
-        public ForTestRedisServer() throws IOException {
-        }
+        //Act
+        Set<String> givenSettings = emailEmbeddedRedis.getSettings();
 
-        public synchronized void stop() throws EmbeddedRedisException {
-            //Do nothing
-        }
+        //Assert
+        assertions.assertThat(givenSettings).containsOnly("appendonly no", "appendfsync always");
+    }
 
-        public boolean isActive() {
-            throw new UnsupportedOperationException();
-        }
+    @Test
+    public void shouldGetSettingsReturnDefaultAndNewOnesSettings() throws Exception {
+        //Arrange
+        emailEmbeddedRedis = new EmailEmbeddedRedis(PORT, ImmutableSet.of("maxmemory 2mb"));
 
+        //Act
+        Set<String> givenSettings = emailEmbeddedRedis.getSettings();
+
+        //Assert
+        assertions.assertThat(givenSettings).containsOnly("appendonly yes", "appendfsync everysec", "maxmemory 2mb");
     }
 
 }

@@ -1,54 +1,84 @@
 package it.ozimov.springboot.templating.mail.service;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.stereotype.Component;
 import redis.embedded.RedisServer;
+import redis.embedded.RedisServerBuilder;
 
 import javax.annotation.PreDestroy;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.SPRING_MAIL_PERSISTENCE_REDIS_PORT;
-import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.PERSISTENCE_IS_ENABLED_WITH_EMBEDDED_REDIS;
+import static java.util.stream.Collectors.toSet;
 
-@Component
-@ConditionalOnExpression(PERSISTENCE_IS_ENABLED_WITH_EMBEDDED_REDIS)
 @Slf4j
 public class EmailEmbeddedRedis {
 
-    private static final String REDIS_PORT = "${" + SPRING_MAIL_PERSISTENCE_REDIS_PORT + "}";
+    private static final Character WHITESPACE = ' ';
 
     @Getter
     private final int redisPort;
+    @Getter
+    private final Set<String> settings;
 
     private final RedisServer redisServer;
 
-    @Autowired
-    public EmailEmbeddedRedis(@Value(REDIS_PORT) final int redisPort) {
+    public EmailEmbeddedRedis(final int redisPort, @NonNull final Set<String> settings) {
         this.redisPort = redisPort;
-        redisServer = createStartedRedis();
+        this.settings = mergeSettings(settings);
+        redisServer = createRedisServer();
     }
 
-    private RedisServer createStartedRedis() {
-        final RedisServer redisServer = RedisServer.builder()
+    private RedisServer createRedisServer() {
+        final RedisServerBuilder redisServerBuilder = RedisServer.builder()
                 .port(redisPort)
                 .setting("appendonly yes")
-                .build();
-        redisServer.start();
-        log.info("Started Embedded Redis Server on port %d.", redisPort);
+                .setting("appendfsync everysec");
+        settings.stream().forEach(s -> redisServerBuilder.setting(s));
+
+        final RedisServer redisServer = redisServerBuilder.build();
         return redisServer;
+    }
+
+
+    public EmailEmbeddedRedis start() {
+        log.info("Started Embedded Redis Server on port {}.", redisPort);
+        redisServer.start();
+        return this;
     }
 
     @PreDestroy
     public void stopRedis() {
         redisServer.stop();
-        log.info("Stopped Embedded Redis Server on port %d.", redisPort);
+        log.info("Stopped Embedded Redis Server on port {}.", redisPort);
     }
 
     public boolean isActive() {
         return redisServer.isActive();
+    }
+
+    private Set<String> mergeSettings(final Set<String> settings) {
+        Map<String, String> keyValueMap = new HashMap<>();
+        keyValueMap.put("appendonly", "yes");
+        keyValueMap.put("appendfsync", "everysec");
+
+        for(String setting : settings){
+            String normalizedSetting = setting.trim();
+            int indexOfWhitespace =normalizedSetting.indexOf(WHITESPACE);
+            if(indexOfWhitespace != -1 && indexOfWhitespace != normalizedSetting.length()) {
+                String key = normalizedSetting.substring(0, indexOfWhitespace);
+                String value = normalizedSetting.substring(indexOfWhitespace+1).trim();
+                keyValueMap.put(key, value);
+            }
+        }
+
+        return keyValueMap.entrySet()
+                .stream()
+                .map(entry -> entry.getKey()+WHITESPACE+entry.getValue())
+                .collect(toSet());
     }
 
 }
