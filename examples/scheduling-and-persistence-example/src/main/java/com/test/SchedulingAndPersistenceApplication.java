@@ -9,6 +9,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
@@ -17,32 +19,37 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
+@EnableAsync
 @ComponentScan(basePackages = {"com.test", "it.ozimov.springboot.templating.mail"})
-public class MimeEmailWithFreemarkerSchedulingApplication implements ApplicationContextAware {
+public class SchedulingAndPersistenceApplication implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
+
+    private static boolean scheduleEmails = true;
 
     @Autowired
     private TestService testService;
 
-    public static void main(String[] args) {
-        SpringApplication.run(MimeEmailWithFreemarkerSchedulingApplication.class, args);
+    public static void createMainSpringApp(final boolean schedule) {
+        scheduleEmails = schedule;
+        SpringApplication.run(SchedulingAndPersistenceApplication.class);
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
     @PostConstruct
     public void sendEmail() throws UnsupportedEncodingException, InterruptedException, CannotSendEmailException {
-        testService.scheduleSixMimeEmails();
+        if (scheduleEmails) testService.scheduleTwoEmails();
 
         close();
     }
 
+    @Async
     private void close() {
-        TimerTask shutdownTask = new TimerTask() {
+        final TimerTask shutdownTask = new TimerTask() {
             @Override
             public void run() {
                 ((ConfigurableApplicationContext) applicationContext).close();

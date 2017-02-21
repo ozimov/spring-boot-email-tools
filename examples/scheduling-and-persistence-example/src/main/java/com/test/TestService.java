@@ -30,18 +30,24 @@ public class TestService {
     @Autowired
     private SchedulerService schedulerService;
 
-    public void scheduleSixMimeEmails() throws UnsupportedEncodingException, CannotSendEmailException {
-        OffsetDateTime now = OffsetDateTime.now();
-        OffsetDateTime whenFirstGroup = now.plusSeconds(5);
-        OffsetDateTime whenSecondGroup = now.plusSeconds(10);
-        OffsetDateTime whenThirdGroup = now.plusSeconds(15);
+    public void scheduleTwoEmails() throws UnsupportedEncodingException, CannotSendEmailException {
+        OffsetDateTime when = OffsetDateTime.now().plusSeconds(20);
+        schedulePlainTextEmail(when, 1);
+        scheduleMimeEmail(when, 2);
+    }
 
-        scheduleMimeEmail(whenFirstGroup, 2);
-        scheduleMimeEmail(whenFirstGroup, 1);
-        scheduleMimeEmail(whenSecondGroup, 1);
-        scheduleMimeEmail(whenSecondGroup, 2);
-        scheduleMimeEmail(whenThirdGroup, 2);
-        scheduleMimeEmail(whenThirdGroup, 1);
+    private void schedulePlainTextEmail(OffsetDateTime when, int priority) throws UnsupportedEncodingException {
+        final Email email = DefaultEmail.builder()
+                .from(new InternetAddress("hari.seldon@gmail.com",
+                        "Hari Seldon"))
+                .to(newArrayList(
+                        new InternetAddress("the-real-cleon@trantor.gov",
+                                "Cleon I")))
+                .subject(String.format("Plain text email scheduled with firetime '%s' and priority %d", when, priority))
+                .body("Hello Planet!")
+                .encoding("UTF-8").build();
+
+        schedulerService.schedule(email, when, priority);
     }
 
     private void scheduleMimeEmail(OffsetDateTime when, int priority) throws UnsupportedEncodingException, CannotSendEmailException {
@@ -53,7 +59,7 @@ public class TestService {
                 .to(newArrayList(
                         new InternetAddress("the-real-cleon@trantor.gov",
                                 "Cleon I")))
-                .subject(String.format("Email scheduled with firetime '%s' and priority %d", when, priority))
+                .subject(String.format("Mime email scheduled with firetime '%s' and priority %d", when, priority))
                 .body("")//this will be overridden by the template, anyway
                 .attachment(getCsvForecastAttachment("forecast"))
                 .encoding("UTF-8").build();
