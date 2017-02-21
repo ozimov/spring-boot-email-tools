@@ -4,7 +4,7 @@ a template engine to generate dynamic content.
 
 **Source Website:** *[github.com/ozimov/spring-boot-email-tools](http://github.com/ozimov/spring-boot-email-tools/)*<br />
 
-**Latest Release:** *0.4.1* <br />
+**Latest Release:** *0.4.2* <br />
 **Latest Artifacts:** *it.ozimov:spring-boot-email-core*, *it.ozimov:spring-boot-freemarker-email*,
     *it.ozimov:spring-boot-mustache-email*, *it.ozimov:spring-boot-pebble-email*, *it.ozimov:spring-boot-thymeleaf-email* <br />
 **Continuous Integration:** <br />
@@ -29,13 +29,13 @@ module that is shipped with the core module. The standard naming for the templat
 `it.ozimov:spring-boot-{template_engine_name}-email` (where `{template_engine_name}` is for instance `pebble`).
 
 ## Dependency
-Latest release is **`0.4.1`**. To use the core module, you can import the following dependency in Maven
+Latest release is **`0.4.2`**. To use the core module, you can import the following dependency in Maven
 
 ```xml
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-core</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 </dependency>
 ```
 
@@ -45,7 +45,7 @@ To embed the module that includes the _Freemarker_ template engine, you can use 
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-freemarker-email</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 </dependency>
 ```
 
@@ -55,7 +55,7 @@ for _Mustache_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-mustache-email</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 </dependency>
 ```
 
@@ -65,7 +65,7 @@ for _Pebble_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-pebble-email</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 </dependency>
 ```
 
@@ -75,7 +75,7 @@ and for _Thymeleaf_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-thymeleaf-email</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 </dependency>
 ```
 
@@ -258,7 +258,7 @@ This is required to set the a proper content-id.
 
 ## Email scheduling
 
-The library supports email scheduling, but since version _0.4.1_ the scheduler is disabled by default. To enable 
+The library supports email scheduling, but since version _0.4.2_ the scheduler is disabled by default. To enable 
 email scheduling, the following property has to be provided:
  
 ```properties
@@ -348,7 +348,7 @@ public void MyEmailWithTemplateSenderService {
 ```
 
 ## Persistence
-Persistence has been introduced in version `0.4.1`. Persistence is mainly of interest if the scheduler is used, therefore
+Persistence has been introduced in version `0.4.2`. Persistence is mainly of interest if the scheduler is used, therefore
 it can be enabled only if the scheduler is enabled.
 
 The persistence layer is optional, thus needs to be activated. The default implementation is fully based on embedded REDIS.
@@ -360,7 +360,19 @@ spring.mail.scheduler.persistence.redis.enabled=true
 spring.mail.scheduler.persistence.redis.embedded=true
 spring.mail.scheduler.persistence.redis.host=localhost
 spring.mail.scheduler.persistence.redis.port=6381
+spring.mail.scheduler.persistence.redis.settings=
 ```
+
+I recommend to specify in the REDIS settings at least the `appendfilename` and `dir` properties,
+so that you know where the append file is placed and which name it uses. For instance do:
+
+```properties
+spring.mail.scheduler.persistence.redis.settings=appendfilename email_appendonly.aof, dir /Users/your_username/Downloads
+```
+
+By default we have the setting `appendonly yes` and `appendfsync everysec`. Feel free to override them or fine tune them 
+according with your needs.
+
 
 Clearly, you can provide your own persistence layer by implementing the `PersistenceService` interface. You can also
  use your REDIS implementation, but this will require extra coding on your side.

@@ -21,6 +21,7 @@ import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.service.PersistenceService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.BoundZSetOperations;
@@ -52,8 +53,8 @@ public class DefaultPersistenceService implements PersistenceService {
     private final RedisTemplate<String, EmailSchedulingData> valueTemplate;
 
     @Autowired
-    public DefaultPersistenceService(@NonNull final StringRedisTemplate orderingTemplate,
-                                     @NonNull final RedisTemplate<String, EmailSchedulingData> valueTemplate) {
+    public DefaultPersistenceService(@Qualifier("orderingTemplate") @NonNull final StringRedisTemplate orderingTemplate,
+                                     @Qualifier("valueTemplate") @NonNull final RedisTemplate<String, EmailSchedulingData> valueTemplate) {
         this.orderingTemplate = orderingTemplate;
         this.orderingTemplate.setEnableTransactionSupport(true);
 

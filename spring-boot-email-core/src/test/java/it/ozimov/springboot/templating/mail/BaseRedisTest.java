@@ -16,6 +16,7 @@
 
 package it.ozimov.springboot.templating.mail;
 
+import com.google.common.collect.ImmutableSet;
 import it.ozimov.springboot.templating.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.templating.mail.service.EmailEmbeddedRedis;
 import it.ozimov.springboot.templating.mail.service.defaultimpl.SchedulerProperties;
@@ -42,7 +43,10 @@ import redis.clients.jedis.JedisShardInfo;
 import redis.embedded.RedisServer;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
 import static it.ozimov.springboot.templating.mail.PortUtils.randomFreePort;
@@ -123,10 +127,10 @@ public abstract class BaseRedisTest implements ContextBasedTest {
                             SPRING_MAIL_SCHEDULER_ENABLED + "=true",
                             SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS + "=321",
                             SPRING_MAIL_PERSISTENCE_ENABLED + "=true",
-                            SPRING_MAIL_PERSISTENCE_REDIS_EMBEDDED + "=false",
-                            SPRING_MAIL_PERSISTENCE_REDIS_ENABLED + "=false",
-                            SPRING_MAIL_PERSISTENCE_REDIS_HOST + "=localhost",
-                            SPRING_MAIL_PERSISTENCE_REDIS_PORT + "=6381",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_EMBEDDED + "=false",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_ENABLED + "=false",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_HOST + "=localhost",
+                            SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_PORT + "=6381",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_DESIRED_BATCH_SIZE + "=125",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MIN_KEPT_IN_MEMORY + "=25",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY + "=123456"
@@ -141,7 +145,8 @@ public abstract class BaseRedisTest implements ContextBasedTest {
         public ContextConfiguration() throws IOException {
             int redisPort = randomFreePort();
 
-            emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort);
+            emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort, ImmutableSet.of()).start();
+
             redisServer = (RedisServer) ReflectionTestUtils.getField(emailEmbeddedRedis, "redisServer");
 
             JedisShardInfo shardInfo = new JedisShardInfo("localhost", redisPort);

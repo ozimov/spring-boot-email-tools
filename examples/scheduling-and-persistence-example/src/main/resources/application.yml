@@ -1,0 +1,25 @@
+--- 
+spring.mail: 
+  port: 587
+  host: smtp.gmail.com
+  password: Th3MuleWh0
+  username: hari.seldon@the-foundation.gal
+  properties.mail.smtp:
+    auth: true
+    starttls: 
+      enable: true
+      required: true
+  scheduler: 
+    enabled: true
+    priorityLevels: 2
+    persistence:
+      enabled: true
+      desiredBatchSize: 200
+      maxKeptInMemory: 1000
+      minKeptInMemory: 100
+      redis: 
+        enabled: true
+        embedded: true
+        host: localhost
+        port: 6381
+        settings: appendfilename email_appendonly.aof, dir /Users/your_username/Downloads

@@ -2,7 +2,8 @@ package it.ozimov.springboot.templating.mail.service;
 
 public enum ServiceStatus {
 
-    CREATED,
+    RUNNING,
+    CLOSING,
     CLOSED
 
 }

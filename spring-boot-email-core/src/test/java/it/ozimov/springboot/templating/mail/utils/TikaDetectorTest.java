@@ -16,17 +16,20 @@
 
 package it.ozimov.springboot.templating.mail.utils;
 
+import org.assertj.core.api.JUnitSoftAssertions;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.io.InputStream;
 
-import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
-import static org.hamcrest.Matchers.is;
 import static testutils.TestUtils.loadFileIntoInputStream;
 
 public class TikaDetectorTest {
+
+    @Rule
+    public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
     private static final String FILE_NAME = "100_percent_free.jpg";
     private static final String FILE_PATH = "images" + File.separator + FILE_NAME;
@@ -38,7 +41,7 @@ public class TikaDetectorTest {
         final TikaDetector tikaDetector2 = TikaDetector.tikaDetector();
 
         //Assert
-        given(tikaDetector1).assertThat(is(tikaDetector2));
+        assertions.assertThat(tikaDetector1).isEqualTo(tikaDetector2);
     }
 
     @Test
@@ -50,7 +53,7 @@ public class TikaDetectorTest {
         final MediaType mediaType = TikaDetector.tikaDetector().detect(inputStream, FILE_NAME);
 
         //Assert
-        given(mediaType).assertThat(is(MediaType.IMAGE_JPEG));
+        assertions.assertThat(mediaType).isEqualTo(MediaType.IMAGE_JPEG);
     }
 
 }

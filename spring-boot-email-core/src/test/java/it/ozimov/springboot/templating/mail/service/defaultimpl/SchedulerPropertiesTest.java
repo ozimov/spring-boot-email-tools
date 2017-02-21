@@ -22,6 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static junit.framework.TestCase.fail;
+
 public class SchedulerPropertiesTest implements UnitTest {
 
     @Rule
@@ -101,8 +103,11 @@ public class SchedulerPropertiesTest implements UnitTest {
 
         expectedException.expect(IllegalStateException.class);
 
-        //Act+Assert
+        //Act
         schedulerProperties.validate();
+
+        //Assert
+        fail("IllegalStateException expected");
     }
 
     @Test
@@ -116,8 +121,11 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Expected at least one priority level. Review property 'spring.mail.scheduler.priorityLevels'.");
 
-        //Act+Assert
+        //Act
         schedulerProperties.validate();
+
+        //Assert
+        fail("IllegalStateException expected");
     }
 
 
@@ -137,8 +145,11 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Expected at least a batch of size one, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistence.desiredBatchSize'.");
 
-        //Act+Assert
+        //Act
         schedulerProperties.validate();
+
+        //Assert
+        fail("IllegalStateException expected");
     }
 
     @Test
@@ -157,8 +168,11 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Expected a non negative amount of email to be kept in memory. Review property 'spring.mail.scheduler.persistence.minKeptInMemory'.");
 
-        //Act+Assert
+        //Act
         schedulerProperties.validate();
+
+        //Assert
+        fail("IllegalStateException expected");
     }
 
     @Test
@@ -177,8 +191,11 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Expected at least one email to be available in memory, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistence.maxKeptInMemory'.");
 
-        //Act+Assert
+        //Act
         schedulerProperties.validate();
+
+        //Assert
+        fail("IllegalStateException expected");
     }
 
     @Test
@@ -197,8 +214,11 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("The application properties key 'spring.mail.scheduler.persistence.maxKeptInMemory' should not have a value smaller than the value in property 'spring.mail.scheduler.persistence.minKeptInMemory'.");
 
-        //Act+Assert
+        //Act
         schedulerProperties.validate();
+
+        //Assert
+        fail("IllegalStateException expected");
     }
 
     @Test
@@ -217,8 +237,11 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("The application properties key 'spring.mail.scheduler.persistence.maxKeptInMemory' should not have a value smaller than the value in property 'spring.mail.scheduler.persistence.desiredBatchSize'.");
 
-        //Act+Assert
+        //Act
         schedulerProperties.validate();
+
+        //Assert
+        fail("IllegalStateException expected");
     }
 
 }

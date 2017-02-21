@@ -52,9 +52,9 @@
         </dependency>
         <!-- Embedded Redis -->
         <dependency>
-            <groupId>com.github.kstyrc</groupId>
+            <groupId>it.ozimov</groupId>
             <artifactId>embedded-redis</artifactId>
-            <version>0.6</version>
+            <version>0.7.0</version>
         </dependency>
 
         <dependency>
