@@ -19,7 +19,6 @@ package it.ozimov.springboot.templating.mail.configuration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-//FIXME remove the templating package and keep it only for the template engines
 @Configuration
 @ComponentScan("it.ozimov.springboot")
 public class EmailToolsConfiguration {

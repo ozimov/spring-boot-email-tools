@@ -9,6 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [0.5.0] - 2017-02-21
 ### Added 
 - Annotation to avoid using `@ComponentScan` in the spring boot main application (refer to issue #32).
 

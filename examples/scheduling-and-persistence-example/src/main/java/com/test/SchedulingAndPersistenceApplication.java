@@ -1,5 +1,6 @@
 package com.test;
 
+import it.ozimov.springboot.templating.mail.configuration.EnableEmailTools;
 import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 @EnableAsync
-@ComponentScan(basePackages = {"com.test", "it.ozimov.springboot.templating.mail"})
+@EnableEmailTools
 public class SchedulingAndPersistenceApplication implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
