@@ -7,6 +7,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 Revise unit testing by only using AssertJ and JUnit5
 
 ## [Unreleased]
+### Added
+- More examples with scheduling and persistence.
+- New config key for REDIS settings `spring.mail.scheduler.persistence.redis.settings`.
+
+### Fixed
+- Fixed concurrency issues in the scheduler.
+- Used new version of EmbeddedRedis that shutdown the `ThreadExecutor` properly.
 
 ## [0.4.1] - 2017-02-14
 ### Added

@@ -360,7 +360,19 @@ spring.mail.scheduler.persistence.redis.enabled=true
 spring.mail.scheduler.persistence.redis.embedded=true
 spring.mail.scheduler.persistence.redis.host=localhost
 spring.mail.scheduler.persistence.redis.port=6381
+spring.mail.scheduler.persistence.redis.settings=
 ```
+
+I recommend to specify in the REDIS settings at least the `appendfilename` and `dir` properties,
+so that you know where the append file is placed and which name it uses. For instance do:
+
+```properties
+spring.mail.scheduler.persistence.redis.settings=appendfilename email_appendonly.aof, dir /Users/your_username/Downloads
+```
+
+By default we have the setting `appendonly yes` and `appendfsync everysec`. Feel free to override them or fine tune them 
+according with your needs.
+
 
 Clearly, you can provide your own persistence layer by implementing the `PersistenceService` interface. You can also
  use your REDIS implementation, but this will require extra coding on your side.
