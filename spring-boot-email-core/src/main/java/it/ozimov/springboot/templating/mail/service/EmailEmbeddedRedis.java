@@ -1,50 +1,53 @@
 package it.ozimov.springboot.templating.mail.service;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.stereotype.Component;
 import redis.embedded.RedisServer;
+import redis.embedded.RedisServerBuilder;
 
 import javax.annotation.PreDestroy;
+import java.util.Set;
 
-import static it.ozimov.springboot.templating.mail.service.ApplicationPropertiesConstants.SPRING_MAIL_PERSISTENCE_REDIS_PORT;
-import static it.ozimov.springboot.templating.mail.service.defaultimpl.ConditionalExpression.PERSISTENCE_IS_ENABLED_WITH_EMBEDDED_REDIS;
-
-@Component
-@ConditionalOnExpression(PERSISTENCE_IS_ENABLED_WITH_EMBEDDED_REDIS)
 @Slf4j
 public class EmailEmbeddedRedis {
 
-    private static final String REDIS_PORT = "${" + SPRING_MAIL_PERSISTENCE_REDIS_PORT + "}";
-
     @Getter
     private final int redisPort;
+    @Getter
+    private final Set<String> settings;
 
     private final RedisServer redisServer;
 
-    @Autowired
-    public EmailEmbeddedRedis(@Value(REDIS_PORT) final int redisPort) {
+    public EmailEmbeddedRedis(final int redisPort, @NonNull final Set<String> settings) {
         this.redisPort = redisPort;
+        this.settings = settings;
         redisServer = createStartedRedis();
     }
 
     private RedisServer createStartedRedis() {
-        final RedisServer redisServer = RedisServer.builder()
+        final RedisServerBuilder redisServerBuilder = RedisServer.builder()
                 .port(redisPort)
                 .setting("appendonly yes")
-                .build();
+                .setting("appendfsync everysec")
+//                .setting("save 1 1")
+//                .setting("appendfilename email_appendonly.aof")
+//                .setting("dbfilename email_dump.rdb")
+//                .setting("dir /Users/trunfio/Downloads")
+                ;
+        settings.stream().forEach(s -> redisServerBuilder.setting(s));
+
+        final RedisServer redisServer = redisServerBuilder.build();
+
         redisServer.start();
-        log.info("Started Embedded Redis Server on port %d.", redisPort);
+        log.info("Started Embedded Redis Server on port {}.", redisPort);
         return redisServer;
     }
 
     @PreDestroy
     public void stopRedis() {
         redisServer.stop();
-        log.info("Stopped Embedded Redis Server on port %d.", redisPort);
+        log.info("Stopped Embedded Redis Server on port {}.", redisPort);
     }
 
     public boolean isActive() {

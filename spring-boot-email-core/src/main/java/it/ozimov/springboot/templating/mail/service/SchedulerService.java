@@ -19,6 +19,7 @@ package it.ozimov.springboot.templating.mail.service;
 import it.ozimov.springboot.templating.mail.model.Email;
 import it.ozimov.springboot.templating.mail.model.InlinePicture;
 import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
+import org.springframework.scheduling.annotation.Async;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -34,6 +35,7 @@ public interface SchedulerService {
      *                             the emails with scheduledTime<=now are sent according to an order depending
      *                             on their desiredPriority level
      */
+    @Async
     void schedule(Email mimeEmail, OffsetDateTime scheduledDateTime, int desiredPriorityLevel);
 
     /**
@@ -48,6 +50,7 @@ public interface SchedulerService {
      * @param modelObject          the model object to be used for the template engine, it may be null
      * @param inlinePictures       list of pictures to be rendered inline in the template
      */
+    @Async
     void schedule(Email mimeEmail,
                   OffsetDateTime scheduledDateTime, int desiredPriorityLevel,
                   String template, Map<String, Object> modelObject,

@@ -546,7 +546,6 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     private void scheduleEmailSchedulingData(DefaultEmailSchedulingData defaultEmailSchedulingData) {
-        System.out.println(defaultEmailSchedulingData.getId());
         priorityQueueSchedulerService.schedule(defaultEmailSchedulingData.getEmail(), defaultEmailSchedulingData.getScheduledDateTime(), defaultEmailSchedulingData.getAssignedPriority());
     }
 
