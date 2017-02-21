@@ -2,7 +2,7 @@
 <html>
 <body>
 <p>
-    Dear {{title}} <em>{{name}}</em>,
+    Dear ${title} <em>${name}</em>,
 </p>
 <p>
     I prepared a logo for your empire. Just have a look and give me a feedback.
@@ -21,15 +21,13 @@
     Sincerely,
 
     Hari.
-<p>﻿
 
-    --<br/>
-    <em>Hari Seldon</em><br/>
-    Professor Emeritus of Psychohistory at Streeling University on Trantor.<br/>
-    Director of the Psychohistory Research Project.<br/>
-    Executive Editor of the Encyclopedia Galactica.<br/>
+    --
+    <em>Hari Seldon</em>
+    Professor Emeritus of Psychohistory at Streeling University on Trantor.
+    Director of the Psychohistory Research Project.
+    Executive Editor of the Encyclopedia Galactica.
     Creator of the Foundation.
-
 </p>
 </body>
 </html>

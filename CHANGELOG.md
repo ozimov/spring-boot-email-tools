@@ -8,6 +8,9 @@ Revise unit testing by only using AssertJ and JUnit5
 
 ## [Unreleased]
 
+### Added 
+- Annotation to avoid using `@ComponentScan` in the spring boot main application (refer to issue #32).
+
 ## [0.4.1] - 2017-02-14
 ### Added
 - The property to enable the `SchedulerService` class is the boolean one `spring.mail.scheduler.enabled`.

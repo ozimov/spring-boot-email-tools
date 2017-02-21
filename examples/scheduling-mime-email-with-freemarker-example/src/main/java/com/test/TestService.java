@@ -9,7 +9,7 @@ import it.ozimov.springboot.templating.mail.model.InlinePicture;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmail;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultEmailAttachment;
 import it.ozimov.springboot.templating.mail.model.defaultimpl.DefaultInlinePicture;
-import it.ozimov.springboot.templating.mail.service.EmailService;
+import it.ozimov.springboot.templating.mail.service.SchedulerService;
 import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,6 +19,7 @@ import javax.mail.internet.InternetAddress;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.time.OffsetDateTime;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -27,30 +28,45 @@ import static com.google.common.collect.Lists.newArrayList;
 public class TestService {
 
     @Autowired
-    private EmailService emailService;
+    private SchedulerService schedulerService;
 
-    public void sendMimeEmailWithPebble() throws UnsupportedEncodingException, CannotSendEmailException {
+    public void scheduleSixMimeEmails() throws UnsupportedEncodingException, CannotSendEmailException {
+        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime whenFirstGroup = now.plusSeconds(5);
+        OffsetDateTime whenSecondGroup = now.plusSeconds(10);
+        OffsetDateTime whenThirdGroup = now.plusSeconds(15);
+
+        schedulePlainTextEmail(whenFirstGroup, 2);
+        schedulePlainTextEmail(whenFirstGroup, 1);
+        schedulePlainTextEmail(whenSecondGroup, 1);
+        schedulePlainTextEmail(whenSecondGroup, 2);
+        schedulePlainTextEmail(whenThirdGroup, 2);
+        schedulePlainTextEmail(whenThirdGroup, 1);
+    }
+
+    private void schedulePlainTextEmail(OffsetDateTime when, int priority) throws UnsupportedEncodingException, CannotSendEmailException {
         InlinePicture inlinePicture = createGalaxyInlinePicture();
 
         final Email email = DefaultEmail.builder()
-                .from(new InternetAddress("hari.seldon@the-foundation.gal",
+                .from(new InternetAddress("hari.seldon@gmail.com",
                         "Hari Seldon"))
                 .to(newArrayList(
                         new InternetAddress("the-real-cleon@trantor.gov",
                                 "Cleon I")))
-                .subject("You shall die! It's not me, it's Psychohistory")
+                .subject(String.format("Email scheduled with firetime '%s' and priority %d", when, priority))
                 .body("")//this will be overridden by the template, anyway
                 .attachment(getCsvForecastAttachment("forecast"))
                 .encoding("UTF-8").build();
 
-        String template = "emailTemplate.html";
+        String template = "emailTemplate.ftl";
 
         Map<String, Object> modelObject = ImmutableMap.of(
                 "title", "Emperor",
                 "name", "Cleon I"
         );
 
-        emailService.send(email, template, modelObject, inlinePicture);
+        schedulerService.schedule(email, when, priority,
+                template, modelObject, inlinePicture);
     }
 
     private InlinePicture createGalaxyInlinePicture() {
