@@ -398,11 +398,11 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     private int currentlyInMemory() {
         schedulerLock.lock();
         try {
-            return IntStream.range(0, queues.length)
-                    .map(
-                            queueIndex -> queues[queueIndex].size()
-                    )
-                    .sum();
+            int inMemory=0;
+            for(TreeSet queue : queues){
+                inMemory += queue.size();
+            }
+            return inMemory;
         } finally {
             schedulerLock.unlock();
         }
@@ -447,7 +447,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         log.info("Closing EmailScheduler");
         this.serviceStatus = ServiceStatus.CLOSING;
         try {
-            if(schedulerLock.tryLock()) schedulerLock.unlock();
+            if (schedulerLock.tryLock()) schedulerLock.unlock();
         } catch (IllegalMonitorStateException e) {
             log.error("Error while closing EmailScheduler.", e);
         }

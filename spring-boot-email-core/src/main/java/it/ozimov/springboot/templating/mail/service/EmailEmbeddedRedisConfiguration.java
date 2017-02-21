@@ -35,7 +35,7 @@ public class EmailEmbeddedRedisConfiguration {
 
         emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort,
                 redisSettings.stream().map(s -> s.trim()).collect(toSet())
-        );
+        ).start();
 
         JedisShardInfo shardInfo = new JedisShardInfo("localhost", redisPort);
         connectionFactory = new JedisConnectionFactory();

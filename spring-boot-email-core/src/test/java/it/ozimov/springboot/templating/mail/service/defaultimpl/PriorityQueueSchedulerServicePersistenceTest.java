@@ -478,7 +478,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
         scheduleEmailSchedulingData(defaultEmailSchedulingDataLow7);//12) -- this MUST NOT be in memory
         scheduleEmailSchedulingData(defaultEmailSchedulingDataLow8);//13) -- this MUST NOT be in memory
 
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(15);
 
         //Assert
         TreeSet<EmailSchedulingData>[] queues = getPriorityQueues();
@@ -525,13 +525,13 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
         mockDefaultEmailSchedulingDataCreation(defaultEmailSchedulingDataMid2);
 
         //Act
-        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh1);//1) -- Should fire asap so is put in memory and one from the low priority sent out
-        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh2);//2) -- Should fire asap so is put in memory and one from the low priority sent out
-        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh3);//3) -- Should fire asap so is put in memory and one from the low priority sent out
-        scheduleEmailSchedulingData(defaultEmailSchedulingDataMid1);//4) -- Mid priority, so is put in memory and one from the low priority sent out
-        scheduleEmailSchedulingData(defaultEmailSchedulingDataMid2);//5) -- this could be not in memory
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh1); //1) -- Should fire asap so is put in memory and one from the low priority sent out
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh2); //2) -- Should fire asap so is put in memory and one from the low priority sent out
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataHigh3); //3) -- Should fire asap so is put in memory and one from the low priority sent out
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataMid1);  //4) -- Mid priority, so is put in memory and one from the low priority sent out
+        scheduleEmailSchedulingData(defaultEmailSchedulingDataMid2);  //5) -- this could be not in memory
 
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(15);
 
         //Assert
         TreeSet<EmailSchedulingData>[] queues = getPriorityQueues();
@@ -555,13 +555,15 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     }
 
     protected void createScheduler() {
-        SchedulerProperties.Persistence Persistence = SchedulerProperties.Persistence.builder()
+        //Sometimes Spring fails in creating the mock for the bean. Bad Spring! Bad!
+        schedulerProperties = mock(SchedulerProperties.class);
+        SchedulerProperties.Persistence persistence = SchedulerProperties.Persistence.builder()
                 .minKeptInMemory(minKeptInMemory)
                 .maxKeptInMemory(maxKeptInMemory)
                 .desiredBatchSize(desiredBatchSize)
                 .build();
         when(schedulerProperties.getPriorityLevels()).thenReturn(priorityLevels);
-        when(schedulerProperties.getPersistence()).thenReturn(Persistence);
+        when(schedulerProperties.getPersistence()).thenReturn(persistence);
 
         priorityQueueSchedulerService = spy(new PriorityQueueSchedulerService(emailService, schedulerProperties, Optional.of(defaultPersistenceService)));
     }

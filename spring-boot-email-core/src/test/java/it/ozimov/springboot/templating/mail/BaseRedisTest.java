@@ -43,7 +43,10 @@ import redis.clients.jedis.JedisShardInfo;
 import redis.embedded.RedisServer;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
 import static it.ozimov.springboot.templating.mail.PortUtils.randomFreePort;
@@ -142,7 +145,8 @@ public abstract class BaseRedisTest implements ContextBasedTest {
         public ContextConfiguration() throws IOException {
             int redisPort = randomFreePort();
 
-            emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort, ImmutableSet.of());
+            emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort, ImmutableSet.of()).start();
+
             redisServer = (RedisServer) ReflectionTestUtils.getField(emailEmbeddedRedis, "redisServer");
 
             JedisShardInfo shardInfo = new JedisShardInfo("localhost", redisPort);
