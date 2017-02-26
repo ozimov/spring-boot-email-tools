@@ -17,7 +17,6 @@
 package it.ozimov.springboot.mail.configuration;
 
 import it.ozimov.springboot.mail.BaseRedisTest;
-import it.ozimov.springboot.mail.configuration.EmailEmbeddedRedis;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.After;
 import org.junit.Before;

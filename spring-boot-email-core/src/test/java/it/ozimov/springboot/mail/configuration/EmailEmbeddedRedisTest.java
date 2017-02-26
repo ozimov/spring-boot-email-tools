@@ -18,7 +18,6 @@ package it.ozimov.springboot.mail.configuration;
 
 import com.google.common.collect.ImmutableSet;
 import it.ozimov.springboot.mail.UnitTest;
-import it.ozimov.springboot.mail.configuration.EmailEmbeddedRedis;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;

@@ -695,7 +695,7 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
     public void shouldRemoveAllDoNothingWhenNoDataIsPersisted() throws Exception {
         //Arrange
         setBeforeTransactionAssertion(connection -> {
-            assertions.assertThat(connection.exists("*".getBytes())).isFalse();
+            assertions.assertThat(connection.exists("*" .getBytes())).isFalse();
         });
 
         //Act

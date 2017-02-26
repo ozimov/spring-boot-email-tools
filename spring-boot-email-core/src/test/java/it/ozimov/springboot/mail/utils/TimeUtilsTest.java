@@ -19,26 +19,42 @@ package it.ozimov.springboot.mail.utils;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.time.OffsetDateTime;
 
-import static com.danhaywood.java.assertjext.Conditions.matchedBy;
-import static it.ozimov.cirneco.hamcrest.java7.clazz.IsValidNoArgumentConstructor.hasNoArgumentConstructor;
 import static java.time.ZoneOffset.UTC;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TimeUtilsTest {
 
     @Rule
-    public JUnitSoftAssertions assertions = new JUnitSoftAssertions();
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Rule
+    public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
     @Test
-    public void shouldHaveNoArgConstructor() throws Exception {
-        //Assert
-        assertions.assertThat(TimeUtilsTest.class)
-                .is(matchedBy(hasNoArgumentConstructor()));
+    public void shouldBeUtilityClass() throws Exception {
+        //Arrange
+        Constructor<?> constructor = TimeUtils.class.getDeclaredConstructor();
+        assertions.assertThat(Modifier.isPrivate(constructor.getModifiers()))
+                .as("Constructor of an Utility Class should be private")
+                .isTrue();
+        constructor.setAccessible(true);
+
+        expectedException.expectCause(
+                allOf(instanceOf(UnsupportedOperationException.class),
+                        hasProperty("message", equalTo("This is a utility class and cannot be instantiated"))
+                ));
+
+        //Act
+        constructor.newInstance();
     }
 
     @Test

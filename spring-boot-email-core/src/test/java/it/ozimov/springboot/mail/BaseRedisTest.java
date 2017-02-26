@@ -17,8 +17,8 @@
 package it.ozimov.springboot.mail;
 
 import com.google.common.collect.ImmutableSet;
-import it.ozimov.springboot.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.mail.configuration.EmailEmbeddedRedis;
+import it.ozimov.springboot.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.mail.service.defaultimpl.SchedulerProperties;
 import lombok.NonNull;
 import org.junit.Before;

@@ -64,19 +64,19 @@ public class EmailEmbeddedRedis {
         keyValueMap.put("appendonly", "yes");
         keyValueMap.put("appendfsync", "everysec");
 
-        for(String setting : settings){
+        for (String setting : settings) {
             String normalizedSetting = setting.trim();
-            int indexOfWhitespace =normalizedSetting.indexOf(WHITESPACE);
-            if(indexOfWhitespace != -1 && indexOfWhitespace != normalizedSetting.length()) {
+            int indexOfWhitespace = normalizedSetting.indexOf(WHITESPACE);
+            if (indexOfWhitespace != -1 && indexOfWhitespace != normalizedSetting.length()) {
                 String key = normalizedSetting.substring(0, indexOfWhitespace);
-                String value = normalizedSetting.substring(indexOfWhitespace+1).trim();
+                String value = normalizedSetting.substring(indexOfWhitespace + 1).trim();
                 keyValueMap.put(key, value);
             }
         }
 
         return keyValueMap.entrySet()
                 .stream()
-                .map(entry -> entry.getKey()+WHITESPACE+entry.getValue())
+                .map(entry -> entry.getKey() + WHITESPACE + entry.getValue())
                 .collect(toSet());
     }
 

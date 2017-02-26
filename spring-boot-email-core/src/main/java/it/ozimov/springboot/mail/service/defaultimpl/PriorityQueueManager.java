@@ -258,26 +258,8 @@ public class PriorityQueueManager implements Closeable {
         return getStreamOfAllLast().min((comparing(EmailSchedulingData::getScheduledDateTime)));
     }
 
-
-    private Optional<EmailSchedulingData> getLeastOfAllLastExcludedFromQueue(EmailSchedulingData emailSchedulingData) {
-       final int priority = emailSchedulingData.getAssignedPriority();
-
-       return getStreamOfAllLast()
-               .filter(last -> last.getAssignedPriority() != priority)
-               .min((comparing(EmailSchedulingData::getScheduledDateTime)));
-    }
-
     private Optional<EmailSchedulingData> getLatestOfAllLast() {
         return getStreamOfAllLast().max((comparing(EmailSchedulingData::getScheduledDateTime)));
-    }
-
-    private boolean afterLastLoadedWithSamePriorityFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
-        if (!hasPersistence) {
-            return false;
-        }
-
-        TreeSet<EmailSchedulingData> queue = queues[queueIndex(emailSchedulingData)];
-        return !queue.isEmpty() && emailSchedulingData.getScheduledDateTime().compareTo(queue.last().getScheduledDateTime()) > 0;
     }
 
     private boolean beforeLastLoadedFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
@@ -286,31 +268,8 @@ public class PriorityQueueManager implements Closeable {
         }
 
         final EmailSchedulingData least = getLeastOfAllLast().get();
-        final int scheduledDateTimeComparison =  emailSchedulingData.getScheduledDateTime().compareTo(least.getScheduledDateTime().plus(queuabilityDelta));
+        final int scheduledDateTimeComparison = emailSchedulingData.getScheduledDateTime().compareTo(least.getScheduledDateTime().plus(queuabilityDelta));
         return scheduledDateTimeComparison < 0 || (scheduledDateTimeComparison == 0 && emailSchedulingData.getAssignedPriority() < least.getAssignedPriority());
-    }
-
-    private boolean beforeLastLoadedWithDifferentPriorityFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
-        if (!hasPersistence) {
-            return false;
-        }
-
-        final Optional<EmailSchedulingData> least = getLeastOfAllLastExcludedFromQueue(emailSchedulingData);
-        return !least.isPresent() || emailSchedulingData.getScheduledDateTime().compareTo(least.get().getScheduledDateTime()) > 0;
-    }
-
-    private boolean betweenLeastOfLastLoadedAndLastLoadedFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
-        if (!hasPersistence || currentlyInQueue() < 2) {
-            return false;
-        }
-
-        final Optional<EmailSchedulingData> leastOfAllLast = getLeastOfAllLast();
-        final Optional<EmailSchedulingData> latestOfAllLast = getLatestOfAllLast();
-        return leastOfAllLast.isPresent() && latestOfAllLast.isPresent()
-                && emailSchedulingData.getScheduledDateTime().compareTo(leastOfAllLast.get().getScheduledDateTime()) > 0
-                && (emailSchedulingData.getScheduledDateTime().compareTo(latestOfAllLast.get().getScheduledDateTime()) < 0
-        || (emailSchedulingData.getScheduledDateTime().compareTo(latestOfAllLast.get().getScheduledDateTime()) == 0 &&
-                emailSchedulingData.getAssignedPriority() < latestOfAllLast.get().getAssignedPriority()));
     }
 
     private int queueIndexOfLatestOfAllLast() {

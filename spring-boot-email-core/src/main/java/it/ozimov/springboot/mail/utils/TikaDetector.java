@@ -41,7 +41,7 @@ public class TikaDetector {
     }
 
     public static TikaDetector tikaDetector() {
-        return TikaDetectorSingletonHolder.tikaDetector;
+        return TikaDetectorSingletonHolder.TIKA_DETECTOR;
     }
 
     private static org.springframework.http.MediaType toSpringMediaType(final MediaType mediaType) {
@@ -49,7 +49,7 @@ public class TikaDetector {
     }
 
     /**
-     * Detect the MediaType tikaDetector the given input stream
+     * Detect the MediaType of the given input stream
      *
      * @param inputStream the stream for which the content has to be detected
      * @param fileName    filename with extension
@@ -68,7 +68,7 @@ public class TikaDetector {
     }
 
     private static class TikaDetectorSingletonHolder {
-        public static TikaDetector tikaDetector = new TikaDetector();
+        public static final TikaDetector TIKA_DETECTOR = new TikaDetector();
     }
 
 }
