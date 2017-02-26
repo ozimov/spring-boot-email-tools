@@ -1,6 +1,6 @@
 package com.test;
 
-import it.ozimov.springboot.templating.mail.service.EmailService;
+import it.ozimov.springboot.mail.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

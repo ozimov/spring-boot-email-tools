@@ -1,12 +1,12 @@
 package com.test;
 
+import it.ozimov.springboot.mail.configuration.EnableEmailTools;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import javax.annotation.PostConstruct;
@@ -16,7 +16,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.test", "it.ozimov.springboot.templating.mail"})
+@EnableEmailTools
 public class PlainTextEmailSchedulingApplication implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
