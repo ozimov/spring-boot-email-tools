@@ -1,7 +1,7 @@
 package com.test;
 
-import it.ozimov.springboot.templating.mail.configuration.EnableEmailTools;
-import it.ozimov.springboot.templating.mail.service.exception.CannotSendEmailException;
+import it.ozimov.springboot.mail.configuration.EnableEmailTools;
+import it.ozimov.springboot.mail.service.exception.CannotSendEmailException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 
