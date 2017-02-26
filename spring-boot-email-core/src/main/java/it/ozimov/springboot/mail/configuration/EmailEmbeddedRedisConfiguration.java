@@ -31,11 +31,11 @@ public class EmailEmbeddedRedisConfiguration {
     private JedisConnectionFactory connectionFactory;
 
     public EmailEmbeddedRedisConfiguration(@Value(REDIS_PORT) final int redisPort,
-                                           @Value(REDIS_SETTINGS) final List<String> redisSettings) throws IOException {
+                                           @Value(REDIS_SETTINGS) final List<String> redisSettings) {
 
-        emailEmbeddedRedis = new EmailEmbeddedRedis(redisPort,
-                redisSettings.stream().map(s -> s.trim()).collect(toSet())
-        ).start();
+        emailEmbeddedRedis =
+                new EmailEmbeddedRedis(redisPort, redisSettings.stream().map(s -> s.trim()).collect(toSet()))
+                .start();
 
         JedisShardInfo shardInfo = new JedisShardInfo("localhost", redisPort);
         connectionFactory = new JedisConnectionFactory();
@@ -55,7 +55,6 @@ public class EmailEmbeddedRedisConfiguration {
     public RedisConnectionFactory redisConnectionFactory() {
         return connectionFactory;
     }
-
 
     @PreDestroy
     public void preDestroy() {
