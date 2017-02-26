@@ -20,11 +20,14 @@ import static it.ozimov.springboot.mail.service.defaultimpl.ConditionalExpressio
 
 @Configuration
 @ConditionalOnExpression(PERSISTENCE_IS_ENABLED_WITH_REDIS)
-@Slf4j
 public class EmailRedisTemplateConfiguration {
 
+    private final RedisConnectionFactory redisConnectionFactory;
+
     @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
+    public EmailRedisTemplateConfiguration(final RedisConnectionFactory redisConnectionFactory){
+        this.redisConnectionFactory = redisConnectionFactory;
+    }
 
     @Bean
     @Qualifier("orderingTemplate")

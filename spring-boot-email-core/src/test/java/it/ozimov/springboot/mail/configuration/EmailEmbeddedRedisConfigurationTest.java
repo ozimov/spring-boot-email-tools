@@ -1,10 +1,8 @@
 package it.ozimov.springboot.mail.configuration;
 
 import com.google.common.collect.ImmutableList;
-import it.ozimov.springboot.mail.PortUtils;
 import it.ozimov.springboot.mail.UnitTest;
 import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -14,8 +12,6 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.*;
-
 public class EmailEmbeddedRedisConfigurationTest implements UnitTest {
 
     @Rule
@@ -24,17 +20,15 @@ public class EmailEmbeddedRedisConfigurationTest implements UnitTest {
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
-    private EmailEmbeddedRedisConfiguration emailEmbeddedRedisConfiguration;
-
     @Test
     public void shouldEmailEmbeddedRedisConfigurationBeCreate() throws Exception {
         //Arrange
         int port = 6381;
         List<String> settings = ImmutableList.of("appendfilename email_appendonly.aof",
-                                                "save 900 1");
+                "save 900 1");
 
         //Act
-        emailEmbeddedRedisConfiguration = new EmailEmbeddedRedisConfiguration(port, settings);
+        EmailEmbeddedRedisConfiguration emailEmbeddedRedisConfiguration = new EmailEmbeddedRedisConfiguration(port, settings);
 
         //Assert
         assertions.assertThat(emailEmbeddedRedisConfiguration.emailEmbeddedRedis())
@@ -42,7 +36,6 @@ public class EmailEmbeddedRedisConfigurationTest implements UnitTest {
         assertions.assertThat(emailEmbeddedRedisConfiguration.redisConnectionFactory())
                 .isNotNull()
                 .isInstanceOf(JedisConnectionFactory.class);
-
 
 
         //Act
