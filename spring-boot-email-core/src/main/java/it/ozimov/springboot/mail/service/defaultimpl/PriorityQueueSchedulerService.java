@@ -310,7 +310,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         }
     }
 
-    private int normalizePriority(int priorityLevel) {
+    protected int normalizePriority(int priorityLevel) {
         //the priority level must be between 0 and numberOfPriorityLevels
         final int maxLevel = priorityQueueManager.numberOfLevels();
         if (priorityLevel > maxLevel) {

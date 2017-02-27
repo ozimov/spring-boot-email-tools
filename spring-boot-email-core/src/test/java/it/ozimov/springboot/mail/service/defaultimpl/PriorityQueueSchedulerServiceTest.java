@@ -16,11 +16,13 @@
 
 package it.ozimov.springboot.mail.service.defaultimpl;
 
+import it.ozimov.mockito.helpers.captors.ResultCaptor;
 import it.ozimov.springboot.mail.ContextBasedTest;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.service.EmailService;
 import it.ozimov.springboot.mail.service.ServiceStatus;
 import it.ozimov.springboot.mail.utils.TimeUtils;
+import org.assertj.core.api.JUnitSoftAssertions;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,6 +32,7 @@ import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -38,7 +41,9 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
+import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.assertIs;
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -48,10 +53,13 @@ import static org.mockito.Mockito.*;
 public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
     @Rule
+    public final Timeout timeout = new Timeout(30, SECONDS);
+
+    @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
     @Rule
-    public final Timeout timeout = new Timeout(30, SECONDS);
+    public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
     @MockBean
     private EmailService emailService;
@@ -102,7 +110,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     }
 
     @Test
-    public void testAnEmailIsScheduledAndSent() throws Exception {
+    public void shouldScheduleAndSendEmailWithoutTemplate() throws Exception {
         //Arrange
         final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
         final Email email = getSimpleMail();
@@ -116,7 +124,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     }
 
     @Test
-    public void testAnEmailWithTemplateIsScheduledAndSent() throws Exception {
+    public void shouldScheduleAndSendEmailWithTemplate() throws Exception {
         //Arrange
         final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
         final Email email = getSimpleMail();
@@ -133,7 +141,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     }
 
     @Test
-    public void testPriorityIsRespectedForSameDateTime() throws Exception {
+    public void shouldRespectPriorityForSameDateTime() throws Exception {
         //Arrange
         final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(3);
         final Email emailLowPriority = lowPriority();
@@ -156,7 +164,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     }
 
     @Test
-    public void testPriorityIsRespectedDifferentDateTime() throws Exception {
+    public void shouldRespectPriorityWhenDifferentDateTime() throws Exception {
         //Arrange
         final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(3);
         final Email emailLowPriority = lowPriority();
@@ -179,7 +187,31 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     }
 
     @Test
-    public void testCanClose() throws Exception {
+    public void shouldNormalizePriority() throws Exception {
+        //Arrange
+        final int maxPriorityLevels = 1;
+        final int nonAvailablePriorityLevel = 2;
+        assertions.assertThat(nonAvailablePriorityLevel).isGreaterThan(maxPriorityLevels);
+
+        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(maxPriorityLevels);
+        final Email email = getSimpleMail(new InternetAddress("virgilio@marone.roma", "Publio Virgilio Marone"));
+
+        final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow();
+
+        ResultCaptor<Integer> normalizedPriorityLevelCaptor = new ResultCaptor<>();
+        doAnswer(normalizedPriorityLevelCaptor).when(priorityQueueSchedulerService).normalizePriority(nonAvailablePriorityLevel);
+
+
+        //Act
+        priorityQueueSchedulerService.schedule(email, dateTime.plusSeconds(threeSeconds()), nonAvailablePriorityLevel);
+
+        //Assert
+        verify(priorityQueueSchedulerService).normalizePriority(nonAvailablePriorityLevel);
+        assertions.assertThat(normalizedPriorityLevelCaptor.result()).isEqualTo(maxPriorityLevels);
+    }
+
+    @Test
+    public void shouldClose() throws Exception {
         //Arrange
         PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
 
@@ -194,9 +226,9 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     private PriorityQueueSchedulerService scheduler(int numPriorityLevels) throws InterruptedException {
         when(schedulerProperties.getPriorityLevels()).thenReturn(numPriorityLevels);
 
-        final PriorityQueueSchedulerService schedulerService = new PriorityQueueSchedulerService(emailService,
+        final PriorityQueueSchedulerService schedulerService = spy(new PriorityQueueSchedulerService(emailService,
                 schedulerProperties,
-                Optional.empty());
+                Optional.empty()));
         return schedulerService;
     }
 
