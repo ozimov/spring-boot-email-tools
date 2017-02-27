@@ -154,7 +154,8 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
         priorityQueueSchedulerService.schedule(emailLowPriority, dateTime.plusSeconds(twoSeconds()), 3);
         priorityQueueSchedulerService.schedule(emailHighPriority, dateTime.plusSeconds(twoSeconds()), 1);
         priorityQueueSchedulerService.schedule(emailMidPriority, dateTime.plusSeconds(twoSeconds()), 2);
-        Thread.sleep(fiveSecondsInMillis());
+
+        TimeUnit.SECONDS.sleep(5);
 
         //Assert
         final InOrder inOrder = inOrder(emailService);

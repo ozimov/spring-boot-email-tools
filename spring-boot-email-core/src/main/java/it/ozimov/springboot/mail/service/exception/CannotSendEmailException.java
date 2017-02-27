@@ -19,6 +19,7 @@ package it.ozimov.springboot.mail.service.exception;
 public class CannotSendEmailException extends Exception {
 
     public CannotSendEmailException() {
+        super();
     }
 
     public CannotSendEmailException(final String message) {
@@ -33,8 +34,4 @@ public class CannotSendEmailException extends Exception {
         super(message, cause);
     }
 
-    public CannotSendEmailException(final String message, final Throwable cause,
-                                    final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

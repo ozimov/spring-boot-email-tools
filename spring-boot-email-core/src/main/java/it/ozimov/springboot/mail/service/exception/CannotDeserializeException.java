@@ -19,6 +19,7 @@ package it.ozimov.springboot.mail.service.exception;
 public class CannotDeserializeException extends RuntimeException {
 
     public CannotDeserializeException() {
+        super();
     }
 
     public CannotDeserializeException(final String message) {
@@ -33,8 +34,4 @@ public class CannotDeserializeException extends RuntimeException {
         super(message, cause);
     }
 
-    public CannotDeserializeException(final String message, final Throwable cause,
-                                      final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

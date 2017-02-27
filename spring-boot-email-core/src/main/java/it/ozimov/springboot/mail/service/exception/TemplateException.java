@@ -19,6 +19,7 @@ package it.ozimov.springboot.mail.service.exception;
 public class TemplateException extends Exception {
 
     public TemplateException() {
+        super();
     }
 
     public TemplateException(final String message) {
@@ -33,8 +34,4 @@ public class TemplateException extends Exception {
         super(message, cause);
     }
 
-    public TemplateException(final String message, final Throwable cause,
-                             final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
