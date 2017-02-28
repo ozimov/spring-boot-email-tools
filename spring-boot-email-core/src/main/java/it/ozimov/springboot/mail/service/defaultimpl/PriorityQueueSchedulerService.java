@@ -467,7 +467,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
         public void close() throws InterruptedException {
             try {
-                if (enabled()) {
+                if (!isInterrupted()) {
                     log.info("Interrupting email scheduler consumer");
                     interrupt();
                     synchronized (this) {
@@ -520,7 +520,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
         public synchronized void close() throws InterruptedException {
             try {
-                if (enabled()) {
+                if (!isInterrupted()) {
                     log.info("Interrupting email scheduler resumer");
                     interrupt();
                     synchronized (this) {
