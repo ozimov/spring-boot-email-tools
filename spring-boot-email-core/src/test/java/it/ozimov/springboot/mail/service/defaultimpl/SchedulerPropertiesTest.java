@@ -244,4 +244,16 @@ public class SchedulerPropertiesTest implements UnitTest {
         fail("IllegalStateException expected");
     }
 
+    @Test
+    public void shouldCheckIsValidThrowExceptionWhenInputIsNull() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        SchedulerProperties.checkIsValid(null);
+
+        //Assert
+        fail("IllegalStateException expected");
+    }
+
 }

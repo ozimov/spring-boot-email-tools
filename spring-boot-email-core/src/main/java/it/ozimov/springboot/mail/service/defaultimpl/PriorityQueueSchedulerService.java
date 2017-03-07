@@ -100,9 +100,9 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     @Autowired
     public PriorityQueueSchedulerService(
-            @NonNull final EmailService emailService,
-            @NonNull final SchedulerProperties schedulerProperties,
-            @NonNull final Optional<PersistenceService> persistenceServiceOptional) throws InterruptedException {
+            final EmailService emailService,
+            final SchedulerProperties schedulerProperties,
+            final Optional<PersistenceService> persistenceServiceOptional) throws InterruptedException {
 
         this.emailService = emailService;
         this.persistenceServiceOptional = persistenceServiceOptional;

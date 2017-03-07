@@ -45,7 +45,10 @@ public class PriorityQueueManager implements Closeable {
     private final ReentrantReadWriteLock currentOperationLock = new ReentrantReadWriteLock();
     private CurrentOperation currentOperation = CurrentOperation.NONE;
 
-    PriorityQueueManager(final int numberOfPriorityLevels, final boolean hasPersistence, final int maxInMemory, @NonNull final Duration queuabilityDelta) {
+    PriorityQueueManager(final int numberOfPriorityLevels,
+                         final boolean hasPersistence,
+                         final int maxInMemory,
+                         @NonNull final Duration queuabilityDelta) {
         Preconditions.checkArgument(numberOfPriorityLevels > 0, "Number of priority levels should be a positive number, while %s was given", numberOfPriorityLevels);
         Preconditions.checkArgument(maxInMemory > 0, "Number of max emails in memory should be a positive number, while %s was given", maxInMemory);
 
@@ -197,19 +200,19 @@ public class PriorityQueueManager implements Closeable {
         }
     }
 
-    private boolean isCurrentOperationNone() {
+    protected boolean isCurrentOperationNone() {
         return isCurrentOperation(CurrentOperation.NONE);
     }
 
-    private boolean isCurrentOperationClosing() {
+    protected boolean isCurrentOperationClosing() {
         return isCurrentOperation(CurrentOperation.CLOSING);
     }
 
-    private boolean isCurrentOperationDequeuing() {
+    protected boolean isCurrentOperationDequeuing() {
         return isCurrentOperation(CurrentOperation.DEQUEUING);
     }
 
-    private boolean isCurrentOperationEnqueuing() {
+    protected boolean isCurrentOperationEnqueuing() {
         return isCurrentOperation(CurrentOperation.ENQUEUING);
     }
 
@@ -222,7 +225,7 @@ public class PriorityQueueManager implements Closeable {
         }
     }
 
-    private void setCurrentOperationToEnqueuing() throws InterruptedException {
+    protected void setCurrentOperationToEnqueuing() throws InterruptedException {
         currentOperationLock.writeLock().lock();
         if (isCurrentOperationDequeuing()) {
             notDequeuing.await();
@@ -231,7 +234,7 @@ public class PriorityQueueManager implements Closeable {
         currentOperationLock.writeLock().unlock();
     }
 
-    private void setCurrentOperationToDequeuing() throws InterruptedException {
+    protected void setCurrentOperationToDequeuing() throws InterruptedException {
         currentOperationLock.writeLock().lock();
         if (isCurrentOperationEnqueuing()) {
             notEnqueuing.await();
@@ -240,7 +243,7 @@ public class PriorityQueueManager implements Closeable {
         currentOperationLock.writeLock().unlock();
     }
 
-    private void setCurrentOperationToNone() {
+    protected void setCurrentOperationToNone() {
         currentOperationLock.writeLock().lock();
         currentOperation = CurrentOperation.NONE;
         currentOperationLock.writeLock().unlock();

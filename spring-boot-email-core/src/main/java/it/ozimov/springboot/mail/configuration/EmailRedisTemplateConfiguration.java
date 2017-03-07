@@ -1,7 +1,6 @@
 package it.ozimov.springboot.mail.configuration;
 
 import it.ozimov.springboot.mail.model.EmailSchedulingData;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -25,7 +24,7 @@ public class EmailRedisTemplateConfiguration {
     private final RedisConnectionFactory redisConnectionFactory;
 
     @Autowired
-    public EmailRedisTemplateConfiguration(final RedisConnectionFactory redisConnectionFactory){
+    public EmailRedisTemplateConfiguration(final RedisConnectionFactory redisConnectionFactory) {
         this.redisConnectionFactory = redisConnectionFactory;
     }
 

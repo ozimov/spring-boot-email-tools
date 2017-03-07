@@ -32,7 +32,6 @@ import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -43,7 +42,6 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.assertIs;
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static java.util.concurrent.TimeUnit.SECONDS;

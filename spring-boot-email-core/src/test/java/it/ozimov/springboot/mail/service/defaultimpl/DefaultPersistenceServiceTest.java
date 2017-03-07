@@ -52,6 +52,7 @@ import static com.danhaywood.java.assertjext.Conditions.matchedBy;
 import static it.ozimov.cirneco.hamcrest.java7.javautils.IsUUID.UUID;
 import static it.ozimov.springboot.mail.service.defaultimpl.EmailSchedulingDataUtils.createDefaultEmailSchedulingDataWithPriority;
 import static it.ozimov.springboot.mail.service.defaultimpl.EmailSchedulingDataUtils.createTemplateEmailSchedulingDataWithPriority;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.inOrder;
 
 @RunWith(SpringRunner.class)
@@ -92,6 +93,9 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
         //Act
         defaultPersistenceService.add(null);
+
+        //Assert
+        fail();
     }
 
     @Test
@@ -229,6 +233,9 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
         //Act
         defaultPersistenceService.get(null);
+
+        //Assert
+        fail();
     }
 
     @Test
@@ -290,6 +297,9 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
         //Act
         defaultPersistenceService.remove(null);
+
+        //Assert
+        fail();
     }
 
     @Test
@@ -354,6 +364,9 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
         //Act
         defaultPersistenceService.addAll(null);
+
+        //Assert
+        fail();
     }
 
     @Test
@@ -420,7 +433,7 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
     }
 
     @Test
-    public void shouldGetNextBatchForOrderingKeyThrowExceptionGivenNoEmailSchedulingData() throws Exception {
+    public void shouldGetNextBatchForOrderingKeyReturnNothingGivenNoEmailSchedulingData() throws Exception {
         //Arrange
         int assignedPriority = 1;
 
@@ -493,10 +506,13 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
 
         //Act
         defaultPersistenceService.getNextBatch(0);
+
+        //Assert
+        fail();
     }
 
     @Test
-    public void shouldGetNextBatchThrowExceptionGivenNoEmailSchedulingData() throws Exception {
+    public void shouldGetNextBatchReturnNothingGivenNoEmailSchedulingData() throws Exception {
         //Act
         Collection<EmailSchedulingData> givenBatch = defaultPersistenceService.getNextBatch(100);
 
@@ -695,7 +711,7 @@ public class DefaultPersistenceServiceTest extends BaseRedisTest {
     public void shouldRemoveAllDoNothingWhenNoDataIsPersisted() throws Exception {
         //Arrange
         setBeforeTransactionAssertion(connection -> {
-            assertions.assertThat(connection.exists("*" .getBytes())).isFalse();
+            assertions.assertThat(connection.exists("*".getBytes())).isFalse();
         });
 
         //Act

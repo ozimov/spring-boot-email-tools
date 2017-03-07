@@ -22,8 +22,11 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.Timeout;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 public class RedisBasedPersistenceServiceConstantsTest {
@@ -38,6 +41,24 @@ public class RedisBasedPersistenceServiceConstantsTest {
 
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
+
+    @Test
+    public void shouldBeUtilityClass() throws Exception {
+        //Arrange
+        Constructor<?> constructor = RedisBasedPersistenceServiceConstants.class.getDeclaredConstructor();
+        assertions.assertThat(Modifier.isPrivate(constructor.getModifiers()))
+                .as("Constructor of an Utility Class should be private")
+                .isTrue();
+        constructor.setAccessible(true);
+
+        expectedException.expectCause(
+                allOf(instanceOf(UnsupportedOperationException.class),
+                        hasProperty("message", equalTo("This is a utility class and cannot be instantiated"))
+                ));
+
+        //Act
+        constructor.newInstance();
+    }
 
     @Test
     public void shouldThrowExceptionWhenOrderingKeyIsConstructedFromNegativeNumber() throws Exception {

@@ -17,8 +17,10 @@
 package it.ozimov.springboot.mail.service.defaultimpl;
 
 import com.google.common.base.Preconditions;
+import lombok.experimental.UtilityClass;
 
-public final class RedisBasedPersistenceServiceConstants {
+@UtilityClass
+public class RedisBasedPersistenceServiceConstants {
 
     public static final String ORDERING_KEY_PREFIX = "priority-level:";
 

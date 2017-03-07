@@ -21,7 +21,7 @@ public class EmailEmbeddedRedisConfigurationTest implements UnitTest {
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
     @Test
-    public void shouldEmailEmbeddedRedisConfigurationBeCreate() throws Exception {
+    public void shouldEmailEmbeddedRedisConfigurationBeCreated() throws Exception {
         //Arrange
         int port = 6381;
         List<String> settings = ImmutableList.of("appendfilename email_appendonly.aof",

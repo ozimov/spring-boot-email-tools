@@ -6,21 +6,14 @@ import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static it.ozimov.springboot.mail.service.defaultimpl.ConditionalExpression.PERSISTENCE_IS_ENABLED_WITH_REDIS;
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 public class EmailRedisTemplateConfigurationTest implements UnitTest {
@@ -34,7 +27,7 @@ public class EmailRedisTemplateConfigurationTest implements UnitTest {
     public EmailRedisTemplateConfiguration emailRedisTemplateConfiguration;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         emailRedisTemplateConfiguration = new EmailRedisTemplateConfiguration(redisConnectionFactory);
     }
 

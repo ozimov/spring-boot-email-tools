@@ -48,6 +48,7 @@ import java.util.Map;
 import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -166,16 +167,19 @@ public class DefaultEmailServiceTest implements UnitTest {
     }
 
     @Test
-    public void sendMailWithoutTemplateShouldThrowWhenEmailIsNull() {
+    public void sendMailWithoutTemplateShouldThrowExceptionWhenEmailIsNull() {
         //Arrange
         thrown.expect(NullPointerException.class);
 
         //Act
         mailService.send(null);
+
+        //Assert
+        fail();
     }
 
     @Test
-    public void sendMailWithTemplateShouldThrowWhenEmailIsNull() throws CannotSendEmailException {
+    public void sendMailWithTemplateShouldThrowExceptionWhenEmailIsNull() throws CannotSendEmailException {
         //Arrange
         thrown.expect(NullPointerException.class);
         final String imageName = "100_percent_free.jpg";
@@ -186,10 +190,13 @@ public class DefaultEmailServiceTest implements UnitTest {
         //Act
         mailService.send(null, "never_called.ftl", Maps.newHashMap(),
                 getInlinePicture(inlineImageFile, imageName));
+
+        //Assert
+        fail();
     }
 
     @Test
-    public void sendMailWithTemplateShouldThrowWhenTemplateIsNull()
+    public void sendMailWithTemplateShouldThrowExceptionWhenTemplateIsNull()
             throws CannotSendEmailException, UnsupportedEncodingException {
         //Arrange
         thrown.expect(NullPointerException.class);
@@ -202,10 +209,13 @@ public class DefaultEmailServiceTest implements UnitTest {
         //Act
         mailService.send(email, null, Maps.newHashMap(),
                 getInlinePicture(inlineImageFile, imageName));
+
+        //Assert
+        fail();
     }
 
     @Test
-    public void sendMailWithTemplateAndInlinePictureThrowWhenPictureIsNull() throws IOException, CannotSendEmailException, TemplateException {
+    public void sendMailWithTemplateAndInlinePictureThrowExceptionWhenPictureIsNull() throws IOException, CannotSendEmailException, TemplateException {
         //Arrange
         thrown.expect(NullPointerException.class);
         final Email email = getSimpleMail();
@@ -215,6 +225,9 @@ public class DefaultEmailServiceTest implements UnitTest {
 
         //Act
         mailService.send(email, "never_called.ftl", Maps.newHashMap(), null);
+
+        //Assert
+        fail();
     }
 
     private it.ozimov.springboot.mail.model.InlinePicture getInlinePicture(final File inlineImageFile, final String imageName) {

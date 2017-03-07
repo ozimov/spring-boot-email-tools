@@ -5,7 +5,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.internet.MimeMessage;
@@ -28,16 +27,16 @@ public class MimeMessageHelperExtTest {
     public static final String ENCODING = "UTF-16";
 
     @Test
-    public void shouldConstructorWithMimeMessage()throws Exception {
+    public void shouldConstructorWithMimeMessage() throws Exception {
         //Act
-       MimeMessageHelperExt mimeMessageHelperExt = new MimeMessageHelperExt(mimeMessage);
+        MimeMessageHelperExt mimeMessageHelperExt = new MimeMessageHelperExt(mimeMessage);
 
-       //Assert
-       assertions.assertThat(mimeMessageHelperExt.getMimeMessage()).isEqualTo(mimeMessage);
+        //Assert
+        assertions.assertThat(mimeMessageHelperExt.getMimeMessage()).isEqualTo(mimeMessage);
     }
 
     @Test
-    public void shouldConstructorWithMimeMessageAndEncoding()throws Exception {
+    public void shouldConstructorWithMimeMessageAndEncoding() throws Exception {
         //Act
         MimeMessageHelperExt mimeMessageHelperExt = new MimeMessageHelperExt(mimeMessage, ENCODING);
 
@@ -47,7 +46,7 @@ public class MimeMessageHelperExtTest {
     }
 
     @Test
-    public void shouldConstructorWithMimeMessageAndMultipart()throws Exception {
+    public void shouldConstructorWithMimeMessageAndMultipart() throws Exception {
         //Act
         MimeMessageHelperExt mimeMessageHelperExt = new MimeMessageHelperExt(mimeMessage, false);
         MimeMessageHelperExt mimeMessageHelperExtMultipart = new MimeMessageHelperExt(mimeMessage, true);
@@ -60,7 +59,7 @@ public class MimeMessageHelperExtTest {
     }
 
     @Test
-    public void shouldConstructorWithMimeMessageMultipartAndEncding()throws Exception {
+    public void shouldConstructorWithMimeMessageMultipartAndEncding() throws Exception {
         //Act
         MimeMessageHelperExt mimeMessageHelperExt = new MimeMessageHelperExt(mimeMessage, false, ENCODING);
         MimeMessageHelperExt mimeMessageHelperExtMultipart = new MimeMessageHelperExt(mimeMessage, true, ENCODING);
@@ -75,7 +74,7 @@ public class MimeMessageHelperExtTest {
 
 
     @Test
-    public void shouldConstructorWithMimeMessageMultipartMode()throws Exception {
+    public void shouldConstructorWithMimeMessageMultipartMode() throws Exception {
         //Act
         MimeMessageHelperExt mimeMessageHelperExtMixed = new MimeMessageHelperExt(mimeMessage, 1);
         MimeMessageHelperExt mimeMessageHelperExtRelated = new MimeMessageHelperExt(mimeMessage, 2);
@@ -88,7 +87,7 @@ public class MimeMessageHelperExtTest {
     }
 
     @Test
-    public void shouldConstructorWithMimeMessageMultipartModeAndEncding()throws Exception {
+    public void shouldConstructorWithMimeMessageMultipartModeAndEncding() throws Exception {
         //Act
         MimeMessageHelperExt mimeMessageHelperExtMixed = new MimeMessageHelperExt(mimeMessage, 1, ENCODING);
         MimeMessageHelperExt mimeMessageHelperExtRelated = new MimeMessageHelperExt(mimeMessage, 2, ENCODING);
@@ -102,7 +101,7 @@ public class MimeMessageHelperExtTest {
     }
 
     @Test
-    public void shouldConstructorsWork()throws Exception {
+    public void shouldConstructorsWork() throws Exception {
         //Act
         MimeMessageHelperExt mimeMessageHelperExt5 = new MimeMessageHelperExt(mimeMessage, 1);
         MimeMessageHelperExt mimeMessageHelperExt6 = new MimeMessageHelperExt(mimeMessage, 1, "UTF-8");
