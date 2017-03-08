@@ -17,12 +17,16 @@
 package it.ozimov.springboot.mail.model.defaultimpl;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import it.ozimov.springboot.mail.UnitTest;
+import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import javax.mail.internet.InternetAddress;
+
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -32,9 +36,12 @@ public class DefaultEmailTest implements UnitTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-
+    
+    @Rule
+    public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
+    
     @Test
-    public void testEmailImplMustHaveFrom() throws Exception {
+    public void testDefaultEmaillMustHaveFrom() throws Exception {
         //Arrange
         expectedException.expect(NullPointerException.class);
 
@@ -49,7 +56,7 @@ public class DefaultEmailTest implements UnitTest {
     }
 
     @Test
-    public void testEmailImplMustHaveSubject() throws Exception {
+    public void testDefaultEmaillMustHaveSubject() throws Exception {
         //Arrange
         expectedException.expect(NullPointerException.class);
 
@@ -64,7 +71,7 @@ public class DefaultEmailTest implements UnitTest {
     }
 
     @Test
-    public void testEmailImplMustHaveBody() throws Exception {
+    public void testDefaultEmaillMustHaveBody() throws Exception {
         //Arrange
         expectedException.expect(NullPointerException.class);
 
@@ -79,7 +86,7 @@ public class DefaultEmailTest implements UnitTest {
     }
 
     @Test
-    public void testEmailImplValidWithRequiredFields() throws Exception {
+    public void testDefaultEmaillValidWithRequiredFields() throws Exception {
         //Arrange
 
         //Act
@@ -93,4 +100,42 @@ public class DefaultEmailTest implements UnitTest {
         //Assert
         assertThat(email, not(is(nullValue())));
     }
+
+    @Test
+    public void shoulDefaultEmailHaveDefaultEmptyCustomHeaders() throws Exception {
+        //Arrange
+        final DefaultEmail email = DefaultEmail.builder()
+                .from(new InternetAddress())
+                .to(ImmutableList.of(new InternetAddress()))
+                .subject("subject")
+                .body("body")
+                .build();
+
+        //Act
+        final Map<String, String> givenCustomHeaders = email.getCustomHeaders();
+
+        //Assert
+        assertions.assertThat(givenCustomHeaders).isNotNull().isEmpty();
+    }
+
+    @Test
+    public void shoulDefaultEmailReturnGivenCustomHeaders() throws Exception {
+        //Arrange
+        final Map<String, String> expectedCustomHeaders = ImmutableMap.of("K1", "V1", "K2", "V2");
+
+        final DefaultEmail email = DefaultEmail.builder()
+                .from(new InternetAddress())
+                .to(ImmutableList.of(new InternetAddress()))
+                .subject("subject")
+                .body("body")
+                .customHeaders(expectedCustomHeaders)
+                .build();
+
+        //Act
+        final Map<String, String> givenCustomHeaders = email.getCustomHeaders();
+
+        //Assert
+        assertions.assertThat(givenCustomHeaders).isNotNull().isEqualTo(expectedCustomHeaders);
+    }
+
 }

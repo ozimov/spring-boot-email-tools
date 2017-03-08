@@ -16,11 +16,16 @@
 
 package it.ozimov.springboot.mail.utils;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import it.ozimov.springboot.mail.UnitTest;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.EmailAttachment;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmail;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmailAttachment;
+import org.assertj.core.api.JUnitSoftAssertions;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,9 +43,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
@@ -52,60 +55,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultEmailToMimeMessageTest {
+public class DefaultEmailToMimeMessageTest extends EmailToMimeMessageValidators implements UnitTest {
 
-    private static final String HEADER_DEPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
-
-    private static final String HEADER_RETURN_RECEIPT = "Return-Receipt-To";
+    private static final Map<String, String> CUSTOM_HEADERS = ImmutableMap.of("key1", "value1", "key2", "value2");
 
     @Mock
     private JavaMailSender javaMailSender;
 
     @InjectMocks
     private EmailToMimeMessage emailToMimeMessage;
-
-    public static void validateFrom(final Email email, final MimeMessage sentMessage)
-            throws MessagingException, IOException {
-        final List<Address> froms = asList(sentMessage.getFrom());
-        assertThat(froms, hasSize(1)); // redundant with contains
-        assertThat(froms, contains((Address) email.getFrom()));
-    }
-
-    public static void validateReplyTo(final Email email, final MimeMessage sentMessage)
-            throws MessagingException, IOException {
-        final List<Address> replyTos = asList(sentMessage.getReplyTo());
-        assertThat(replyTos, hasSize(1)); // redundant with contains
-        assertThat(replyTos, contains((Address) email.getReplyTo()));
-    }
-
-    public static void validateTo(final Email email, final MimeMessage sentMessage)
-            throws MessagingException, IOException {
-        final List<Address> tos = asList(sentMessage.getRecipients(TO));
-        assertThat(tos.get(0), is((new ArrayList<>(email.getTo()).get(0))));
-        assertThat(tos, everyItem(is(in(toAddress(email.getTo())))));
-    }
-
-    public static void validateCc(final Email email, final MimeMessage sentMessage)
-            throws MessagingException, IOException {
-        final List<Address> ccs = asList(sentMessage.getRecipients(CC));
-        assertThat(ccs, everyItem(is(in(toAddress(email.getCc())))));
-    }
-
-    public static void validateBcc(final Email email, final MimeMessage sentMessage)
-            throws MessagingException, IOException {
-        final List<Address> bccs = asList(sentMessage.getRecipients(BCC));
-        assertThat(bccs, everyItem(is(in(toAddress(email.getBcc())))));
-    }
-
-    public static void validateSubject(final Email email, final MimeMessage sentMessage)
-            throws MessagingException, IOException {
-        assertThat(sentMessage.getSubject(), is(email.getSubject()));
-    }
-
-    public static void validateBody(final Email email, final MimeMessage sentMessage)
-            throws MessagingException, IOException {
-        assertThat(sentMessage.getContent(), is(email.getBody()));
-    }
 
     public static Email getSimpleMail(InternetAddress from, EmailAttachment... emailAttachments) throws UnsupportedEncodingException {
         final DefaultEmail.DefaultEmailBuilder builder = DefaultEmail.builder()
@@ -119,6 +77,7 @@ public class DefaultEmailToMimeMessageTest {
                 .receiptTo(new InternetAddress("caligola@urbs.aeterna", "Gaius Iulius Caesar Augustus Germanicus"))
                 .subject("Laelius de amicitia")
                 .body("Firmamentum autem stabilitatis constantiaeque eius, quam in amicitia quaerimus, fides est.")
+                .customHeaders(CUSTOM_HEADERS)
                 .encoding(StandardCharsets.UTF_8.name());
         if (nonNull(emailAttachments) && emailAttachments.length > 0) {
             builder.attachments(asList(emailAttachments));
@@ -133,10 +92,6 @@ public class DefaultEmailToMimeMessageTest {
     public static Email getSimpleMailWithAttachments() throws UnsupportedEncodingException {
         return getSimpleMail(new InternetAddress("cicero@mala-tempora.currunt", "Marco Tullio Cicerone"),
                 getCsvAttachment("test1"), getCsvAttachment("test2"));
-    }
-
-    private static List<Address> toAddress(final Collection<InternetAddress> internetAddresses) {
-        return internetAddresses.stream().map(internetAddress -> (Address) internetAddress).collect(toList());
     }
 
     @Test
@@ -160,17 +115,11 @@ public class DefaultEmailToMimeMessageTest {
         validateReceipt(email, sentMessage);
         validateSubject(email, sentMessage);
         validateBody(email, sentMessage);
+        validateCustomHeaders(email, sentMessage);
 
         verify(javaMailSender).createMimeMessage();
     }
 
-    private void validateReceipt(Email email, MimeMessage sentMessage) throws MessagingException {
-        assertThat(sentMessage.getHeader(HEADER_RETURN_RECEIPT)[0], is(email.getReceiptTo().getAddress()));
-    }
-
-    private void validateDepositionNotification(Email email, MimeMessage sentMessage) throws MessagingException {
-        assertThat(sentMessage.getHeader(HEADER_DEPOSITION_NOTIFICATION_TO)[0], is(email.getReceiptTo().getAddress()));
-    }
 
     private static EmailAttachment getCsvAttachment(String filename) {
         final String testData = "col1,col2\n1,2\n3,4";

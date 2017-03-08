@@ -10,11 +10,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.5.1] -  2017-03-08
+### Added
+- Added support for custom headers in `Email` interface.
+
 ## [0.5.0] - 2017-02-26
 ### Added 
 - Annotation to avoid using `@ComponentScan` in the spring boot main application (refer to issue #32).
+
 ### Changed
 - Large refactoring of packages.
+
 ### Fixed
 - Class `PriorityQueueSchedulerService` has been simplified, with a large refactoring to provide
     better interaction with persistence service (now having it own thread).
