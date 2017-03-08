@@ -17,6 +17,8 @@
 package it.ozimov.springboot.mail.model.defaultimpl;
 
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.EmailAttachment;
 import lombok.*;
@@ -26,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Mime email.
@@ -70,5 +73,19 @@ public class DefaultEmail implements Email {
     private InternetAddress receiptTo;
 
     private InternetAddress depositionNotificationTo;
+
+    private Map<String, String> customHeaders;
+
+    //This is to have default values in Lombok constructor
+    public static class DefaultEmailBuilder {
+
+        private Collection<InternetAddress> cc = ImmutableList.of();
+
+        private Collection<InternetAddress> bcc = ImmutableList.of();
+
+        private String encoding = StandardCharsets.UTF_8.name();
+
+        private Map<String, String> customHeaders = ImmutableMap.of();
+    }
 
 }
