@@ -95,12 +95,32 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                 messageHelper.setHeaderReturnReceipt(email.getDepositionNotificationTo().getAddress());
             }
 
+            if(nonNull(email.getCustomHeaders())) {
+                setCustomHeaders(email, mimeMessage);
+            }
+
         } catch (MessagingException e) {
             log.error("Error while converting DefaultEmail to MimeMessage");
             throw new EmailConversionException(e);
         }
 
         return mimeMessage;
+    }
+
+    private void setCustomHeaders(Email email, MimeMessage mimeMessage) {
+        email.getCustomHeaders().entrySet().stream()
+                .forEach(
+                        entry -> {
+                            final String key = entry.getKey();
+                            final String value = entry.getValue();
+                            try {
+                                mimeMessage.setHeader(key, value);
+                            } catch (MessagingException e) {
+                                log.warn("Exception while setting custom email header with value {} and key {}. " +
+                                        "The MimeEmail will be created anyway but something may go wrong afterward.", key, value, e);
+                            }
+                        }
+                );
     }
 
 }

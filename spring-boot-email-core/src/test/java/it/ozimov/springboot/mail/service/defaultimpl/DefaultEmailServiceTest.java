@@ -26,6 +26,7 @@ import it.ozimov.springboot.mail.service.TemplateService;
 import it.ozimov.springboot.mail.service.exception.CannotSendEmailException;
 import it.ozimov.springboot.mail.service.exception.TemplateException;
 import it.ozimov.springboot.mail.utils.EmailToMimeMessage;
+import it.ozimov.springboot.mail.utils.EmailToMimeMessageValidators;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,7 +54,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultEmailServiceTest implements UnitTest {
+public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implements UnitTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
