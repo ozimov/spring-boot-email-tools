@@ -346,7 +346,7 @@ public void MyEmailWithTemplateSenderService {
 ```
 
 ## Persistence
-Persistence has been introduced in version `0.5.1`. Persistence is mainly of interest if the scheduler is used, therefore
+Persistence has been introduced in version `0.5.0`. Persistence is mainly of interest if the scheduler is used, therefore
 it can be enabled only if the scheduler is enabled.
 
 The persistence layer is optional, thus needs to be activated. The default implementation is fully based on embedded REDIS.
