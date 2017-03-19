@@ -40,9 +40,6 @@ import static com.google.common.io.Files.getFileExtension;
 public class PebbleTemplateService implements TemplateService {
 
     @Autowired
-    private PebbleViewResolver pebbleViewResolver;
-
-    @Autowired
     private PebbleEngine pebbleEngine;
 
     @Value("${pebble.suffix:pebble}")
