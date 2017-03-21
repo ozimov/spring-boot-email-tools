@@ -32,10 +32,10 @@ public class EmailRendererBuilderTest implements UnitTest {
 
     @Before
     public void setUp() throws Exception {
-        final Date sentAt = Date.from(
+        Date sentAt = Date.from(
                 LocalDate.of(2014, 7, 8)
-                .atTime(3,5, 1, 10)
-                .atZone(ZoneId.ofOffset("UTC", ZoneOffset.ofHours(1)))
+                        .atTime(4,5, 1, 10)
+                        .atZone(ZoneId.of("UTC"))
                         .toInstant()
         );
 
@@ -159,7 +159,7 @@ public class EmailRendererBuilderTest implements UnitTest {
                 .contains(", attachments=[attachment1.pdf, attachment2.pdf]")
                 .contains(", encoding=UTF-16")
                 .contains(", locale=it_IT")
-                .contains(", sentAt=2014-07-08 04:05:01 CEST")
+                .contains(", sentAt=2014-07-08 04:05:01 UTC")
                 .contains(", receiptTo=***@email.com")
                 .contains(", depositionNotificationTo=depositionNotificationTo@***")
                 .contains(", customHeaders=[header1=value1, header2=value2]")

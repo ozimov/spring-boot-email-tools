@@ -7,6 +7,7 @@ import javax.mail.internet.InternetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import static java.util.Objects.isNull;
 
@@ -17,9 +18,16 @@ public class EmailFieldFormat {
 
     private static final String NULL = "NULL";
 
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = createSimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private static final SimpleDateFormat DATE_FORMAT_WITH_ZONE_ID = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+    private static final SimpleDateFormat DATE_FORMAT_WITH_ZONE_ID = createSimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+
+    private static SimpleDateFormat createSimpleDateFormat(String pattern) {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return simpleDateFormat;
+    }
+
 
     public static String plainText(final Locale locale) {
         return plainText(isNull(locale)? null : locale.toString());

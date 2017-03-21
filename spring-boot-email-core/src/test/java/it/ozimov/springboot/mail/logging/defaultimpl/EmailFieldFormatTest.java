@@ -328,8 +328,8 @@ public class EmailFieldFormatTest {
         //Arrange
         Date date = Date.from(
                 LocalDate.of(2014, 7, 8)
-                        .atTime(3,5, 1, 10)
-                        .atZone(ZoneId.ofOffset("UTC", ZoneOffset.ofHours(1)))
+                        .atTime(4,5, 1, 10)
+                        .atZone(ZoneId.of("UTC"))
                         .toInstant()
         );
 
@@ -363,8 +363,8 @@ public class EmailFieldFormatTest {
         //Arrange
         Date date = Date.from(
                 LocalDate.of(2014, 7, 8)
-                        .atTime(3,5, 1, 10)
-                        .atZone(ZoneId.ofOffset("UTC", ZoneOffset.ofHours(1)))
+                        .atTime(4,5, 1, 10)
+                        .atZone(ZoneId.of("UTC"))
                         .toInstant()
         );
 
@@ -375,7 +375,7 @@ public class EmailFieldFormatTest {
         assertions.assertThat(givenFormattedText)
                 .isNotNull()
                 .isNotEmpty()
-                .isEqualTo("2014-07-08 04:05:01 CEST");
+                .isEqualTo("2014-07-08 04:05:01 UTC");
     }
 
     @Test
