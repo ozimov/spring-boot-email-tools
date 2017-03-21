@@ -62,6 +62,13 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Security -->
+        <dependency>
+            <groupId>org.owasp.encoder</groupId>
+            <artifactId>encoder</artifactId>
+            <version>1.2.1</version>
+        </dependency>
     </dependencies>
 
 </project>
