@@ -102,7 +102,7 @@ public class DefaultEmailTest implements UnitTest {
     }
 
     @Test
-    public void shoulDefaultEmailHaveDefaultEmptyCustomHeaders() throws Exception {
+    public void shouldDefaultEmailHaveDefaultEmptyCustomHeaders() throws Exception {
         //Arrange
         final DefaultEmail email = DefaultEmail.builder()
                 .from(new InternetAddress())
@@ -119,7 +119,7 @@ public class DefaultEmailTest implements UnitTest {
     }
 
     @Test
-    public void shoulDefaultEmailReturnGivenCustomHeaders() throws Exception {
+    public void shouldDefaultEmailReturnGivenCustomHeaders() throws Exception {
         //Arrange
         final Map<String, String> expectedCustomHeaders = ImmutableMap.of("K1", "V1", "K2", "V2");
 

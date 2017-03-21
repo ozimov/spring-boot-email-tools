@@ -1,4 +1,4 @@
-package it.ozimov.springboot.mail.service.defaultimpl;
+package it.ozimov.springboot.mail.configuration;
 
 import com.google.common.base.Preconditions;
 import lombok.*;

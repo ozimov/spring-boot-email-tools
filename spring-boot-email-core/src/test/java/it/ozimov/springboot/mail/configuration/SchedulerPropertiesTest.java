@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package it.ozimov.springboot.mail.service.defaultimpl;
+package it.ozimov.springboot.mail.configuration;
 
 import it.ozimov.springboot.mail.UnitTest;
+import it.ozimov.springboot.mail.configuration.SchedulerProperties;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;

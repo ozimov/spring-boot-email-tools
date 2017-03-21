@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import it.ozimov.mockito.helpers.captors.ResultCaptor;
 import it.ozimov.springboot.mail.BaseRedisTest;
+import it.ozimov.springboot.mail.configuration.SchedulerProperties;
 import it.ozimov.springboot.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmailSchedulingData;
 import it.ozimov.springboot.mail.service.EmailService;

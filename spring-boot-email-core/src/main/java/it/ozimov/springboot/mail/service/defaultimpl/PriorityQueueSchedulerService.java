@@ -16,6 +16,7 @@
 
 package it.ozimov.springboot.mail.service.defaultimpl;
 
+import it.ozimov.springboot.mail.configuration.SchedulerProperties;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.mail.model.InlinePicture;

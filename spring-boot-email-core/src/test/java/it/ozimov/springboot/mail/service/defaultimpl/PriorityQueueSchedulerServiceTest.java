@@ -18,6 +18,7 @@ package it.ozimov.springboot.mail.service.defaultimpl;
 
 import it.ozimov.mockito.helpers.captors.ResultCaptor;
 import it.ozimov.springboot.mail.ContextBasedTest;
+import it.ozimov.springboot.mail.configuration.SchedulerProperties;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.service.EmailService;
 import it.ozimov.springboot.mail.service.ServiceStatus;
