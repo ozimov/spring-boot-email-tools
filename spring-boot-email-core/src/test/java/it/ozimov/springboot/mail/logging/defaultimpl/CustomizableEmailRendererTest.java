@@ -15,11 +15,10 @@ import org.springframework.http.MediaType;
 import javax.mail.internet.InternetAddress;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Locale;
 
-public class EmailRendererBuilderTest implements UnitTest {
+public class CustomizableEmailRendererTest implements UnitTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
@@ -28,7 +27,7 @@ public class EmailRendererBuilderTest implements UnitTest {
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
     private DefaultEmail emailWithOnlyMandatoryFields;
-    private DefaultEmail emailFullShortContent;
+    private DefaultEmail emailFullContent;
 
     @Before
     public void setUp() throws Exception {
@@ -47,7 +46,7 @@ public class EmailRendererBuilderTest implements UnitTest {
                 .body("body")
                 .build();
 
-        emailFullShortContent = DefaultEmail.builder()
+        emailFullContent = DefaultEmail.builder()
                 .from(new InternetAddress("from@email.com"))
                 .to(ImmutableList.of(new InternetAddress("to_1@email.com"),
                         new InternetAddress("to_2@email.com")))
@@ -73,9 +72,10 @@ public class EmailRendererBuilderTest implements UnitTest {
     @Test
     public void shouldBuildReturnEmptyDescriptionGivenNoCallToWitherMethods() throws Exception {
         //Arrange
+        CustomizableEmailRenderer customizableEmailRenderer =  CustomizableEmailRenderer.builder().build();
 
         //Act
-        String givenPrint = EmailRendererBuilder.builderFor(emailFullShortContent).build();
+        String givenPrint = customizableEmailRenderer.render(emailFullContent);
 
         //Assert
         assertions.assertThat(givenPrint).isEqualTo("Email{}");
@@ -84,9 +84,7 @@ public class EmailRendererBuilderTest implements UnitTest {
     @Test
     public void shouldBuildReturnFullDescriptionGivenAllCallsToWitherMethods() throws Exception {
         //Arrange
-
-        //Act
-        String givenPrint = EmailRendererBuilder.builderFor(emailFullShortContent)
+        CustomizableEmailRenderer customizableEmailRenderer =  CustomizableEmailRenderer.builder()
                 .withFromFormat(EmailFieldFormat::plainText)
                 .withToFormat(EmailFieldFormat::plainText)
                 .withCcFormat(EmailFieldFormat::plainText)
@@ -102,6 +100,9 @@ public class EmailRendererBuilderTest implements UnitTest {
                 .withDepositionNotificationToFormat(EmailFieldFormat::plainText)
                 .includeCustomHeaders()
                 .build();
+
+        //Act
+        String givenPrint = customizableEmailRenderer.render(emailFullContent);
 
         //Assert
         assertions.assertThat(givenPrint)
@@ -127,9 +128,7 @@ public class EmailRendererBuilderTest implements UnitTest {
     @Test
     public void shouldBuildReturnFullDescriptionGivenSpecialEmailFieldFormats() throws Exception {
         //Arrange
-
-        //Act
-        String givenPrint = EmailRendererBuilder.builderFor(emailFullShortContent)
+        CustomizableEmailRenderer customizableEmailRenderer = CustomizableEmailRenderer.builder()
                 .withFromFormat(EmailFieldFormat::textFromAt)
                 .withToFormat(EmailFieldFormat::textUpToAt)
                 .withCcFormat(EmailFieldFormat::textFromAt)
@@ -145,6 +144,9 @@ public class EmailRendererBuilderTest implements UnitTest {
                 .withDepositionNotificationToFormat(EmailFieldFormat::textUpToAt)
                 .includeCustomHeaders()
                 .build();
+
+        //Act
+        String givenPrint = customizableEmailRenderer.render(emailFullContent);
 
         //Assert
         assertions.assertThat(givenPrint)
@@ -167,11 +169,9 @@ public class EmailRendererBuilderTest implements UnitTest {
     }
 
     @Test
-    public void shouldBuildReturnNullFieldsAsNULLOrEmptyList() throws Exception {
+    public void shouldBuildIgnoreNullAndEmptyCollections() throws Exception {
         //Arrange
-
-        //Act
-        String givenPrint = EmailRendererBuilder.builderFor(emailWithOnlyMandatoryFields)
+        CustomizableEmailRenderer customizableEmailRenderer = CustomizableEmailRenderer.builder()
                 .withFromFormat(EmailFieldFormat::plainText)
                 .withToFormat(EmailFieldFormat::plainText)
                 .withCcFormat(EmailFieldFormat::plainText)
@@ -188,48 +188,8 @@ public class EmailRendererBuilderTest implements UnitTest {
                 .includeCustomHeaders()
                 .build();
 
-        //Assert
-        assertions.assertThat(givenPrint)
-                .startsWith("Email{")
-                .contains("from=from@email.com")
-                .contains(", replyTo=NULL")
-                .contains(", to=[to_1@email.com, to_2@email.com]")
-                .contains(", cc=[]")
-                .contains(", bcc=[]")
-                .contains(", subject=subject")
-                .contains(", body=body")
-                .contains(", attachments=[]")
-                .contains(", encoding=UTF-8")
-                .contains(", locale=NULL")
-                .contains(", sentAt=NULL")
-                .contains(", receiptTo=NULL")
-                .contains(", depositionNotificationTo=NULL")
-                .contains(", customHeaders=[]")
-                .endsWith("}");
-    }
-
-    @Test
-    public void shouldBuildIgnoreNullAndEmptyCollectionsOnProperConfigurationMethod() throws Exception {
-        //Arrange
-
         //Act
-        String givenPrint = EmailRendererBuilder.builderFor(emailWithOnlyMandatoryFields)
-                .withFromFormat(EmailFieldFormat::plainText)
-                .withToFormat(EmailFieldFormat::plainText)
-                .withCcFormat(EmailFieldFormat::plainText)
-                .withBccFormat(EmailFieldFormat::plainText)
-                .withReplyToFormat(EmailFieldFormat::plainText)
-                .withSubjectFormat(EmailFieldFormat::plainText)
-                .withBodyFormat(EmailFieldFormat::plainText)
-                .withAttachmentsFormat(EmailFieldFormat::plainText)
-                .withEncodingFormat(EmailFieldFormat::plainText)
-                .withLocaleFormat(EmailFieldFormat::plainText)
-                .withSentAtFormat(EmailFieldFormat::dateFormat)
-                .withReceiptToFormat(EmailFieldFormat::plainText)
-                .withDepositionNotificationToFormat(EmailFieldFormat::plainText)
-                .includeCustomHeaders()
-                .ignoreNullAndEmptyCollections()
-                .build();
+        String givenPrint = customizableEmailRenderer.render(emailWithOnlyMandatoryFields);
 
         //Assert
         assertions.assertThat(givenPrint)
@@ -248,6 +208,50 @@ public class EmailRendererBuilderTest implements UnitTest {
                 .doesNotContain(", receiptTo=NULL")
                 .doesNotContain(", depositionNotificationTo=NULL")
                 .doesNotContain(", customHeaders=[]")
+                .endsWith("}");
+    }
+
+    @Test
+    public void shouldBuildReturnNullFieldsAsNULLOrEmptyListOnProperConfigurationMethod() throws Exception {
+        //Arrange
+        CustomizableEmailRenderer customizableEmailRenderer = CustomizableEmailRenderer.builder()
+                .withFromFormat(EmailFieldFormat::plainText)
+                .withToFormat(EmailFieldFormat::plainText)
+                .withCcFormat(EmailFieldFormat::plainText)
+                .withBccFormat(EmailFieldFormat::plainText)
+                .withReplyToFormat(EmailFieldFormat::plainText)
+                .withSubjectFormat(EmailFieldFormat::plainText)
+                .withBodyFormat(EmailFieldFormat::plainText)
+                .withAttachmentsFormat(EmailFieldFormat::plainText)
+                .withEncodingFormat(EmailFieldFormat::plainText)
+                .withLocaleFormat(EmailFieldFormat::plainText)
+                .withSentAtFormat(EmailFieldFormat::dateFormat)
+                .withReceiptToFormat(EmailFieldFormat::plainText)
+                .withDepositionNotificationToFormat(EmailFieldFormat::plainText)
+                .includeCustomHeaders()
+                .includeNullAndEmptyCollections()
+                .build();
+
+        //Act
+        String givenPrint = customizableEmailRenderer.render(emailWithOnlyMandatoryFields);
+
+        //Assert
+        assertions.assertThat(givenPrint)
+                .startsWith("Email{")
+                .contains("from=from@email.com")
+                .contains(", replyTo=NULL")
+                .contains(", to=[to_1@email.com, to_2@email.com]")
+                .contains(", cc=[]")
+                .contains(", bcc=[]")
+                .contains(", subject=subject")
+                .contains(", body=body")
+                .contains(", attachments=[]")
+                .contains(", encoding=UTF-8")
+                .contains(", locale=NULL")
+                .contains(", sentAt=NULL")
+                .contains(", receiptTo=NULL")
+                .contains(", depositionNotificationTo=NULL")
+                .contains(", customHeaders=[]")
                 .endsWith("}");
     }
 

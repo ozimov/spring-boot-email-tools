@@ -1,17 +1,23 @@
 package it.ozimov.springboot.mail.logging.defaultimpl;
 
 import com.google.common.base.Preconditions;
+import it.ozimov.springboot.mail.logging.LoggingStrategy;
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.mail.internet.InternetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static java.util.Objects.isNull;
 
 @UtilityClass
+@Slf4j
 public class EmailFieldFormat {
 
     private static final String STARS = "***";
@@ -22,19 +28,87 @@ public class EmailFieldFormat {
 
     private static final SimpleDateFormat DATE_FORMAT_WITH_ZONE_ID = createSimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
 
-    private static SimpleDateFormat createSimpleDateFormat(String pattern) {
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return simpleDateFormat;
+    public static UnaryOperator<String> textFormatterFrom(@NonNull final LoggingStrategy loggingStrategy) {
+        switch (loggingStrategy) {
+            case PLAIN_TEXT:
+                return EmailFieldFormat::plainText;
+            case HIDDEN:
+                break;
+            case FIRST_DOZEN_THEN_STARS:
+                return EmailFieldFormat::firstDozenThenStars;
+            case FULL_TEXT_FROM_COMMERCIAL_AT:
+            case FULL_TEXT_UP_TO_COMMERCIAL_AT:
+            case STANDARD_DATE_FORMAT:
+            case STANDARD_DATE_FORMAT_WITH_ZONE_ID:
+            default:
+                logUnsupportedLoggingStrategy(loggingStrategy, "String");
+        }
+        return text -> text;
     }
 
+    public static Function<InternetAddress, String> emailFormatterFrom(@NonNull final LoggingStrategy loggingStrategy) {
+        switch (loggingStrategy) {
+            case PLAIN_TEXT:
+                return EmailFieldFormat::plainText;
+            case HIDDEN:
+                break;
+            case FIRST_DOZEN_THEN_STARS:
+                return EmailFieldFormat::firstDozenThenStars;
+            case FULL_TEXT_FROM_COMMERCIAL_AT:
+                return EmailFieldFormat::textFromAt;
+            case FULL_TEXT_UP_TO_COMMERCIAL_AT:
+                return EmailFieldFormat::textUpToAt;
+            case STANDARD_DATE_FORMAT:
+            case STANDARD_DATE_FORMAT_WITH_ZONE_ID:
+            default:
+                logUnsupportedLoggingStrategy(loggingStrategy, "InternetAddress");
+        }
+        return internetAddress -> internetAddress.toString();
+    }
+
+    public static Function<Locale, String> localeFormatterFrom(@NonNull final LoggingStrategy loggingStrategy) {
+        switch (loggingStrategy) {
+            case PLAIN_TEXT:
+                return EmailFieldFormat::plainText;
+            case HIDDEN:
+                break;
+            case FIRST_DOZEN_THEN_STARS:
+            case FULL_TEXT_FROM_COMMERCIAL_AT:
+            case FULL_TEXT_UP_TO_COMMERCIAL_AT:
+            case STANDARD_DATE_FORMAT:
+            case STANDARD_DATE_FORMAT_WITH_ZONE_ID:
+            default:
+                logUnsupportedLoggingStrategy(loggingStrategy, "Locale");
+        }
+        return locale -> locale.toString();
+    }
+
+    public static Function<Date, String> dateFormatterFrom(@NonNull final LoggingStrategy loggingStrategy) {
+        switch (loggingStrategy) {
+            case PLAIN_TEXT:
+                break;
+            case HIDDEN:
+                break;
+            case STANDARD_DATE_FORMAT:
+                return EmailFieldFormat::dateFormat;
+            case STANDARD_DATE_FORMAT_WITH_ZONE_ID:
+                return EmailFieldFormat::dateFormatWithZoneId;
+            case FIRST_DOZEN_THEN_STARS:
+            case FULL_TEXT_FROM_COMMERCIAL_AT:
+            case FULL_TEXT_UP_TO_COMMERCIAL_AT:
+            default:
+                logUnsupportedLoggingStrategy(loggingStrategy, "Date");
+        }
+        return date -> date.toString();
+    }
 
     public static String plainText(final Locale locale) {
-        return plainText(isNull(locale)? null : locale.toString());
+        return plainText(isNull(locale) ? null : locale.toString());
     }
 
+
     public static String plainText(final InternetAddress internetAddress) {
-        return plainText(isNull(internetAddress)? null : internetAddress.getAddress());
+        return plainText(isNull(internetAddress) ? null : internetAddress.getAddress());
     }
 
     public static String plainText(final String text) {
@@ -59,9 +133,9 @@ public class EmailFieldFormat {
     public static String textFromAt(final String text) {
         if (isNull(text)) return NULL;
         final int indexOfAt = text.indexOf('@');
-        Preconditions.checkArgument(indexOfAt>0,
+        Preconditions.checkArgument(indexOfAt > 0,
                 "Given text should contain '@', while %s given.", text);
-        return preprendStars(text, indexOfAt, text.length());
+        return prependStars(text, indexOfAt, text.length());
     }
 
     public static String textUpToAt(final InternetAddress internetAddress) {
@@ -71,7 +145,7 @@ public class EmailFieldFormat {
     public static String textUpToAt(final String text) {
         if (isNull(text)) return NULL;
         final int indexOfAt = text.indexOf('@');
-        Preconditions.checkArgument(indexOfAt>0,
+        Preconditions.checkArgument(indexOfAt > 0,
                 "Given text should contain '@', while %s given.", text);
         return appendStars(text, 0, indexOfAt + 1);
     }
@@ -90,8 +164,18 @@ public class EmailFieldFormat {
         return text.substring(from, to) + STARS;
     }
 
-    private static String preprendStars(String text, int from, int to) {
+    private static String prependStars(String text, int from, int to) {
         return STARS + text.substring(from, to);
+    }
+
+    private static SimpleDateFormat createSimpleDateFormat(String pattern) {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return simpleDateFormat;
+    }
+
+    private static void logUnsupportedLoggingStrategy(LoggingStrategy loggingStrategy, String inputType) {
+        log.warn("LoggingStrategy {} is not supported for the input type {}.", loggingStrategy, inputType);
     }
 
 }

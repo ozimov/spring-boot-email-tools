@@ -20,4 +20,7 @@ public class ConditionalExpression {
                     " && '${" + SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_ENABLED + ":false}' == 'true'" +
                     " && '${" + SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_EMBEDDED + ":false}' == 'true'";
 
+
+    public static final String EMAIL_LOGGING_RENDERER_IS_ENABLED = "'${" + SPRING_MAIL_LOGGING_ENABLED + ":true}' == 'true'";
+
 }

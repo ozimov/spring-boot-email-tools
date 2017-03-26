@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 public class EmailFieldFormatTest {
 
     public static final String NULL = "NULL";
+
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
@@ -392,5 +393,7 @@ public class EmailFieldFormatTest {
                 .isNotEmpty()
                 .isEqualTo(NULL);
     }
+
+    //TODO test new static methods
 
 }
