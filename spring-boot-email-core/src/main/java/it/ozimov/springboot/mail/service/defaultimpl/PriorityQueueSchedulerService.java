@@ -135,9 +135,33 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     @Override
     @Async
-    public void schedule(@NonNull final Email mimeEmail, @NonNull final OffsetDateTime scheduledDateTime,
-                         final int desiredPriorityLevel) {
+    public void schedule(@NonNull final Email mimeEmail, final int desiredPriorityLevel) {
+        scheduleEmail(mimeEmail, TimeUtils.offsetDateTimeNow(), desiredPriorityLevel);
+    }
+
+    @Override
+    @Async
+    public void schedule(@NonNull final Email mimeEmail, @NonNull final OffsetDateTime scheduledDateTime, final int desiredPriorityLevel) {
+        scheduleEmail(mimeEmail, scheduledDateTime, desiredPriorityLevel);
+    }
+
+    @Override
+    @Async
+    public void schedule(@NonNull final Email mimeEmail, final int desiredPriorityLevel, @NonNull final String template,
+                         @NonNull final Map<String, Object> modelObject, final InlinePicture... inlinePictures) throws CannotSendEmailException {
+        scheduleTemplateEmail(mimeEmail, TimeUtils.offsetDateTimeNow(), desiredPriorityLevel, template, modelObject, inlinePictures);
+    }
+
+    @Override
+    @Async
+    public void schedule(@NonNull final Email mimeEmail, @NonNull final OffsetDateTime scheduledDateTime, final int desiredPriorityLevel,
+                         @NonNull final String template, @NonNull final Map<String, Object> modelObject, final InlinePicture... inlinePictures) throws CannotSendEmailException {
+        scheduleTemplateEmail(mimeEmail, scheduledDateTime, desiredPriorityLevel, template, modelObject, inlinePictures);
+    }
+
+    private void scheduleEmail(final Email mimeEmail, final OffsetDateTime scheduledDateTime, final int desiredPriorityLevel) {
         checkPriorityLevel(desiredPriorityLevel);
+
         final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);
         final EmailSchedulingData emailSchedulingData = buildEmailSchedulingData(mimeEmail, scheduledDateTime, desiredPriorityLevel, assignedPriorityLevel);
         schedule(emailSchedulingData);
@@ -145,14 +169,8 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         notifyConsumerIfCouldFire(scheduledDateTime);
     }
 
-    @Override
-    @Async
-    public void schedule(@NonNull final Email mimeEmail,
-                         @NonNull final OffsetDateTime scheduledDateTime,
-                         final int desiredPriorityLevel,
-                         @NonNull final String template,
-                         @NonNull final Map<String, Object> modelObject,
-                         final InlinePicture... inlinePictures) throws CannotSendEmailException {
+    private void scheduleTemplateEmail(final Email mimeEmail, final OffsetDateTime scheduledDateTime, final int desiredPriorityLevel,
+                         final String template, final Map<String, Object> modelObject, final InlinePicture... inlinePictures) throws CannotSendEmailException {
         checkPriorityLevel(desiredPriorityLevel);
 
         final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);

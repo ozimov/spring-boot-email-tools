@@ -108,6 +108,20 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     }
 
     @Test
+    public void shouldScheduleAndSendEmailWithoutTemplateAndOffsetDateTime() throws Exception {
+        //Arrange
+        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
+        final Email email = getSimpleMail();
+
+        //Act
+        priorityQueueSchedulerService.schedule(email, 1);
+        Thread.sleep(twoSecondsInMillis());
+
+        //Assert
+        verify(emailService).send(email);
+    }
+
+    @Test
     public void shouldScheduleAndSendEmailWithoutTemplate() throws Exception {
         //Arrange
         final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
@@ -119,6 +133,23 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
         //Assert
         verify(emailService).send(email);
+    }
+
+    @Test
+    public void shouldScheduleAndSendEmailWithTemplateAndOffsetDateTime() throws Exception {
+        //Arrange
+        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
+        final Email email = getSimpleMail();
+
+        //Act
+        priorityQueueSchedulerService.schedule(email,1, TemplatingTestUtils.TEMPLATE,
+                TemplatingTestUtils.MODEL_OBJECT);
+        Thread.sleep(twoSecondsInMillis());
+
+        //Assert
+        verify(emailService).send(email,
+                TemplatingTestUtils.TEMPLATE,
+                TemplatingTestUtils.MODEL_OBJECT);
     }
 
     @Test
