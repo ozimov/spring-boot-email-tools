@@ -22,17 +22,17 @@ import static java.util.Objects.nonNull;
 
 @Configuration
 @ConditionalOnExpression(EMAIL_LOGGING_RENDERER_IS_ENABLED)
-public class EmailRenderedConfiguration {
+public class EmailRendererConfiguration {
 
     private final LoggingProperties loggingProperties;
 
     @Autowired
-    public EmailRenderedConfiguration(final LoggingProperties loggingProperties) {
+    public EmailRendererConfiguration(final LoggingProperties loggingProperties) {
         this.loggingProperties = loggingProperties;
     }
 
     @Bean
-    public EmailRenderer createEmailRenderer() {
+    public EmailRenderer emailRenderer() {
         final CustomizableEmailRendererBuilder customizableEmailRenderer = CustomizableEmailRenderer.builder();
         final LoggingProperties.Strategy loggingPropertiesStrategy = loggingProperties.getStrategy();
 

@@ -14,7 +14,7 @@ import static it.ozimov.springboot.mail.configuration.ApplicationPropertiesConst
 public class LoggingProperties {
 
     // spring.mail.logging.enabled
-    private boolean enabled = false;
+    private boolean enabled = true;
 
     // spring.mail.logging.strategy.*
     private Strategy strategy = new Strategy();
@@ -27,7 +27,7 @@ public class LoggingProperties {
         private LoggingStrategy from = LoggingStrategy.PLAIN_TEXT;
 
         // spring.mail.logging.strategy.replyTo
-        private LoggingStrategy replyTo;
+        private LoggingStrategy replyTo = LoggingStrategy.PLAIN_TEXT;
 
         // spring.mail.logging.strategy.to
         private LoggingStrategy to = LoggingStrategy.PLAIN_TEXT;
