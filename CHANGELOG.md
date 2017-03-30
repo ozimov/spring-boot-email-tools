@@ -9,6 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- `SchedulerService` has two new methods that schedule an email at time now with time zone UTC.
 
 ## [0.5.1] -  2017-03-08
 ### Added
