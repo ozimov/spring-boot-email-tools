@@ -251,9 +251,4 @@ public class CustomizableEmailRenderer implements EmailRenderer {
                 .collect(LIST_JOINER);
     }
 
-
-    @Override
-    public String render(MimeMessage mimeMessage) {
-        return null;
-    }
 }

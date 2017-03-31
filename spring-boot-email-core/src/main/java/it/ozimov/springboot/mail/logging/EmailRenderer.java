@@ -8,6 +8,4 @@ public interface EmailRenderer {
 
     String render(Email email);
 
-    String render(MimeMessage mimeMessage);
-
 }

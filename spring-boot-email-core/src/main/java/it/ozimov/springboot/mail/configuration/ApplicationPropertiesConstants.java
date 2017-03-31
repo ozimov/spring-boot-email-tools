@@ -27,7 +27,7 @@ public class ApplicationPropertiesConstants {
 
     public static final String __SPRING_MAIL_LOGGING = "spring.mail.logging";
 
-    public static final String __SPRING_MAIL_LOGGING_STRATEGY = __SPRING_MAIL_LOGGING + DOT + "renderingStrategy";
+    public static final String __SPRING_MAIL_LOGGING_STRATEGY = __SPRING_MAIL_LOGGING + DOT + "strategy";
 
     public static final String SPRING_MAIL_HOST = "spring.mail.host";
 

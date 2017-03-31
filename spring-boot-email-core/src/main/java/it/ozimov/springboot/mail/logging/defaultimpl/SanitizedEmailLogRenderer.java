@@ -11,21 +11,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-
 @Component
 @Scope("prototype")
 @Slf4j
 public class SanitizedEmailLogRenderer implements EmailLogRenderer {
 
-    private Logger logger;
-
     private final EmailRenderer emailRenderer;
+    private Logger logger;
 
     @Autowired
     public SanitizedEmailLogRenderer(final EmailRenderer emailRenderer) {
         logger = log;
         this.emailRenderer = emailRenderer;
+    }
+
+    /**
+     * Sanitize text to prevent injection of EOL characters into log messages.
+     * <p>
+     * Actually, replaces all whitespaces including CR and LF with a space and all other ASCII control
+     * characters with "?" to avoid malicious code in the logs.
+     */
+    private static String sanitizeString(String text) {
+        return Encode.forJava(text);
     }
 
     @Override
@@ -34,7 +41,7 @@ public class SanitizedEmailLogRenderer implements EmailLogRenderer {
     }
 
     @Override
-    public void trace(@NonNull final String message, @NonNull final Email email, Objects... messageParams) {
+    public void trace(@NonNull final String message, @NonNull final Email email, Object... messageParams) {
         if (logger.isTraceEnabled()) {
             logger.trace(message, renderEmail(email), messageParams);
         }
@@ -48,7 +55,7 @@ public class SanitizedEmailLogRenderer implements EmailLogRenderer {
     }
 
     @Override
-    public void debug(@NonNull final String message, @NonNull final Email email, Objects... messageParams) {
+    public void debug(@NonNull final String message, @NonNull final Email email, Object... messageParams) {
         if (logger.isDebugEnabled()) {
             logger.debug(message, renderEmail(email), messageParams);
 
@@ -63,7 +70,7 @@ public class SanitizedEmailLogRenderer implements EmailLogRenderer {
     }
 
     @Override
-    public void info(@NonNull final String message, @NonNull final Email email, Objects... messageParams) {
+    public void info(@NonNull final String message, @NonNull final Email email, Object... messageParams) {
         if (logger.isInfoEnabled()) {
             logger.info(message, renderEmail(email), messageParams);
         }
@@ -77,7 +84,7 @@ public class SanitizedEmailLogRenderer implements EmailLogRenderer {
     }
 
     @Override
-    public void warn(@NonNull final String message, @NonNull final Email email, Objects... messageParams) {
+    public void warn(@NonNull final String message, @NonNull final Email email, Object... messageParams) {
         if (logger.isWarnEnabled()) {
             logger.warn(message, renderEmail(email), messageParams);
         }
@@ -91,7 +98,7 @@ public class SanitizedEmailLogRenderer implements EmailLogRenderer {
     }
 
     @Override
-    public void error(@NonNull final String message, @NonNull final Email email, Objects... messageParams) {
+    public void error(@NonNull final String message, @NonNull final Email email, Object... messageParams) {
         if (logger.isErrorEnabled()) {
             logger.error(message, renderEmail(email), messageParams);
         }
@@ -106,16 +113,6 @@ public class SanitizedEmailLogRenderer implements EmailLogRenderer {
 
     private String renderEmail(final Email email) {
         return sanitizeString(emailRenderer.render(email));
-    }
-
-    /**
-     * Sanitize text to prevent injection of EOL characters into log messages.
-     * <p>
-     * Actually, replaces all whitespaces including CR and LF with a space and all other ASCII control
-     * characters with "?" to avoid malicious code in the logs.
-     */
-    private static String sanitizeString(String text) {
-        return Encode.forJava(text);
     }
 
 }

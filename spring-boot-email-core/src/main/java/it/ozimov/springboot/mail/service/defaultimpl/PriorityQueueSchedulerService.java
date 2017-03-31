@@ -17,6 +17,7 @@
 package it.ozimov.springboot.mail.service.defaultimpl;
 
 import it.ozimov.springboot.mail.configuration.SchedulerProperties;
+import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.mail.model.InlinePicture;
@@ -97,16 +98,20 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     private Optional<PersistenceService> persistenceServiceOptional;
 
+    private EmailLogRenderer emailLogRenderer;
+
     private final Lock schedulerLock = new ReentrantLock();
 
     @Autowired
     public PriorityQueueSchedulerService(
             final EmailService emailService,
             final SchedulerProperties schedulerProperties,
-            final Optional<PersistenceService> persistenceServiceOptional) throws InterruptedException {
+            final Optional<PersistenceService> persistenceServiceOptional,
+            final EmailLogRenderer emailLogRenderer) throws InterruptedException {
 
         this.emailService = emailService;
         this.persistenceServiceOptional = persistenceServiceOptional;
+        this.emailLogRenderer = emailLogRenderer;
 
         timeOfNextScheduledMessage = new AtomicLong();
 
@@ -142,7 +147,8 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);
         final EmailSchedulingData emailSchedulingData = buildEmailSchedulingData(mimeEmail, scheduledDateTime, desiredPriorityLevel, assignedPriorityLevel);
         schedule(emailSchedulingData);
-        log.info("Scheduled email {} at UTC time {} with priority {}", mimeEmail, scheduledDateTime, desiredPriorityLevel);
+
+        emailLogRenderer.info("Scheduled email {} at UTC time {} with priority {}", mimeEmail, scheduledDateTime, desiredPriorityLevel);
         notifyConsumerIfCouldFire(scheduledDateTime);
     }
 
@@ -159,7 +165,8 @@ public class PriorityQueueSchedulerService implements SchedulerService {
         final int assignedPriorityLevel = normalizePriority(desiredPriorityLevel);
         final EmailSchedulingData emailTemplateSchedulingData = buildEmailSchedulingData(mimeEmail, scheduledDateTime, desiredPriorityLevel, template, modelObject, assignedPriorityLevel, inlinePictures);
         schedule(emailTemplateSchedulingData);
-        log.info("Scheduled email {} at UTC time {} with priority {} with template", mimeEmail, scheduledDateTime, desiredPriorityLevel);
+
+        emailLogRenderer.info("Scheduled email {} at UTC time {} with priority {} with template", mimeEmail, scheduledDateTime, desiredPriorityLevel);
         notifyConsumerIfCouldFire(scheduledDateTime);
     }
 
@@ -252,19 +259,14 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
     protected void deleteFromPersistenceLayer(final EmailSchedulingData emailSchedulingData) {
         //This part is disabled for now, I'm not sure that this could not provide overhead to the persistence layer
-//        final AtomicBoolean shouldLoadFromPersistenceLayer = new AtomicBoolean();
         if (serviceStatus == ServiceStatus.RUNNING) {
             persistenceServiceOptional.ifPresent(
                     persistenceService -> {
                         persistenceService.remove(emailSchedulingData.getId());
-//                        shouldLoadFromPersistenceLayer.set(currentlyInMemory() < minInMemory);
                         priorityQueueManager.completeDequeue();
                     }
             );
         }
-//        if (shouldLoadFromPersistenceLayer.get()) {
-//            notifyResumerIfCouldFire();
-//        }
     }
 
     protected void loadNextBatch() {
@@ -433,10 +435,6 @@ public class PriorityQueueSchedulerService implements SchedulerService {
                         if (enabled() && !persistenceServiceOptional.isPresent()) {
                             priorityQueueManager.completeDequeue();
                         }
-                        log.info("Sent email {} at UTC time {} with assigned priority {}.",
-                                emailSchedulingData.getEmail(),
-                                emailSchedulingData.getScheduledDateTime(),
-                                emailSchedulingData.getAssignedPriority());
 
                         if (enabled()) deleteFromPersistenceLayer(emailSchedulingData);
                     }

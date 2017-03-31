@@ -2,10 +2,6 @@ package it.ozimov.springboot.mail.logging;
 
 import it.ozimov.springboot.mail.model.Email;
 import org.slf4j.Logger;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 public interface EmailLogRenderer {
 
@@ -29,7 +25,7 @@ public interface EmailLogRenderer {
      * @param email         Email to be logged
      * @param messageParams Additional objects to be injected in the message template
      */
-    void trace(String message, Email email, Objects... messageParams);
+    void trace(String message, Email email, Object... messageParams);
 
     /**
      * Log a trace message representing the given email.
@@ -55,7 +51,7 @@ public interface EmailLogRenderer {
      * @param email         Email to be logged
      * @param messageParams Additional objects to be injected in the message template
      */
-    void debug(String message, Email email, Objects... messageParams);
+    void debug(String message, Email email, Object... messageParams);
 
     /**
      * Log a debug message representing the given email.
@@ -81,7 +77,7 @@ public interface EmailLogRenderer {
      * @param email         Email to be logged
      * @param messageParams Additional objects to be injected in the message template
      */
-    void info(String message, Email email, Objects... messageParams);
+    void info(String message, Email email, Object... messageParams);
 
     /**
      * Log an info message representing the given email.
@@ -107,7 +103,7 @@ public interface EmailLogRenderer {
      * @param email         Email to be logged
      * @param messageParams Additional objects to be injected in the message template
      */
-    void warn(String message, Email email, Objects... messageParams);
+    void warn(String message, Email email, Object... messageParams);
 
     /**
      * Log a warning message representing the given email.
@@ -133,7 +129,7 @@ public interface EmailLogRenderer {
      * @param email         Email to be logged
      * @param messageParams Additional objects to be injected in the message template
      */
-    void error(String message, Email email, Objects... messageParams);
+    void error(String message, Email email, Object... messageParams);
 
     /**
      * Log an error message representing the given email.

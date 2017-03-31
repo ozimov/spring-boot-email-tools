@@ -19,6 +19,7 @@ package it.ozimov.springboot.mail.service.defaultimpl;
 
 import com.google.common.collect.Maps;
 import it.ozimov.springboot.mail.UnitTest;
+import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.ImageType;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultInlinePicture;
@@ -65,6 +66,9 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
     @Mock
     private TemplateService templateService;
 
+    @Mock
+    private EmailLogRenderer emailLogRenderer;
+
     private EmailToMimeMessage emailToMimeMessage;
 
     private DefaultEmailService mailService;
@@ -72,7 +76,7 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
     @Before
     public void setUp() {
         emailToMimeMessage = new EmailToMimeMessage(javaMailSender);
-        mailService = new DefaultEmailService(javaMailSender, templateService, emailToMimeMessage);
+        mailService = new DefaultEmailService(javaMailSender, templateService, emailToMimeMessage, emailLogRenderer);
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
