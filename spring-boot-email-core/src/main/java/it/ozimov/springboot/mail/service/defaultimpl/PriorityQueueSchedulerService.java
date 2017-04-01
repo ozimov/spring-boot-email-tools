@@ -111,7 +111,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
         this.emailService = emailService;
         this.persistenceServiceOptional = persistenceServiceOptional;
-        this.emailLogRenderer = emailLogRenderer;
+        this.emailLogRenderer = emailLogRenderer.registerLogger(log);
 
         timeOfNextScheduledMessage = new AtomicLong();
 

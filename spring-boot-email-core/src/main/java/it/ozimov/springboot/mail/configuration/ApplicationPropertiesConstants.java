@@ -70,7 +70,7 @@ public class ApplicationPropertiesConstants {
     public static final String SPRING_MAIL_LOGGING_STRATEGY_FROM = __SPRING_MAIL_LOGGING_STRATEGY + DOT + "from";
 
     public static final String SPRING_MAIL_LOGGING_STRATEGY_REPLY_TO = __SPRING_MAIL_LOGGING_STRATEGY + DOT + "replyTo";
-    
+
     public static final String SPRING_MAIL_LOGGING_STRATEGY_TO = __SPRING_MAIL_LOGGING_STRATEGY + DOT + "to";
 
     public static final String SPRING_MAIL_LOGGING_STRATEGY_CC = __SPRING_MAIL_LOGGING_STRATEGY + DOT + "cc";

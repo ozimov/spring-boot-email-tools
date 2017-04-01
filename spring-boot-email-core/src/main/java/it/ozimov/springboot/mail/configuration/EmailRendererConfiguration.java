@@ -1,7 +1,22 @@
+/*
+ * Copyright 2012-2015 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package it.ozimov.springboot.mail.configuration;
 
 import it.ozimov.springboot.mail.logging.EmailRenderer;
-import it.ozimov.springboot.mail.logging.LoggingStrategy;
 import it.ozimov.springboot.mail.logging.defaultimpl.CustomizableEmailRenderer;
 import it.ozimov.springboot.mail.logging.defaultimpl.CustomizableEmailRenderer.CustomizableEmailRendererBuilder;
 import it.ozimov.springboot.mail.logging.defaultimpl.EmailFieldFormat;
@@ -13,7 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import javax.mail.internet.InternetAddress;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -53,31 +67,33 @@ public class EmailRendererConfiguration {
 
         final UnaryOperator<String> subjectFormat = EmailFieldFormat.textFormatterFrom(loggingPropertiesStrategy.getSubject());
         if (nonNull(subjectFormat)) customizableEmailRenderer.withSubjectFormat(subjectFormat);
-        
+
         final UnaryOperator<String> bodyFormat = EmailFieldFormat.textFormatterFrom(loggingPropertiesStrategy.getBody());
         if (nonNull(bodyFormat)) customizableEmailRenderer.withBodyFormat(bodyFormat);
-        
+
         final UnaryOperator<String> attachmentsFormat = EmailFieldFormat.textFormatterFrom(loggingPropertiesStrategy.getAttachments());
         if (nonNull(attachmentsFormat)) customizableEmailRenderer.withAttachmentsFormat(attachmentsFormat);
-        
+
         final UnaryOperator<String> encodingFormat = EmailFieldFormat.textFormatterFrom(loggingPropertiesStrategy.getEncoding());
         if (nonNull(encodingFormat)) customizableEmailRenderer.withEncodingFormat(encodingFormat);
-        
+
         final Function<Locale, String> localeFormat = EmailFieldFormat.localeFormatterFrom(loggingPropertiesStrategy.getLocale());
         if (nonNull(localeFormat)) customizableEmailRenderer.withLocaleFormat(localeFormat);
-        
+
         final Function<Date, String> sentAtFormat = EmailFieldFormat.dateFormatterFrom(loggingPropertiesStrategy.getSentAt());
         if (nonNull(sentAtFormat)) customizableEmailRenderer.withSentAtFormat(sentAtFormat);
 
         final Function<InternetAddress, String> receiptToFormat = EmailFieldFormat.emailFormatterFrom(loggingPropertiesStrategy.getReceiptTo());
         if (nonNull(receiptToFormat)) customizableEmailRenderer.withReceiptToFormat(receiptToFormat);
-        
+
         final Function<InternetAddress, String> depositionNotificationToFormat = EmailFieldFormat.emailFormatterFrom(loggingPropertiesStrategy.getDepositionNotificationTo());
-        if (nonNull(depositionNotificationToFormat)) customizableEmailRenderer.withDepositionNotificationToFormat(depositionNotificationToFormat);
+        if (nonNull(depositionNotificationToFormat))
+            customizableEmailRenderer.withDepositionNotificationToFormat(depositionNotificationToFormat);
 
         if (!loggingPropertiesStrategy.areCustomHeadersIgnored()) customizableEmailRenderer.includeCustomHeaders();
 
-        if (!loggingPropertiesStrategy.areNullAndEmptyCollectionsIgnored()) customizableEmailRenderer.includeNullAndEmptyCollections();
+        if (!loggingPropertiesStrategy.areNullAndEmptyCollectionsIgnored())
+            customizableEmailRenderer.includeNullAndEmptyCollections();
 
         return customizableEmailRenderer.build();
     }

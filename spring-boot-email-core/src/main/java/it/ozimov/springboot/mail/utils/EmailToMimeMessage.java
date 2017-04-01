@@ -95,7 +95,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                 messageHelper.setHeaderReturnReceipt(email.getDepositionNotificationTo().getAddress());
             }
 
-            if(nonNull(email.getCustomHeaders())) {
+            if (nonNull(email.getCustomHeaders())) {
                 setCustomHeaders(email, mimeMessage);
             }
 

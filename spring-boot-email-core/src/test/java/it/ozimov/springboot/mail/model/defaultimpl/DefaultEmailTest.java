@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import javax.mail.internet.InternetAddress;
-
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,10 +35,10 @@ public class DefaultEmailTest implements UnitTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-    
+
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
-    
+
     @Test
     public void testDefaultEmaillMustHaveFrom() throws Exception {
         //Arrange

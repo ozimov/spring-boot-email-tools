@@ -19,6 +19,7 @@ package it.ozimov.springboot.mail.service.defaultimpl;
 import it.ozimov.mockito.helpers.captors.ResultCaptor;
 import it.ozimov.springboot.mail.ContextBasedTest;
 import it.ozimov.springboot.mail.configuration.SchedulerProperties;
+import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.service.EmailService;
 import it.ozimov.springboot.mail.service.ServiceStatus;
@@ -33,6 +34,7 @@ import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.slf4j.Logger;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -65,6 +67,9 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
     @MockBean
     private SchedulerProperties schedulerProperties;
+
+    @MockBean
+    private EmailLogRenderer emailLogRenderer;
 
     @Mock
     private MimeMessage mimeMessage;
@@ -225,10 +230,12 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
     private PriorityQueueSchedulerService scheduler(int numPriorityLevels) throws InterruptedException {
         when(schedulerProperties.getPriorityLevels()).thenReturn(numPriorityLevels);
+        when(emailLogRenderer.registerLogger(any(Logger.class))).thenReturn(emailLogRenderer);
 
         final PriorityQueueSchedulerService schedulerService = spy(new PriorityQueueSchedulerService(emailService,
                 schedulerProperties,
-                Optional.empty()));
+                Optional.empty(),
+                emailLogRenderer));
         return schedulerService;
     }
 

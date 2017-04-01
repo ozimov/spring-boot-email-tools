@@ -39,14 +39,15 @@ import org.springframework.stereotype.Service;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
 
 import static com.google.common.base.Optional.fromNullable;
 
@@ -66,11 +67,11 @@ public class DefaultEmailService implements EmailService {
     public DefaultEmailService(final @NonNull JavaMailSender javaMailSender,
                                final TemplateService templateService,
                                final @NonNull EmailToMimeMessage emailToMimeMessage,
-                               final @NonNull EmailLogRenderer emailLogRenderer){
+                               final @NonNull EmailLogRenderer emailLogRenderer) {
         this.javaMailSender = javaMailSender;
         this.templateService = templateService;
         this.emailToMimeMessage = emailToMimeMessage;
-        this.emailLogRenderer = emailLogRenderer;
+        this.emailLogRenderer = emailLogRenderer.registerLogger(log);
     }
 
     @Autowired(required = false)
@@ -151,7 +152,7 @@ public class DefaultEmailService implements EmailService {
         return emailToMimeMessage.apply(email);
     }
 
-    private Email emailWithCompiledBody(Email email, String body){
+    private Email emailWithCompiledBody(Email email, String body) {
         return new EmailFromTemplate(email).body(body);
     }
 
