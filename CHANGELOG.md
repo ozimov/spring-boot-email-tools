@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.2] -  2017-04-02
 ### Added
 - Added logging formatter/anonymizer for email, used by default in default email scheduler and sender.
 - Using Spring Boot _1.5.2.RELEASE_
