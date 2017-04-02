@@ -80,6 +80,8 @@ public interface Email extends Serializable {
     InternetAddress getDepositionNotificationTo();
 
     @NonNull
-    default Map<String, String> getCustomHeaders() { return ImmutableMap.of(); }
+    default Map<String, String> getCustomHeaders() {
+        return ImmutableMap.of();
+    }
 
 }

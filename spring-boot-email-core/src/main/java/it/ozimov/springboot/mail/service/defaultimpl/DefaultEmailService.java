@@ -17,6 +17,7 @@
 package it.ozimov.springboot.mail.service.defaultimpl;
 
 import com.google.common.collect.ImmutableMap;
+import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.EmailAttachment;
 import it.ozimov.springboot.mail.model.InlinePicture;
@@ -26,6 +27,10 @@ import it.ozimov.springboot.mail.service.exception.CannotSendEmailException;
 import it.ozimov.springboot.mail.service.exception.TemplateException;
 import it.ozimov.springboot.mail.utils.EmailToMimeMessage;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -56,19 +61,24 @@ public class DefaultEmailService implements EmailService {
 
     private EmailToMimeMessage emailToMimeMessage;
 
+    private EmailLogRenderer emailLogRenderer;
+
     @Autowired(required = false)
     public DefaultEmailService(final @NonNull JavaMailSender javaMailSender,
                                final TemplateService templateService,
-                               final @NonNull EmailToMimeMessage emailToMimeMessage) {
+                               final @NonNull EmailToMimeMessage emailToMimeMessage,
+                               final @NonNull EmailLogRenderer emailLogRenderer) {
         this.javaMailSender = javaMailSender;
         this.templateService = templateService;
         this.emailToMimeMessage = emailToMimeMessage;
+        this.emailLogRenderer = emailLogRenderer.registerLogger(log);
     }
 
     @Autowired(required = false)
     public DefaultEmailService(final @NonNull JavaMailSender javaMailSender,
-                               final @NonNull EmailToMimeMessage emailToMimeMessage) {
-        this(javaMailSender, null, emailToMimeMessage);
+                               final @NonNull EmailToMimeMessage emailToMimeMessage,
+                               final @NonNull EmailLogRenderer emailLogRenderer) {
+        this(javaMailSender, null, emailToMimeMessage, emailLogRenderer);
     }
 
     @Override
@@ -76,6 +86,7 @@ public class DefaultEmailService implements EmailService {
         email.setSentAt(new Date());
         final MimeMessage mimeMessage = toMimeMessage(email);
         javaMailSender.send(mimeMessage);
+        emailLogRenderer.info("Sent email {}.", email);
         return mimeMessage;
     }
 
@@ -123,15 +134,16 @@ public class DefaultEmailService implements EmailService {
 
             mimeMessage.setContent(content);
             javaMailSender.send(mimeMessage);
+            emailLogRenderer.info("Sent email {}.", emailWithCompiledBody(email, text));
         } catch (IOException e) {
             log.error("The template file cannot be read", e);
-            throw new CannotSendEmailException("Error while sending the email due to problems with the template file", e);
+            throw new CannotSendEmailException("Error while sending the email due to problems with the template file.", e);
         } catch (TemplateException e) {
             log.error("The template file cannot be processed", e);
-            throw new CannotSendEmailException("Error while processing the template file with the given model object", e);
+            throw new CannotSendEmailException("Error while processing the template file with the given model object.", e);
         } catch (MessagingException e) {
             log.error("The mime message cannot be created", e);
-            throw new CannotSendEmailException("Error while sending the email due to problems with the mime content", e);
+            throw new CannotSendEmailException("Error while sending the email due to problems with the mime content.", e);
         }
         return mimeMessage;
     }
@@ -140,5 +152,20 @@ public class DefaultEmailService implements EmailService {
         return emailToMimeMessage.apply(email);
     }
 
+    private Email emailWithCompiledBody(Email email, String body) {
+        return new EmailFromTemplate(email).body(body);
+    }
+
+    @RequiredArgsConstructor
+    @Accessors(fluent = true)
+    private static class EmailFromTemplate implements Email {
+        @Delegate
+        private final Email email;
+
+        @Setter
+        private String body;
+
+
+    }
 
 }

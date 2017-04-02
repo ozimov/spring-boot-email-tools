@@ -19,6 +19,7 @@ package it.ozimov.springboot.mail.service.defaultimpl;
 
 import com.google.common.collect.Maps;
 import it.ozimov.springboot.mail.UnitTest;
+import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.ImageType;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultInlinePicture;
@@ -34,6 +35,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.mail.MessagingException;
@@ -46,7 +48,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.*;
+import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
@@ -65,6 +67,9 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
     @Mock
     private TemplateService templateService;
 
+    @Mock
+    private EmailLogRenderer emailLogRenderer;
+
     private EmailToMimeMessage emailToMimeMessage;
 
     private DefaultEmailService mailService;
@@ -72,7 +77,9 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
     @Before
     public void setUp() {
         emailToMimeMessage = new EmailToMimeMessage(javaMailSender);
-        mailService = new DefaultEmailService(javaMailSender, templateService, emailToMimeMessage);
+        when(emailLogRenderer.registerLogger(any(Logger.class))).thenReturn(emailLogRenderer);
+
+        mailService = new DefaultEmailService(javaMailSender, templateService, emailToMimeMessage, emailLogRenderer);
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
@@ -182,11 +189,12 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
     @Test
     public void sendMailWithTemplateShouldThrowExceptionWhenEmailIsNull() throws CannotSendEmailException {
         //Arrange
-        thrown.expect(NullPointerException.class);
         final String imageName = "100_percent_free.jpg";
 
         final File inlineImageFile = new File(getClass().getClassLoader()
                 .getResource("images" + File.separator + imageName).getFile());
+
+        thrown.expect(NullPointerException.class);
 
         //Act
         mailService.send(null, "never_called.ftl", Maps.newHashMap(),
@@ -200,12 +208,13 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
     public void sendMailWithTemplateShouldThrowExceptionWhenTemplateIsNull()
             throws CannotSendEmailException, UnsupportedEncodingException {
         //Arrange
-        thrown.expect(NullPointerException.class);
         final Email email = getSimpleMail();
         final String imageName = "100_percent_free.jpg";
 
         final File inlineImageFile = new File(getClass().getClassLoader()
                 .getResource("images" + File.separator + imageName).getFile());
+
+        thrown.expect(NullPointerException.class);
 
         //Act
         mailService.send(email, null, Maps.newHashMap(),
@@ -218,14 +227,68 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
     @Test
     public void sendMailWithTemplateAndInlinePictureThrowExceptionWhenPictureIsNull() throws IOException, CannotSendEmailException, TemplateException {
         //Arrange
-        thrown.expect(NullPointerException.class);
         final Email email = getSimpleMail();
         assertThat(email.getSentAt(), is(nullValue()));
 
         when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenReturn("doesn't matter");
 
+        thrown.expect(NullPointerException.class);
+
         //Act
         mailService.send(email, "never_called.ftl", Maps.newHashMap(), null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldSendMailWithTemplateCatchIOException() throws Exception {
+        //Arrange
+        final Email email = getSimpleMail();
+        assertThat(email.getSentAt(), is(nullValue()));
+        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenThrow(IOException.class);
+
+        thrown.expect(CannotSendEmailException.class);
+        thrown.expectMessage("Error while sending the email due to problems with the template file.");
+        thrown.expectCause(instanceOf(IOException.class));
+        //Act
+        mailService.send(email, "never_called.ftl", Maps.newHashMap());
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldSendMailWithTemplateCatchTemplateException() throws Exception {
+        //Arrange
+        final Email email = getSimpleMail();
+        assertThat(email.getSentAt(), is(nullValue()));
+        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenThrow(TemplateException.class);
+
+        thrown.expect(CannotSendEmailException.class);
+        thrown.expectMessage("Error while processing the template file with the given model object.");
+        thrown.expectCause(instanceOf(TemplateException.class));
+
+        //Act
+        mailService.send(email, "never_called.ftl", Maps.newHashMap());
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldSendMailWithTemplateCatchMessagingException() throws Exception {
+        //Arrange
+        final Email email = getSimpleMail();
+        assertThat(email.getSentAt(), is(nullValue()));
+        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenThrow(MessagingException.class);
+
+        thrown.expect(CannotSendEmailException.class);
+        thrown.expectMessage("Error while sending the email due to problems with the mime content.");
+        thrown.expectCause(instanceOf(MessagingException.class));
+
+        //Act
+        mailService.send(email, "never_called.ftl", Maps.newHashMap());
 
         //Assert
         fail();

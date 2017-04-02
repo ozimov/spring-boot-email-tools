@@ -17,6 +17,7 @@
 package it.ozimov.springboot.mail.service.defaultimpl;
 
 import it.ozimov.springboot.mail.ContextBasedTest;
+import it.ozimov.springboot.mail.configuration.SchedulerProperties;
 import it.ozimov.springboot.mail.service.EmailService;
 import it.ozimov.springboot.mail.service.SchedulerService;
 import org.assertj.core.api.JUnitSoftAssertions;

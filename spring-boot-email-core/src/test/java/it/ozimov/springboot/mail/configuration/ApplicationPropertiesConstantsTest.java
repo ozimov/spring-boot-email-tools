@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012-2015 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package it.ozimov.springboot.mail.configuration;
 
 import org.assertj.core.api.JUnitSoftAssertions;
@@ -58,6 +74,22 @@ public class ApplicationPropertiesConstantsTest {
         assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_HOST).isEqualTo("spring.mail.scheduler.persistence.redis.host");
         assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_PORT).isEqualTo("spring.mail.scheduler.persistence.redis.port");
         assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_SETTINGS).isEqualTo("spring.mail.scheduler.persistence.redis.settings");
+        assertions.assertThat(SPRING_MAIL_LOGGING_ENABLED).isEqualTo("spring.mail.logging.enabled");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_FROM).isEqualTo("spring.mail.logging.strategy.from");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_REPLY_TO).isEqualTo("spring.mail.logging.strategy.replyTo");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_TO).isEqualTo("spring.mail.logging.strategy.to");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_CC).isEqualTo("spring.mail.logging.strategy.cc");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_BCC).isEqualTo("spring.mail.logging.strategy.bcc");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_SUBJECT).isEqualTo("spring.mail.logging.strategy.subject");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_BODY).isEqualTo("spring.mail.logging.strategy.body");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_ATTACHMENTS).isEqualTo("spring.mail.logging.strategy.attachments");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_ENCODING).isEqualTo("spring.mail.logging.strategy.encoding");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_LOCALE).isEqualTo("spring.mail.logging.strategy.locale");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_SENT_AT).isEqualTo("spring.mail.logging.strategy.sentAt");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_RECEIPT_TO).isEqualTo("spring.mail.logging.strategy.receiptTo");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_DEPOSITION_NOTIFICATION_TO).isEqualTo("spring.mail.logging.strategy.depositionNotificationTo");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_IGNORE_CUSTOM_HEADERS).isEqualTo("spring.mail.logging.strategy.ignore.customHeaders");
+        assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_IGNORE_NULL_AND_EMPTY_COLLECTIONS).isEqualTo("spring.mail.logging.strategy.ignore.nullAndEmptyCollections");
     }
 
 }

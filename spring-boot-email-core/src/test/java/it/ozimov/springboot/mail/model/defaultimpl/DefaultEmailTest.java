@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import javax.mail.internet.InternetAddress;
-
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,10 +35,10 @@ public class DefaultEmailTest implements UnitTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-    
+
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
-    
+
     @Test
     public void testDefaultEmaillMustHaveFrom() throws Exception {
         //Arrange
@@ -102,7 +101,7 @@ public class DefaultEmailTest implements UnitTest {
     }
 
     @Test
-    public void shoulDefaultEmailHaveDefaultEmptyCustomHeaders() throws Exception {
+    public void shouldDefaultEmailHaveDefaultEmptyCustomHeaders() throws Exception {
         //Arrange
         final DefaultEmail email = DefaultEmail.builder()
                 .from(new InternetAddress())
@@ -119,7 +118,7 @@ public class DefaultEmailTest implements UnitTest {
     }
 
     @Test
-    public void shoulDefaultEmailReturnGivenCustomHeaders() throws Exception {
+    public void shouldDefaultEmailReturnGivenCustomHeaders() throws Exception {
         //Arrange
         final Map<String, String> expectedCustomHeaders = ImmutableMap.of("K1", "V1", "K2", "V2");
 

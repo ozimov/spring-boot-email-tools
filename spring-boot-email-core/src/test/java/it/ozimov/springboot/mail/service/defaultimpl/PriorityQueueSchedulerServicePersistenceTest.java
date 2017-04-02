@@ -20,6 +20,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import it.ozimov.mockito.helpers.captors.ResultCaptor;
 import it.ozimov.springboot.mail.BaseRedisTest;
+import it.ozimov.springboot.mail.configuration.SchedulerProperties;
+import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmailSchedulingData;
 import it.ozimov.springboot.mail.service.EmailService;
@@ -30,6 +32,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -77,6 +80,9 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
 
     @MockBean
     private EmailService emailService;
+
+    @MockBean
+    private EmailLogRenderer emailLogRenderer;
 
     @Mock
     private MimeMessage mimeMessage;
@@ -606,7 +612,8 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
         when(schedulerProperties.getPriorityLevels()).thenReturn(priorityLevels);
         when(schedulerProperties.getPersistence()).thenReturn(persistence);
         SchedulerProperties.checkIsValid(schedulerProperties);
-        priorityQueueSchedulerService = spy(new PriorityQueueSchedulerService(emailService, schedulerProperties, Optional.of(defaultPersistenceService)));
+        when(emailLogRenderer.registerLogger(any(Logger.class))).thenReturn(emailLogRenderer);
+        priorityQueueSchedulerService = spy(new PriorityQueueSchedulerService(emailService, schedulerProperties, Optional.of(defaultPersistenceService), emailLogRenderer));
     }
 
 }

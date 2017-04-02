@@ -1,0 +1,25 @@
+spring.mail.host: smtp.gmail.com
+spring.mail.port: 587
+spring.mail.username: hari.seldon@the-foundation.gal
+spring.mail.password: Th3MuleWh0
+spring.mail.properties.mail.smtp.auth: true
+spring.mail.properties.mail.smtp.starttls.enable: true
+spring.mail.properties.mail.smtp.starttls.required: true
+
+spring.mail.logging.enabled: true
+
+spring.mail.logging.strategy.from: PLAIN_TEXT
+spring.mail.logging.strategy.replyTo: HIDDEN
+spring.mail.logging.strategy.to: FULL_TEXT_FROM_COMMERCIAL_AT
+spring.mail.logging.strategy.cc: HIDDEN
+spring.mail.logging.strategy.bcc: HIDDEN
+spring.mail.logging.strategy.subject: PLAIN_TEXT
+spring.mail.logging.strategy.body: FIRST_DOZEN_THEN_STARS
+spring.mail.logging.strategy.attachments: HIDDEN
+spring.mail.logging.strategy.encoding: HIDDEN
+spring.mail.logging.strategy.locale: HIDDEN
+spring.mail.logging.strategy.sentAt: STANDARD_DATE_FORMAT_WITH_ZONE_ID
+spring.mail.logging.strategy.receiptTo: HIDDEN
+spring.mail.logging.strategy.depositionNotificationTo: HIDDEN
+spring.mail.logging.strategy.ignore.customHeaders: true
+spring.mail.logging.strategy.ignore.nullAndEmptyCollections: true
