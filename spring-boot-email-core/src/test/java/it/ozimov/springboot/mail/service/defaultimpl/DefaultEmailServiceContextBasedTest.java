@@ -18,7 +18,7 @@ package it.ozimov.springboot.mail.service.defaultimpl;
 
 
 import com.icegreen.greenmail.util.GreenMail;
-import com.icegreen.greenmail.util.ServerSetupTest;
+import com.icegreen.greenmail.util.ServerSetup;
 import it.ozimov.springboot.mail.ContextBasedTest;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.service.EmailService;
@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.springboot.mail.configuration.ApplicationPropertiesConstants.SPRING_MAIL_PORT;
+import static it.ozimov.springboot.mail.service.defaultimpl.DefaultEmailServiceContextBasedTest.MAIL_PORT;
 import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
 import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMailWithAttachments;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,8 +57,10 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application.properties",
-        properties = SPRING_MAIL_PORT + "=3025")
+        properties = SPRING_MAIL_PORT + "=" + MAIL_PORT)
 public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
+
+    public static final int MAIL_PORT = 3026;
 
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -85,11 +88,12 @@ public class DefaultEmailServiceContextBasedTest implements ContextBasedTest {
                         "</body>\n" +
                         "</html>");
 
-        testSmtp = new GreenMail(ServerSetupTest.SMTP);
+        ServerSetup serverSetup = new ServerSetup(MAIL_PORT, (String) null, "smtp");
+        testSmtp = new GreenMail(serverSetup);
         testSmtp.start();
 
         //don't forget to set the test port!
-        ((JavaMailSenderImpl) javaMailSender).setPort(ServerSetupTest.SMTP.getPort());
+        ((JavaMailSenderImpl) javaMailSender).setPort(serverSetup.getPort());
         ((JavaMailSenderImpl) javaMailSender).setHost("localhost");
     }
 
