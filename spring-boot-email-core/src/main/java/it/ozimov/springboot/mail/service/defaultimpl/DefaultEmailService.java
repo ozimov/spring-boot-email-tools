@@ -137,13 +137,13 @@ public class DefaultEmailService implements EmailService {
             emailLogRenderer.info("Sent email {}.", emailWithCompiledBody(email, text));
         } catch (IOException e) {
             log.error("The template file cannot be read", e);
-            throw new CannotSendEmailException("Error while sending the email due to problems with the template file", e);
+            throw new CannotSendEmailException("Error while sending the email due to problems with the template file.", e);
         } catch (TemplateException e) {
             log.error("The template file cannot be processed", e);
-            throw new CannotSendEmailException("Error while processing the template file with the given model object", e);
+            throw new CannotSendEmailException("Error while processing the template file with the given model object.", e);
         } catch (MessagingException e) {
             log.error("The mime message cannot be created", e);
-            throw new CannotSendEmailException("Error while sending the email due to problems with the mime content", e);
+            throw new CannotSendEmailException("Error while sending the email due to problems with the mime content.", e);
         }
         return mimeMessage;
     }

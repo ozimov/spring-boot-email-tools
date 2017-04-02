@@ -397,12 +397,38 @@ the amount of emails to be kept in memory. Clearly, these two values impact the 
 The less you store in memory, the more it takes to send the next email. The smaller
 is the batch size, the higher the times you interact with the persistence layer.
 
+## Customize email logging
+Very often, you want to log the email that you just sent or scheduled, but you would like to avoid a full 
+`toString` of the given email object. For instance, you may want to anonymize an email address, or to ignore custom headers.
+Here follows a list of properties you can use with some examples:
+
+```properties
+spring.mail.logging.enabled=true
+
+spring.mail.logging.strategy.from=PLAIN_TEXT
+spring.mail.logging.strategy.replyTo=HIDDEN
+spring.mail.logging.strategy.to=FULL_TEXT_FROM_COMMERCIAL_AT,
+spring.mail.logging.strategy.cc=HIDDEN
+spring.mail.logging.strategy.bcc=HIDDEN
+spring.mail.logging.strategy.subject=PLAIN_TEXT
+spring.mail.logging.strategy.body=FIRST_DOZEN_THEN_STARS
+spring.mail.logging.strategy.attachments=HIDDEN
+spring.mail.logging.strategy.encoding=HIDDEN
+spring.mail.logging.strategy.locale=HIDDEN
+spring.mail.logging.strategy.sentAt=STANDARD_DATE_FORMAT_WITH_ZONE_ID
+spring.mail.logging.strategy.receiptTo=HIDDEN
+spring.mail.logging.strategy.depositionNotificationTo=HIDDEN
+spring.mail.logging.strategy.ignore.customHeaders=true
+spring.mail.logging.strategy.ignore.nullAndEmptyCollections=true
+```
+
+Allowed logging strategies are defined in the enum `it.ozimov.springboot.mail.logging.LoggingStrategy`.
+Do not pretend to apply a date-only strategy to an email address, or an email address-only strategy to 
+a text field. Usage should be straightforward.
+
 ## Future plans
 
-Here are listed the backlog for the features to be added to the library in the near future:
-* Optimizations for scheduled emails that require the use of a template engine.
-* Add a listener to notify for the sending of an email. 
-* More examples.
+See open issues.
 
 **Any contribution is welcome (and warmly encouraged).**
 

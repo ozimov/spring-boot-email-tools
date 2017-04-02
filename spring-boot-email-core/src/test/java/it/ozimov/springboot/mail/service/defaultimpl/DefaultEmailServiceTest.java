@@ -249,8 +249,8 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenThrow(IOException.class);
 
         thrown.expect(CannotSendEmailException.class);
-        thrown.expectMessage("Error while sending the email due to problems with the template file");
-
+        thrown.expectMessage("Error while sending the email due to problems with the template file.");
+        thrown.expectCause(instanceOf(IOException.class));
         //Act
         mailService.send(email, "never_called.ftl", Maps.newHashMap());
 
@@ -266,7 +266,8 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenThrow(TemplateException.class);
 
         thrown.expect(CannotSendEmailException.class);
-        thrown.expectMessage("Error while processing the template file with the given model object");
+        thrown.expectMessage("Error while processing the template file with the given model object.");
+        thrown.expectCause(instanceOf(TemplateException.class));
 
         //Act
         mailService.send(email, "never_called.ftl", Maps.newHashMap());
@@ -282,8 +283,9 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         assertThat(email.getSentAt(), is(nullValue()));
         when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenThrow(MessagingException.class);
 
-        thrown.expect(MessagingException.class);
-        thrown.expectMessage("Error while sending the email due to problems with the mime content");
+        thrown.expect(CannotSendEmailException.class);
+        thrown.expectMessage("Error while sending the email due to problems with the mime content.");
+        thrown.expectCause(instanceOf(MessagingException.class));
 
         //Act
         mailService.send(email, "never_called.ftl", Maps.newHashMap());
