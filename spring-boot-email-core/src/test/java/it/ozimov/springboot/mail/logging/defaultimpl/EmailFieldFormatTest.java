@@ -16,6 +16,7 @@
 
 package it.ozimov.springboot.mail.logging.defaultimpl;
 
+import it.ozimov.springboot.mail.logging.LoggingStrategy;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,6 +27,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public class EmailFieldFormatTest {
 
@@ -36,8 +39,138 @@ public class EmailFieldFormatTest {
 
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
+    
+    @Test
+    public void shouldTextFormatterFromReturnProperFormatter() {
+        //Arrange
+        final String veryLongText = "qwertyuiopasdfghjklzxcvbnm QWERTYUIOPASDFGHJKLZXCVBNM 0123456789 @#!$%^&*()_+=-?/|\"':;>.<,{[}]~`";
+
+        UnaryOperator<String> expectedPlainTextOperator = EmailFieldFormat::plainText;
+        UnaryOperator<String> expectedHiddenOperator = null;
+        UnaryOperator<String> expectedFirstDozenThenStartsOperator = EmailFieldFormat::firstDozenThenStars;
+        UnaryOperator<String> expectedFullTextFromCommercialAtOperator = null;
+        UnaryOperator<String> expectedFullTextUpToCommercialAtOperator = null;
+        UnaryOperator<String> expectedStandardDateOperator = null;
+        UnaryOperator<String> expectedStandardDateWithZoneIdOperator = null;
 
 
+        //Act
+        UnaryOperator<String> givenPlainTextOperator = EmailFieldFormat.textFormatterFrom(LoggingStrategy.PLAIN_TEXT);
+        UnaryOperator<String> givenHiddenOperator = EmailFieldFormat.textFormatterFrom(LoggingStrategy.HIDDEN);
+        UnaryOperator<String> givenFirstDozenThenStartsOperator = EmailFieldFormat.textFormatterFrom(LoggingStrategy.FIRST_DOZEN_THEN_STARS);
+        UnaryOperator<String> givenFullTextFromCommercialAtOperator = EmailFieldFormat.textFormatterFrom(LoggingStrategy.FULL_TEXT_FROM_COMMERCIAL_AT);
+        UnaryOperator<String> givenFullTextUpToCommercialAtOperator = EmailFieldFormat.textFormatterFrom(LoggingStrategy.FULL_TEXT_UP_TO_COMMERCIAL_AT);
+        UnaryOperator<String> givenStandardDateOperator = EmailFieldFormat.textFormatterFrom(LoggingStrategy.STANDARD_DATE_FORMAT);
+        UnaryOperator<String> givenStandardDateWithZoneIdOperator = EmailFieldFormat.textFormatterFrom(LoggingStrategy.STANDARD_DATE_FORMAT_WITH_ZONE_ID);
+
+        //Assert
+        assertions.assertThat(givenPlainTextOperator.apply(veryLongText)).isEqualTo(expectedPlainTextOperator.apply(veryLongText));
+        assertions.assertThat(givenHiddenOperator).isEqualTo(expectedHiddenOperator).isNull();
+        assertions.assertThat(givenFirstDozenThenStartsOperator.apply(veryLongText)).isEqualTo(expectedFirstDozenThenStartsOperator.apply(veryLongText));
+        assertions.assertThat(givenFullTextFromCommercialAtOperator).isEqualTo(expectedFullTextFromCommercialAtOperator).isNull();
+        assertions.assertThat(givenFullTextUpToCommercialAtOperator).isEqualTo(expectedFullTextUpToCommercialAtOperator).isNull();
+        assertions.assertThat(givenStandardDateOperator).isEqualTo(expectedStandardDateOperator).isNull();
+        assertions.assertThat(givenStandardDateWithZoneIdOperator).isEqualTo(expectedStandardDateWithZoneIdOperator).isNull();
+    }
+    
+    @Test
+    public void shouldEmailFormatterFromReturnProperFormatter() throws Exception {
+        //Arrange
+        InternetAddress internetAddress = new InternetAddress("test@email.com", "Mr. Test");
+
+        Function<InternetAddress, String> expectedPlainTextOperator = EmailFieldFormat::plainText;
+        Function<InternetAddress, String> expectedHiddenOperator = null;
+        Function<InternetAddress, String> expectedFirstDozenThenStartsOperator = EmailFieldFormat::firstDozenThenStars;
+        Function<InternetAddress, String> expectedFullTextFromCommercialAtOperator = EmailFieldFormat::textFromAt;
+        Function<InternetAddress, String> expectedFullTextUpToCommercialAtOperator = EmailFieldFormat::textUpToAt;
+        Function<InternetAddress, String> expectedStandardDateOperator = null;
+        Function<InternetAddress, String> expectedStandardDateWithZoneIdOperator = null;
+
+
+        //Act
+        Function<InternetAddress, String> givenPlainTextOperator = EmailFieldFormat.emailFormatterFrom(LoggingStrategy.PLAIN_TEXT);
+        Function<InternetAddress, String> givenHiddenOperator = EmailFieldFormat.emailFormatterFrom(LoggingStrategy.HIDDEN);
+        Function<InternetAddress, String> givenFirstDozenThenStartsOperator = EmailFieldFormat.emailFormatterFrom(LoggingStrategy.FIRST_DOZEN_THEN_STARS);
+        Function<InternetAddress, String> givenFullTextFromCommercialAtOperator = EmailFieldFormat.emailFormatterFrom(LoggingStrategy.FULL_TEXT_FROM_COMMERCIAL_AT);
+        Function<InternetAddress, String> givenFullTextUpToCommercialAtOperator = EmailFieldFormat.emailFormatterFrom(LoggingStrategy.FULL_TEXT_UP_TO_COMMERCIAL_AT);
+        Function<InternetAddress, String> givenStandardDateOperator = EmailFieldFormat.emailFormatterFrom(LoggingStrategy.STANDARD_DATE_FORMAT);
+        Function<InternetAddress, String> givenStandardDateWithZoneIdOperator = EmailFieldFormat.emailFormatterFrom(LoggingStrategy.STANDARD_DATE_FORMAT_WITH_ZONE_ID);
+
+        //Assert
+        assertions.assertThat(givenPlainTextOperator.apply(internetAddress)).isEqualTo(expectedPlainTextOperator.apply(internetAddress));
+        assertions.assertThat(givenHiddenOperator).isEqualTo(expectedHiddenOperator).isNull();
+        assertions.assertThat(givenFirstDozenThenStartsOperator.apply(internetAddress)).isEqualTo(expectedFirstDozenThenStartsOperator.apply(internetAddress));
+        assertions.assertThat(givenFullTextFromCommercialAtOperator.apply(internetAddress)).isEqualTo(expectedFullTextFromCommercialAtOperator.apply(internetAddress));
+        assertions.assertThat(givenFullTextUpToCommercialAtOperator.apply(internetAddress)).isEqualTo(expectedFullTextUpToCommercialAtOperator.apply(internetAddress));
+        assertions.assertThat(givenStandardDateOperator).isEqualTo(expectedStandardDateOperator).isNull();
+        assertions.assertThat(givenStandardDateWithZoneIdOperator).isEqualTo(expectedStandardDateWithZoneIdOperator).isNull();
+    }
+
+    @Test
+    public void shouldLocaleFormatterFromReturnProperFormatter() throws Exception {
+        //Arrange
+        Locale locale = Locale.ENGLISH;
+
+        Function<Locale, String> expectedPlainTextOperator = EmailFieldFormat::plainText;
+        Function<Locale, String> expectedHiddenOperator = null;
+        Function<Locale, String> expectedFirstDozenThenStartsOperator = null;;
+        Function<Locale, String> expectedFullTextFromCommercialAtOperator = null;
+        Function<Locale, String> expectedFullTextUpToCommercialAtOperator = null;
+        Function<Locale, String> expectedStandardDateOperator = null;
+        Function<Locale, String> expectedStandardDateWithZoneIdOperator = null;
+
+        //Act
+        Function<Locale, String> givenPlainTextOperator = EmailFieldFormat.localeFormatterFrom(LoggingStrategy.PLAIN_TEXT);
+        Function<Locale, String> givenHiddenOperator = EmailFieldFormat.localeFormatterFrom(LoggingStrategy.HIDDEN);
+        Function<Locale, String> givenFirstDozenThenStartsOperator = EmailFieldFormat.localeFormatterFrom(LoggingStrategy.FIRST_DOZEN_THEN_STARS);
+        Function<Locale, String> givenFullTextFromCommercialAtOperator = EmailFieldFormat.localeFormatterFrom(LoggingStrategy.FULL_TEXT_FROM_COMMERCIAL_AT);
+        Function<Locale, String> givenFullTextUpToCommercialAtOperator = EmailFieldFormat.localeFormatterFrom(LoggingStrategy.FULL_TEXT_UP_TO_COMMERCIAL_AT);
+        Function<Locale, String> givenStandardDateOperator = EmailFieldFormat.localeFormatterFrom(LoggingStrategy.STANDARD_DATE_FORMAT);
+        Function<Locale, String> givenStandardDateWithZoneIdOperator = EmailFieldFormat.localeFormatterFrom(LoggingStrategy.STANDARD_DATE_FORMAT_WITH_ZONE_ID);
+
+        //Assert
+        assertions.assertThat(givenPlainTextOperator.apply(locale)).isEqualTo(expectedPlainTextOperator.apply(locale));
+        assertions.assertThat(givenHiddenOperator).isEqualTo(expectedHiddenOperator).isNull();
+        assertions.assertThat(givenFirstDozenThenStartsOperator).isEqualTo(expectedFirstDozenThenStartsOperator).isNull();
+        assertions.assertThat(givenFullTextFromCommercialAtOperator).isEqualTo(expectedFullTextFromCommercialAtOperator).isNull();
+        assertions.assertThat(givenFullTextUpToCommercialAtOperator).isEqualTo(expectedFullTextUpToCommercialAtOperator).isNull();
+        assertions.assertThat(givenStandardDateOperator).isEqualTo(expectedStandardDateOperator).isNull();
+        assertions.assertThat(givenStandardDateWithZoneIdOperator).isEqualTo(expectedStandardDateWithZoneIdOperator).isNull();
+    }
+
+    @Test
+    public void shouldDateFormatterFromReturnProperFormatter() throws Exception {
+        //Arrange
+        Date date = new Date();
+
+        Function<Date, String> expectedPlainTextOperator = null;
+        Function<Date, String> expectedHiddenOperator = null;
+        Function<Date, String> expectedFirstDozenThenStartsOperator = null;;
+        Function<Date, String> expectedFullTextFromCommercialAtOperator = null;
+        Function<Date, String> expectedFullTextUpToCommercialAtOperator = null;
+        Function<Date, String> expectedStandardDateOperator = EmailFieldFormat::dateFormat;
+        Function<Date, String> expectedStandardDateWithZoneIdOperator = EmailFieldFormat::dateFormatWithZoneId;
+
+
+        //Act
+        Function<Date, String> givenPlainTextOperator = EmailFieldFormat.dateFormatterFrom(LoggingStrategy.PLAIN_TEXT);
+        Function<Date, String> givenHiddenOperator = EmailFieldFormat.dateFormatterFrom(LoggingStrategy.HIDDEN);
+        Function<Date, String> givenFirstDozenThenStartsOperator = EmailFieldFormat.dateFormatterFrom(LoggingStrategy.FIRST_DOZEN_THEN_STARS);
+        Function<Date, String> givenFullTextFromCommercialAtOperator = EmailFieldFormat.dateFormatterFrom(LoggingStrategy.FULL_TEXT_FROM_COMMERCIAL_AT);
+        Function<Date, String> givenFullTextUpToCommercialAtOperator = EmailFieldFormat.dateFormatterFrom(LoggingStrategy.FULL_TEXT_UP_TO_COMMERCIAL_AT);
+        Function<Date, String> givenStandardDateOperator = EmailFieldFormat.dateFormatterFrom(LoggingStrategy.STANDARD_DATE_FORMAT);
+        Function<Date, String> givenStandardDateWithZoneIdOperator = EmailFieldFormat.dateFormatterFrom(LoggingStrategy.STANDARD_DATE_FORMAT_WITH_ZONE_ID);
+
+        //Assert
+        assertions.assertThat(givenPlainTextOperator).isEqualTo(expectedPlainTextOperator).isNull();
+        assertions.assertThat(givenHiddenOperator).isEqualTo(expectedHiddenOperator).isNull();
+        assertions.assertThat(givenFirstDozenThenStartsOperator).isEqualTo(expectedFirstDozenThenStartsOperator).isNull();
+        assertions.assertThat(givenFullTextFromCommercialAtOperator).isEqualTo(expectedFullTextFromCommercialAtOperator).isNull();
+        assertions.assertThat(givenFullTextUpToCommercialAtOperator).isEqualTo(expectedFullTextUpToCommercialAtOperator).isNull();
+        assertions.assertThat(givenStandardDateOperator.apply(date)).isEqualTo(expectedStandardDateOperator.apply(date));
+        assertions.assertThat(givenStandardDateWithZoneIdOperator.apply(date)).isEqualTo(expectedStandardDateWithZoneIdOperator.apply(date));
+    }
+    
     @Test
     public void shouldPlainTextFormatLocale() throws Exception {
         //Arrange

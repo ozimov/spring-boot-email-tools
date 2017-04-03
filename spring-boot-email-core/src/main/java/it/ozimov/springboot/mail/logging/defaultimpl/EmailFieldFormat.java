@@ -59,7 +59,7 @@ public class EmailFieldFormat {
             default:
                 logUnsupportedLoggingStrategy(loggingStrategy, "String");
         }
-        return text -> text;
+        return null;
     }
 
     public static Function<InternetAddress, String> emailFormatterFrom(@NonNull final LoggingStrategy loggingStrategy) {
@@ -79,7 +79,7 @@ public class EmailFieldFormat {
             default:
                 logUnsupportedLoggingStrategy(loggingStrategy, "InternetAddress");
         }
-        return internetAddress -> internetAddress.toString();
+        return null;
     }
 
     public static Function<Locale, String> localeFormatterFrom(@NonNull final LoggingStrategy loggingStrategy) {
@@ -96,7 +96,7 @@ public class EmailFieldFormat {
             default:
                 logUnsupportedLoggingStrategy(loggingStrategy, "Locale");
         }
-        return locale -> locale.toString();
+        return null;
     }
 
     public static Function<Date, String> dateFormatterFrom(@NonNull final LoggingStrategy loggingStrategy) {
@@ -115,7 +115,7 @@ public class EmailFieldFormat {
             default:
                 logUnsupportedLoggingStrategy(loggingStrategy, "Date");
         }
-        return date -> date.toString();
+        return null;
     }
 
     public static String plainText(final Locale locale) {
