@@ -48,7 +48,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
+import static it.ozimov.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;

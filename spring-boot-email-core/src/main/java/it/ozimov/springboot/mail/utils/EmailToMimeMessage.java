@@ -42,7 +42,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
     private JavaMailSender javaMailSender;
 
     @Autowired
-    public EmailToMimeMessage(final @NonNull JavaMailSender javaMailSender) {
+    public EmailToMimeMessage(final JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
@@ -88,14 +88,14 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
             }
 
             if (nonNull(email.getReceiptTo())) {
-                messageHelper.setHeaderDepositionNotificationTo(email.getReceiptTo().getAddress());
+                messageHelper.setHeaderReturnReceipt(email.getReceiptTo().getAddress());
             }
 
             if (nonNull(email.getDepositionNotificationTo())) {
-                messageHelper.setHeaderReturnReceipt(email.getDepositionNotificationTo().getAddress());
+                messageHelper.setHeaderDepositionNotificationTo(email.getDepositionNotificationTo().getAddress());
             }
 
-            if (nonNull(email.getCustomHeaders())) {
+            if (nonNull(email.getCustomHeaders()) && !email.getCustomHeaders().isEmpty()) {
                 setCustomHeaders(email, mimeMessage);
             }
 
@@ -107,7 +107,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
         return mimeMessage;
     }
 
-    private void setCustomHeaders(Email email, MimeMessage mimeMessage) {
+    protected void setCustomHeaders(Email email, MimeMessage mimeMessage) {
         email.getCustomHeaders().entrySet().stream()
                 .forEach(
                         entry -> {

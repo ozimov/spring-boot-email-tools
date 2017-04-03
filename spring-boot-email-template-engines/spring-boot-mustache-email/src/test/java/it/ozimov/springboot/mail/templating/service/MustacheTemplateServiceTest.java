@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableMap;
 import it.ozimov.springboot.mail.MustacheTestApplication;
 import it.ozimov.springboot.mail.service.TemplateService;
 import it.ozimov.springboot.mail.service.exception.TemplateException;
+import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -42,6 +43,9 @@ public class MustacheTemplateServiceTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    @Rule
+    public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
+
     @Autowired
     private TemplateService templateService;
 
@@ -55,6 +59,34 @@ public class MustacheTemplateServiceTest {
 
         //Assert
         given(body).assertThat(is(expectedBody));
+    }
+
+    @Test
+    public void shouldMergeTemplateIntoStringThrowExceptionOnNullTemplateReference() throws Exception {
+        //Arrange
+        final Map<String, Object> modelObject = new ImmutableMap.Builder<String, Object>().build();
+        assertions.assertThat(modelObject).isNotNull();
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        templateService.mergeTemplateIntoString(null, modelObject);
+
+        //Assert
+        fail("NullPointerException expected");
+    }
+
+    @Test
+    public void shouldMergeTemplateIntoStringThrowExceptionOnNullModel() throws Exception {
+        //Arrange
+        String templateReference = "file." + UUID.randomUUID();
+        assertions.assertThat(templateReference).isNotNull();
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        templateService.mergeTemplateIntoString(templateReference, null);
+
+        //Assert
+        fail("NullPointerException expected");
     }
 
     @Test

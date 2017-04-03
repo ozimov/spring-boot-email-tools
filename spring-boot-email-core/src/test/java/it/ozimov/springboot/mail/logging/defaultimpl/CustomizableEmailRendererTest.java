@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.internal.matchers.Null;
 import org.springframework.http.MediaType;
 
 import javax.mail.internet.InternetAddress;
@@ -33,6 +34,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
+
+import static org.junit.Assert.fail;
 
 public class CustomizableEmailRendererTest implements UnitTest {
 
@@ -83,6 +86,176 @@ public class CustomizableEmailRendererTest implements UnitTest {
                 .attachment(DefaultEmailAttachment.builder().attachmentName("attachment2.pdf").mediaType(MediaType.APPLICATION_PDF).attachmentData(new byte[]{}).build())
                 .customHeaders(ImmutableMap.of("header1", "value1", "header2", "value2"))
                 .build();
+    }
+
+    @Test
+    public void shouldRenderThrowExceptionOnNullEmail() throws Exception {
+        //Arrange
+        CustomizableEmailRenderer customizableEmailRenderer = CustomizableEmailRenderer.builder().build();
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        customizableEmailRenderer.render(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithFromFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withFromFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithReplyToFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withReplyToFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithToFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withToFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithCcFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withCcFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithBccFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withBccFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithSubjectFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withSubjectFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithBodyFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withBodyFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithAttachmentsFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withAttachmentsFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithEncodingFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withEncodingFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithLocaleFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withLocaleFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithSentAtFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withSentAtFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithReceiptToFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withReceiptToFormat(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWithDepositionNotificationToFormatThrowExceptionOnNullOperator() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        CustomizableEmailRenderer.builder().withDepositionNotificationToFormat(null);
+
+        //Assert
+        fail();
     }
 
     @Test

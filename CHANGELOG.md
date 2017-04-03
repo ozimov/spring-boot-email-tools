@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed 
+- Bug with conversion of email _reply to_ and _deposition notification to_ values.
+- Bug with hide option in logging
+
 ## [0.5.2] -  2017-04-02
 ### Added
 - Added logging formatter/anonymizer for email, used by default in default email scheduler and sender.

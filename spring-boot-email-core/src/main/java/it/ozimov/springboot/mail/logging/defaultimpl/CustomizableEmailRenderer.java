@@ -147,14 +147,6 @@ public class CustomizableEmailRenderer implements EmailRenderer {
         }
     }
 
-//    public static CustomizableEmailRenderer builderFor(@NonNull final Email email) {
-//        return new CustomizableEmailRenderer(email);
-//    }
-//
-//    private CustomizableEmailRenderer(@NonNull final Email email) {
-//        this.email = email;
-//    }
-
     @Override
     public String render(@NonNull final Email email) {
         final StringBuilder emailStringBuilder = new StringBuilder("Email{");

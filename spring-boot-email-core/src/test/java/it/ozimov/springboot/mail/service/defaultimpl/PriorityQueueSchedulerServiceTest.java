@@ -46,7 +46,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
-import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
+import static it.ozimov.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMail;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.Mockito.*;
 

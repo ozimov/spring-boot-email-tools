@@ -44,8 +44,8 @@ import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.springboot.mail.configuration.ApplicationPropertiesConstants.SPRING_MAIL_PORT;
 import static it.ozimov.springboot.mail.service.defaultimpl.DefaultEmailServiceContextBasedTest.MAIL_PORT;
-import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
-import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMailWithAttachments;
+import static it.ozimov.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMail;
+import static it.ozimov.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMailWithAttachments;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;

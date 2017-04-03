@@ -22,15 +22,15 @@ import it.ozimov.springboot.mail.model.Email;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -38,6 +38,9 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 public class SanitizedEmailLogRendererTest {
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
@@ -53,9 +56,6 @@ public class SanitizedEmailLogRendererTest {
 
     @Mock
     private Email email;
-
-    @Captor
-    ArgumentCaptor<String> sanitizedEmailArgumentCaptor;
 
     @Test
     public void shouldRegisterLoggerReturnThis() throws Exception {
@@ -86,6 +86,53 @@ public class SanitizedEmailLogRendererTest {
     //--- TRACE
     //---------------------------------------------------
     //---------------------------------------------------
+
+    @Test
+    public void shouldTraceEmailThrowExceptionOnNullEmail() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.trace(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldTraceEmailThrowExceptionOnNullMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isTraceEnabled()).thenReturn(false);
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.trace(null, email, param1, param2);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldTraceEmailThrowExceptionOnNullEmailButNotMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isTraceEnabled()).thenReturn(false);
+        String messageTemplate = "Email is {} and I add a param here {} and another here {}.";
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.trace(messageTemplate, null, param1, param2);
+
+        //Assert
+        fail();
+    }
 
     @Test
     public void shouldTraceEmailNotLogWhenTraceIsDisabled() throws Exception {
@@ -158,6 +205,53 @@ public class SanitizedEmailLogRendererTest {
     //---------------------------------------------------
 
     @Test
+    public void shouldDebugEmailThrowExceptionOnNullEmail() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.debug(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldDebugEmailThrowExceptionOnNullMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isDebugEnabled()).thenReturn(false);
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.debug(null, email, param1, param2);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldDebugEmailThrowExceptionOnNullEmailButNotMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isDebugEnabled()).thenReturn(false);
+        String messageTemplate = "Email is {} and I add a param here {} and another here {}.";
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.debug(messageTemplate, null, param1, param2);
+
+        //Assert
+        fail();
+    }
+
+    @Test
     public void shouldDebugEmailNotLogWhenDebugIsDisabled() throws Exception {
         //Arrange
         emailLogRenderer.registerLogger(customLogger);
@@ -225,6 +319,53 @@ public class SanitizedEmailLogRendererTest {
     //--- INFO
     //---------------------------------------------------
     //---------------------------------------------------
+
+    @Test
+    public void shouldInfoEmailThrowExceptionOnNullEmail() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.info(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldInfoEmailThrowExceptionOnNullMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isInfoEnabled()).thenReturn(false);
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.info(null, email, param1, param2);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldInfoEmailThrowExceptionOnNullEmailButNotMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isInfoEnabled()).thenReturn(false);
+        String messageTemplate = "Email is {} and I add a param here {} and another here {}.";
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.info(messageTemplate, null, param1, param2);
+
+        //Assert
+        fail();
+    }
 
     @Test
     public void shouldInfoEmailNotLogWhenInfoIsDisabled() throws Exception {
@@ -296,6 +437,53 @@ public class SanitizedEmailLogRendererTest {
     //---------------------------------------------------
 
     @Test
+    public void shouldWarnEmailThrowExceptionOnNullEmail() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.warn(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWarnEmailThrowExceptionOnNullMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isWarnEnabled()).thenReturn(false);
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.warn(null, email, param1, param2);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldWarnEmailThrowExceptionOnNullEmailButNotMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isWarnEnabled()).thenReturn(false);
+        String messageTemplate = "Email is {} and I add a param here {} and another here {}.";
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.warn(messageTemplate, null, param1, param2);
+
+        //Assert
+        fail();
+    }
+
+    @Test
     public void shouldWarnEmailNotLogWhenWarnIsDisabled() throws Exception {
         //Arrange
         emailLogRenderer.registerLogger(customLogger);
@@ -363,6 +551,53 @@ public class SanitizedEmailLogRendererTest {
     //--- ERROR
     //---------------------------------------------------
     //---------------------------------------------------
+
+    @Test
+    public void shouldErrorEmailThrowExceptionOnNullEmail() throws Exception {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.error(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldErrorEmailThrowExceptionOnNullMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isErrorEnabled()).thenReturn(false);
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.error(null, email, param1, param2);
+
+        //Assert
+        fail();
+    }
+
+    @Test
+    public void shouldErrorEmailThrowExceptionOnNullEmailButNotMessage() throws Exception {
+        //Arrange
+        emailLogRenderer.registerLogger(customLogger);
+        when(customLogger.isErrorEnabled()).thenReturn(false);
+        String messageTemplate = "Email is {} and I add a param here {} and another here {}.";
+        int param1 = 123;
+        Boolean param2 = true;
+
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        emailLogRenderer.error(messageTemplate, null, param1, param2);
+
+        //Assert
+        fail();
+    }
 
     @Test
     public void shouldErrorEmailNotLogWhenErrorIsDisabled() throws Exception {

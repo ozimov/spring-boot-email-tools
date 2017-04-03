@@ -23,7 +23,7 @@ import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.is;
 
-public class DefaultEmailConversionExceptionTest implements UnitTest {
+public class EmailConversionExceptionTest implements UnitTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

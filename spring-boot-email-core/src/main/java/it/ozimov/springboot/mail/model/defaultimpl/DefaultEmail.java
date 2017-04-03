@@ -47,7 +47,6 @@ public class DefaultEmail implements Email {
 
     private InternetAddress replyTo;
 
-    @NonNull
     private Collection<InternetAddress> to;
 
     private Collection<InternetAddress> cc;

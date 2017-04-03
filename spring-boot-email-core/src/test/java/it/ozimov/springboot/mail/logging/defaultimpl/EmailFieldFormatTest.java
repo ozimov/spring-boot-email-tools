@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import static org.junit.Assert.fail;
+
 public class EmailFieldFormatTest {
 
     public static final String NULL = "NULL";
@@ -39,7 +41,19 @@ public class EmailFieldFormatTest {
 
     @Rule
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
-    
+
+    @Test
+    public void shouldTextFormatterFromThrowExceptionGivenNullLoggingStrategy() {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        EmailFieldFormat.textFormatterFrom(null);
+
+        //Assert
+        fail();
+    }
+
     @Test
     public void shouldTextFormatterFromReturnProperFormatter() {
         //Arrange
@@ -72,7 +86,19 @@ public class EmailFieldFormatTest {
         assertions.assertThat(givenStandardDateOperator).isEqualTo(expectedStandardDateOperator).isNull();
         assertions.assertThat(givenStandardDateWithZoneIdOperator).isEqualTo(expectedStandardDateWithZoneIdOperator).isNull();
     }
-    
+
+    @Test
+    public void shouldEmailFormatterFromThrowExceptionGivenNullLoggingStrategy() {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        EmailFieldFormat.emailFormatterFrom(null);
+
+        //Assert
+        fail();
+    }
+
     @Test
     public void shouldEmailFormatterFromReturnProperFormatter() throws Exception {
         //Arrange
@@ -107,13 +133,26 @@ public class EmailFieldFormatTest {
     }
 
     @Test
+    public void shouldLocaleFormatterFromThrowExceptionGivenNullLoggingStrategy() {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        EmailFieldFormat.localeFormatterFrom(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
     public void shouldLocaleFormatterFromReturnProperFormatter() throws Exception {
         //Arrange
         Locale locale = Locale.ENGLISH;
 
         Function<Locale, String> expectedPlainTextOperator = EmailFieldFormat::plainText;
         Function<Locale, String> expectedHiddenOperator = null;
-        Function<Locale, String> expectedFirstDozenThenStartsOperator = null;;
+        Function<Locale, String> expectedFirstDozenThenStartsOperator = null;
+        ;
         Function<Locale, String> expectedFullTextFromCommercialAtOperator = null;
         Function<Locale, String> expectedFullTextUpToCommercialAtOperator = null;
         Function<Locale, String> expectedStandardDateOperator = null;
@@ -139,13 +178,26 @@ public class EmailFieldFormatTest {
     }
 
     @Test
+    public void shouldDateFormatterFromThrowExceptionGivenNullLoggingStrategy() {
+        //Arrange
+        expectedException.expect(NullPointerException.class);
+
+        //Act
+        EmailFieldFormat.dateFormatterFrom(null);
+
+        //Assert
+        fail();
+    }
+
+    @Test
     public void shouldDateFormatterFromReturnProperFormatter() throws Exception {
         //Arrange
         Date date = new Date();
 
         Function<Date, String> expectedPlainTextOperator = null;
         Function<Date, String> expectedHiddenOperator = null;
-        Function<Date, String> expectedFirstDozenThenStartsOperator = null;;
+        Function<Date, String> expectedFirstDozenThenStartsOperator = null;
+        ;
         Function<Date, String> expectedFullTextFromCommercialAtOperator = null;
         Function<Date, String> expectedFullTextUpToCommercialAtOperator = null;
         Function<Date, String> expectedStandardDateOperator = EmailFieldFormat::dateFormat;
@@ -170,7 +222,7 @@ public class EmailFieldFormatTest {
         assertions.assertThat(givenStandardDateOperator.apply(date)).isEqualTo(expectedStandardDateOperator.apply(date));
         assertions.assertThat(givenStandardDateWithZoneIdOperator.apply(date)).isEqualTo(expectedStandardDateWithZoneIdOperator.apply(date));
     }
-    
+
     @Test
     public void shouldPlainTextFormatLocale() throws Exception {
         //Arrange
@@ -307,6 +359,21 @@ public class EmailFieldFormatTest {
     }
 
     @Test
+    public void shouldFirstDozenThenStarsFormatShortStringWithNoStars() throws Exception {
+        //Arrange
+        String text = "0123456789";
+
+        //Act
+        String givenFormattedText = EmailFieldFormat.firstDozenThenStars(text);
+
+        //Assert
+        assertions.assertThat(givenFormattedText)
+                .isNotNull()
+                .isNotEmpty()
+                .isEqualTo(text);
+    }
+
+    @Test
     public void shouldFirstDozenThenStarsFormatNullString() throws Exception {
         //Arrange
         String text = null;
@@ -392,7 +459,9 @@ public class EmailFieldFormatTest {
         //Act
         EmailFieldFormat.textFromAt(text);
 
+
         //Assert
+        fail();
     }
 
 
@@ -467,7 +536,9 @@ public class EmailFieldFormatTest {
         //Act
         EmailFieldFormat.textUpToAt(text);
 
+
         //Assert
+        fail();
     }
 
     @Test

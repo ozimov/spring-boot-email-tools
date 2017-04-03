@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import java.time.OffsetDateTime;
 
-import static it.ozimov.springboot.mail.utils.DefaultEmailToMimeMessageTest.getSimpleMail;
+import static it.ozimov.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMail;
 
 public class TemplateEmailSchedulingDataTest {
 

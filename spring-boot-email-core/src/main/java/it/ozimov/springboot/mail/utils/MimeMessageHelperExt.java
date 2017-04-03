@@ -23,9 +23,9 @@ import javax.mail.internet.MimeMessage;
 
 public class MimeMessageHelperExt extends MimeMessageHelper {
 
-    private static final String HEADER_DEPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
-
     private static final String HEADER_RETURN_RECEIPT = "Return-Receipt-To";
+
+    private static final String HEADER_DEPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
 
     public MimeMessageHelperExt(MimeMessage mimeMessage) {
         super(mimeMessage);
