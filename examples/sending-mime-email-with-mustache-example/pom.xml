@@ -6,7 +6,7 @@
 
     <groupId>it.ozimov</groupId>
     <artifactId>sending-mime-email-with-mustache-example</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.5.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Spring Boot Email - Mime Email Sending with Mustache Example</name>
@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.1.RELEASE</version>
+        <version>1.5.2.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>spring-boot-mustache-email</artifactId>
-            <version>0.5.2-SNAPSHOT</version>
+            <version>0.5.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

@@ -6,7 +6,7 @@
 
     <groupId>it.ozimov</groupId>
     <artifactId>email-logging-example</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.5.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Spring Boot Email - Email Logging Example</name>
@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.1.RELEASE</version>
+        <version>1.5.2.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>spring-boot-email-core</artifactId>
-            <version>0.5.2-SNAPSHOT</version>
+            <version>0.5.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
