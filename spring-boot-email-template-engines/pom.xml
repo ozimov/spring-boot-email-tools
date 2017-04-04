@@ -6,13 +6,13 @@
     <parent>
         <groupId>it.ozimov</groupId>
         <artifactId>spring-boot-email-build</artifactId>
-        <version>0.5.3</version>
+        <version>0.5.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-template-engines</artifactId>
-    <version>0.5.3</version>
+    <version>0.5.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Spring Boot Email Template Engines</name>
