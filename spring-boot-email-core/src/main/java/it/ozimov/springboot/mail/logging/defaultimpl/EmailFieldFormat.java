@@ -26,6 +26,7 @@ import javax.mail.internet.InternetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -174,6 +175,10 @@ public class EmailFieldFormat {
     public static String dateFormatWithZoneId(final Date date) {
         if (isNull(date)) return NULL;
         return DATE_FORMAT_WITH_ZONE_ID.format(date);
+    }
+
+    public static String nullValue() {
+        return NULL;
     }
 
     private static String appendStars(String text, int from, int to) {

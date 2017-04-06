@@ -16,6 +16,7 @@
 
 package it.ozimov.springboot.mail.configuration;
 
+import com.google.common.annotations.VisibleForTesting;
 import it.ozimov.springboot.mail.logging.EmailRenderer;
 import it.ozimov.springboot.mail.logging.defaultimpl.CustomizableEmailRenderer;
 import it.ozimov.springboot.mail.logging.defaultimpl.CustomizableEmailRenderer.CustomizableEmailRendererBuilder;
@@ -47,55 +48,59 @@ public class EmailRendererConfiguration {
 
     @Bean
     public EmailRenderer emailRenderer() {
-        final CustomizableEmailRendererBuilder customizableEmailRenderer = CustomizableEmailRenderer.builder();
+        final CustomizableEmailRendererBuilder customizableEmailRendererBuilder = createCustomizableEmailRendererBuilder();
         final LoggingProperties.Strategy loggingPropertiesStrategy = loggingProperties.getStrategy();
 
         final Function<InternetAddress, String> fromFormat = EmailFieldFormat.emailFormatterFrom(loggingPropertiesStrategy.getFrom());
-        if (nonNull(fromFormat)) customizableEmailRenderer.withFromFormat(fromFormat);
+        if (nonNull(fromFormat)) customizableEmailRendererBuilder.withFromFormat(fromFormat);
 
         final Function<InternetAddress, String> replyToFormat = EmailFieldFormat.emailFormatterFrom(loggingPropertiesStrategy.getReplyTo());
-        if (nonNull(replyToFormat)) customizableEmailRenderer.withFromFormat(replyToFormat);
+        if (nonNull(replyToFormat)) customizableEmailRendererBuilder.withReplyToFormat(replyToFormat);
 
         final Function<InternetAddress, String> toFormat = EmailFieldFormat.emailFormatterFrom(loggingPropertiesStrategy.getTo());
-        if (nonNull(toFormat)) customizableEmailRenderer.withToFormat(toFormat);
+        if (nonNull(toFormat)) customizableEmailRendererBuilder.withToFormat(toFormat);
 
         final Function<InternetAddress, String> ccFormat = EmailFieldFormat.emailFormatterFrom(loggingPropertiesStrategy.getCc());
-        if (nonNull(ccFormat)) customizableEmailRenderer.withCcFormat(ccFormat);
+        if (nonNull(ccFormat)) customizableEmailRendererBuilder.withCcFormat(ccFormat);
 
         final Function<InternetAddress, String> bccFormat = EmailFieldFormat.emailFormatterFrom(loggingPropertiesStrategy.getBcc());
-        if (nonNull(bccFormat)) customizableEmailRenderer.withBccFormat(bccFormat);
+        if (nonNull(bccFormat)) customizableEmailRendererBuilder.withBccFormat(bccFormat);
 
         final UnaryOperator<String> subjectFormat = EmailFieldFormat.textFormatterFrom(loggingPropertiesStrategy.getSubject());
-        if (nonNull(subjectFormat)) customizableEmailRenderer.withSubjectFormat(subjectFormat);
+        if (nonNull(subjectFormat)) customizableEmailRendererBuilder.withSubjectFormat(subjectFormat);
 
         final UnaryOperator<String> bodyFormat = EmailFieldFormat.textFormatterFrom(loggingPropertiesStrategy.getBody());
-        if (nonNull(bodyFormat)) customizableEmailRenderer.withBodyFormat(bodyFormat);
+        if (nonNull(bodyFormat)) customizableEmailRendererBuilder.withBodyFormat(bodyFormat);
 
         final UnaryOperator<String> attachmentsFormat = EmailFieldFormat.textFormatterFrom(loggingPropertiesStrategy.getAttachments());
-        if (nonNull(attachmentsFormat)) customizableEmailRenderer.withAttachmentsFormat(attachmentsFormat);
+        if (nonNull(attachmentsFormat)) customizableEmailRendererBuilder.withAttachmentsFormat(attachmentsFormat);
 
         final UnaryOperator<String> encodingFormat = EmailFieldFormat.textFormatterFrom(loggingPropertiesStrategy.getEncoding());
-        if (nonNull(encodingFormat)) customizableEmailRenderer.withEncodingFormat(encodingFormat);
+        if (nonNull(encodingFormat)) customizableEmailRendererBuilder.withEncodingFormat(encodingFormat);
 
         final Function<Locale, String> localeFormat = EmailFieldFormat.localeFormatterFrom(loggingPropertiesStrategy.getLocale());
-        if (nonNull(localeFormat)) customizableEmailRenderer.withLocaleFormat(localeFormat);
+        if (nonNull(localeFormat)) customizableEmailRendererBuilder.withLocaleFormat(localeFormat);
 
         final Function<Date, String> sentAtFormat = EmailFieldFormat.dateFormatterFrom(loggingPropertiesStrategy.getSentAt());
-        if (nonNull(sentAtFormat)) customizableEmailRenderer.withSentAtFormat(sentAtFormat);
+        if (nonNull(sentAtFormat)) customizableEmailRendererBuilder.withSentAtFormat(sentAtFormat);
 
         final Function<InternetAddress, String> receiptToFormat = EmailFieldFormat.emailFormatterFrom(loggingPropertiesStrategy.getReceiptTo());
-        if (nonNull(receiptToFormat)) customizableEmailRenderer.withReceiptToFormat(receiptToFormat);
+        if (nonNull(receiptToFormat)) customizableEmailRendererBuilder.withReceiptToFormat(receiptToFormat);
 
         final Function<InternetAddress, String> depositionNotificationToFormat = EmailFieldFormat.emailFormatterFrom(loggingPropertiesStrategy.getDepositionNotificationTo());
         if (nonNull(depositionNotificationToFormat))
-            customizableEmailRenderer.withDepositionNotificationToFormat(depositionNotificationToFormat);
+            customizableEmailRendererBuilder.withDepositionNotificationToFormat(depositionNotificationToFormat);
 
-        if (!loggingPropertiesStrategy.areCustomHeadersIgnored()) customizableEmailRenderer.includeCustomHeaders();
+        if (!loggingPropertiesStrategy.areCustomHeadersIgnored()) customizableEmailRendererBuilder.includeCustomHeaders();
 
-        if (!loggingPropertiesStrategy.areNullAndEmptyCollectionsIgnored())
-            customizableEmailRenderer.includeNullAndEmptyCollections();
+        if (!loggingPropertiesStrategy.areNullAndEmptyCollectionsIgnored()) customizableEmailRendererBuilder.includeNullAndEmptyCollections();
 
-        return customizableEmailRenderer.build();
+        return customizableEmailRendererBuilder.build();
+    }
+
+    @VisibleForTesting
+    protected CustomizableEmailRendererBuilder createCustomizableEmailRendererBuilder() {
+        return CustomizableEmailRenderer.builder();
     }
 
 

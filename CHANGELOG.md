@@ -9,6 +9,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Fixed bug in the email logger due to null collections.
+
 ## [0.5.3] -  2017-04-04
 ### Fixed 
 - Bug with conversion of email _reply to_ and _deposition notification to_ values.

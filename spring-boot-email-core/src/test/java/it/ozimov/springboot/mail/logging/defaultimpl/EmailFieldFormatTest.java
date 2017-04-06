@@ -43,6 +43,18 @@ public class EmailFieldFormatTest {
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
     @Test
+    public void shouldNullBeConstant() {
+        //Arrange
+        String expectedValue = "NULL";
+
+        //Act
+        String givenValue = EmailFieldFormat.nullValue();
+
+        //Assert
+        assertions.assertThat(givenValue).isEqualTo(expectedValue);
+    }
+
+    @Test
     public void shouldTextFormatterFromThrowExceptionGivenNullLoggingStrategy() {
         //Arrange
         expectedException.expect(NullPointerException.class);

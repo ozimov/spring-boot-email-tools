@@ -23,10 +23,7 @@ import it.ozimov.springboot.mail.model.EmailAttachment;
 import lombok.NonNull;
 
 import javax.mail.internet.InternetAddress;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
@@ -167,19 +164,37 @@ public class CustomizableEmailRenderer implements EmailRenderer {
             if (!isFirst) emailStringBuilder.append(", ");
             isFirst = false;
 
-            emailStringBuilder.append("to=").append(joinAddresses(email.getTo(), toFormat));
+            emailStringBuilder.append("to=");
+            if(isNull(email.getTo())) {
+                emailStringBuilder.append(EmailFieldFormat.nullValue());
+            }
+            else {
+                emailStringBuilder.append(joinAddresses(email.getTo(), toFormat));
+            }
         }
         if (nonNull(ccFormat) && !skipField(email.getCc())) {
             if (!isFirst) emailStringBuilder.append(", ");
             isFirst = false;
 
-            emailStringBuilder.append("cc=").append(joinAddresses(email.getCc(), ccFormat));
+            emailStringBuilder.append("cc=");
+            if(isNull(email.getCc())) {
+                emailStringBuilder.append(EmailFieldFormat.nullValue());
+            }
+            else{
+                emailStringBuilder.append(joinAddresses(email.getCc(), ccFormat));
+            }
         }
         if (nonNull(bccFormat) && !skipField(email.getBcc())) {
             if (!isFirst) emailStringBuilder.append(", ");
             isFirst = false;
 
-            emailStringBuilder.append("bcc=").append(joinAddresses(email.getBcc(), bccFormat));
+            emailStringBuilder.append("bcc=");
+            if(isNull(email.getBcc())) {
+                emailStringBuilder.append(EmailFieldFormat.nullValue());
+            }
+            else{
+                emailStringBuilder.append(joinAddresses(email.getBcc(), bccFormat));
+            }
         }
         if (nonNull(subjectFormat) && !skipField(email.getSubject())) {
             if (!isFirst) emailStringBuilder.append(", ");
@@ -234,10 +249,16 @@ public class CustomizableEmailRenderer implements EmailRenderer {
         if (customHeadersIncluded && !skipField(email.getCustomHeaders())) {
             if (!isFirst) emailStringBuilder.append(", ");
 
-            emailStringBuilder.append("customHeaders=")
-                    .append(email.getCustomHeaders().entrySet().stream()
-                            .map(entry -> entry.getKey() + '=' + entry.getValue())
-                            .collect(LIST_JOINER));
+            emailStringBuilder.append("customHeaders=");
+            if(isNull(email.getCustomHeaders())) {
+                emailStringBuilder.append(EmailFieldFormat.nullValue());
+            }
+            else{
+                emailStringBuilder.append(email.getCustomHeaders().entrySet().stream()
+                        .map(entry -> entry.getKey() + '=' + entry.getValue())
+                        .collect(LIST_JOINER));
+            }
+
         }
         emailStringBuilder.append('}');
         return emailStringBuilder.toString();
