@@ -17,7 +17,6 @@
 package it.ozimov.springboot.mail.templating.service;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.spring4.PebbleViewResolver;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import it.ozimov.springboot.mail.service.TemplateService;
 import it.ozimov.springboot.mail.service.exception.TemplateException;
@@ -51,14 +50,16 @@ public class PebbleTemplateService implements TemplateService {
     String mergeTemplateIntoString(final @NonNull String templateReference,
                                    final @NonNull Map<String, Object> model)
             throws IOException, TemplateException {
-        checkArgument(!isNullOrEmpty(templateReference.trim()), "The given templateName is null, empty or blank");
-        checkArgument(Objects.equals(getFileExtension(templateReference), expectedTemplateExtension()),
-                "Expected a Pebble template file with extension '%s', while '%s' was given. To check " +
-                        "the default extension look at 'pebble.suffix' in your application.properties file",
-                expectedTemplateExtension(), getFileExtension(templateReference));
+        final String trimmedTemplateReference = templateReference.trim();
+        checkArgument(!isNullOrEmpty(trimmedTemplateReference), "The given templateName is null, empty or blank");
+        if (trimmedTemplateReference.contains("."))
+            checkArgument(Objects.equals(getFileExtension(trimmedTemplateReference), expectedTemplateExtension()),
+                    "Expected a Pebble template file with extension '%s', while '%s' was given. To check " +
+                            "the default extension look at 'pebble.suffix' in your application.properties file",
+                    expectedTemplateExtension(), getFileExtension(trimmedTemplateReference));
 
         try {
-            final PebbleTemplate template = pebbleEngine.getTemplate(normalizeTemplateReference(templateReference));
+            final PebbleTemplate template = pebbleEngine.getTemplate(normalizeTemplateReference(trimmedTemplateReference));
             final Writer writer = new StringWriter();
             template.evaluate(writer, model);
             return writer.toString();
@@ -73,8 +74,13 @@ public class PebbleTemplateService implements TemplateService {
     }
 
     private String normalizeTemplateReference(final String templateReference) {
-        final String expectedSuffix = ("." + pebbleSuffix).replace("..", ".");
-        return templateReference.substring(0, templateReference.lastIndexOf(expectedSuffix));
+        if (templateReference.endsWith(pebbleSuffix)) {
+            final String expectedSuffix = ("." + pebbleSuffix).replace("..", ".");
+            return templateReference.substring(0, templateReference.lastIndexOf(expectedSuffix));
+        } else {
+            return templateReference;
+        }
+
     }
 
 }

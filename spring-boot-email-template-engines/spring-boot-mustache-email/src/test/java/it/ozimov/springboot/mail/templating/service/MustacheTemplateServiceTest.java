@@ -53,12 +53,29 @@ public class MustacheTemplateServiceTest {
     public void shouldMergeTemplateIntoString() throws Exception {
         //Arrange
         final String expectedBody = TemplatingTestUtils.getExpectedBody();
+        final String templateWithExtension = TemplatingTestUtils.TEMPLATE;
+        assertions.assertThat(templateWithExtension).endsWith(".html");
 
         //Act
-        final String body = templateService.mergeTemplateIntoString(TemplatingTestUtils.TEMPLATE, TemplatingTestUtils.MODEL_OBJECT);
+        final String body = templateService.mergeTemplateIntoString(templateWithExtension, TemplatingTestUtils.MODEL_OBJECT);
 
         //Assert
         given(body).assertThat(is(expectedBody));
+    }
+
+    @Test
+    public void shouldMergeTemplateIntoStringWhenNoDotsIsAvailable() throws Exception {
+        //Arrange
+        final String expectedBody = TemplatingTestUtils.getExpectedBody();
+
+        final String templateWithNoExtension = TemplatingTestUtils.TEMPLATE.replace(".html", "");
+        assertions.assertThat(templateWithNoExtension).doesNotEndWith(".html");
+
+        //Act
+        final String body = templateService.mergeTemplateIntoString(templateWithNoExtension, TemplatingTestUtils.MODEL_OBJECT);
+
+        //Assert
+        assertions.assertThat(body).isEqualTo(expectedBody);
     }
 
     @Test

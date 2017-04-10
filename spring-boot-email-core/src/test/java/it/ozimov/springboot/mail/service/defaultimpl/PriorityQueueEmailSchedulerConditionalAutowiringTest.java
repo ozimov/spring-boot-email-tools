@@ -67,12 +67,12 @@ public class PriorityQueueEmailSchedulerConditionalAutowiringTest {
         private MimeMessage mimeMessage;
 
         @Autowired(required = false)
-        private EmailSchedulerService schedulerService;
+        private EmailSchedulerService emailSchedulerService;
 
         @Test
         public void shouldSchedulerServiceNotBeAutowired() throws Exception {
             //Assert
-            assertions.assertThat(schedulerService).isNull();
+            assertions.assertThat(emailSchedulerService).isNull();
         }
 
     }
@@ -96,7 +96,7 @@ public class PriorityQueueEmailSchedulerConditionalAutowiringTest {
         public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
         @Autowired
-        private EmailSchedulerProperties schedulerProperties;
+        private EmailSchedulerProperties emailSchedulerProperties;
 
         @MockBean
         private EmailService emailService;
@@ -105,12 +105,12 @@ public class PriorityQueueEmailSchedulerConditionalAutowiringTest {
         private MimeMessage mimeMessage;
 
         @Autowired
-        private EmailSchedulerService schedulerService;
+        private EmailSchedulerService emailSchedulerService;
 
         @Test
         public void shouldSchedulerBeAutowired() throws Exception {
             //Assert
-            assertions.assertThat(schedulerService).isNotNull();
+            assertions.assertThat(emailSchedulerService).isNotNull();
         }
 
     }

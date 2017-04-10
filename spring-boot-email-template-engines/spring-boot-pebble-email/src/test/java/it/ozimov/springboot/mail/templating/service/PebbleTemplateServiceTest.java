@@ -33,9 +33,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Map;
 import java.util.UUID;
 
-import static it.ozimov.cirneco.hamcrest.java7.AssertFluently.given;
 import static junit.framework.TestCase.fail;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 @RunWith(SpringRunner.class)
@@ -55,13 +53,30 @@ public class PebbleTemplateServiceTest {
     public void shouldMergeTemplateIntoString() throws Exception {
         //Arrange
         final String expectedBody = TemplatingTestUtils.getExpectedBody();
+        final String templateWithExtension = TemplatingTestUtils.TEMPLATE;
+        assertions.assertThat(templateWithExtension).endsWith(".html");
 
         //Act
-        final String body = templateService.mergeTemplateIntoString(TemplatingTestUtils.TEMPLATE,
+        final String body = templateService.mergeTemplateIntoString(templateWithExtension,
                 TemplatingTestUtils.MODEL_OBJECT);
 
         //Assert
-        given(body).assertThat(is(expectedBody));
+        assertions.assertThat(body).isEqualTo(expectedBody);
+    }
+
+    @Test
+    public void shouldMergeTemplateIntoStringWhenNoDotsIsAvailable() throws Exception {
+        //Arrange
+        final String expectedBody = TemplatingTestUtils.getExpectedBody();
+
+        final String templateWithNoExtension = TemplatingTestUtils.TEMPLATE.replace(".html", "");
+        assertions.assertThat(templateWithNoExtension).doesNotEndWith(".html");
+
+        //Act
+        final String body = templateService.mergeTemplateIntoString(templateWithNoExtension, TemplatingTestUtils.MODEL_OBJECT);
+
+        //Assert
+        assertions.assertThat(body).isEqualTo(expectedBody);
     }
 
     @Test

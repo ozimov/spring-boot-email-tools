@@ -44,14 +44,18 @@ public class FreemarkerTemplateService implements TemplateService {
     public String mergeTemplateIntoString(final @NonNull String templateReference,
                                           final @NonNull Map<String, Object> model)
             throws IOException, TemplateException {
-        checkArgument(!isNullOrEmpty(templateReference.trim()), "The given template is null, empty or blank");
-        checkArgument(Objects.equals(getFileExtension(templateReference), expectedTemplateExtension()),
-                "Expected a Freemarker template file with extension 'ftl', while '%s' was given",
-                getFileExtension(templateReference));
+        final String trimmedTemplateReference = templateReference.trim();
+        checkArgument(!isNullOrEmpty(trimmedTemplateReference), "The given template is null, empty or blank");
+        if (trimmedTemplateReference.contains("."))
+            checkArgument(Objects.equals(getFileExtension(trimmedTemplateReference), expectedTemplateExtension()),
+                    "Expected a Freemarker template file with extension 'ftl', while '%s' was given",
+                    getFileExtension(trimmedTemplateReference));
 
         try {
+            final String normalizedTemplateReference = trimmedTemplateReference.endsWith(expectedTemplateExtension()) ?
+                    trimmedTemplateReference : trimmedTemplateReference + '.' + expectedTemplateExtension();
             return FreeMarkerTemplateUtils.processTemplateIntoString(
-                    freemarkerConfiguration.getTemplate(templateReference, Charset.forName("UTF-8").name()), model);
+                    freemarkerConfiguration.getTemplate(normalizedTemplateReference, Charset.forName("UTF-8").name()), model);
         } catch (Exception e) {
             throw new TemplateException(e);
         }

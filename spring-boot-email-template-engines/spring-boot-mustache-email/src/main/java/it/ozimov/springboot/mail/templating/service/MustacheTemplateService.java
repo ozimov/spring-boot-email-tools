@@ -48,16 +48,18 @@ public class MustacheTemplateService implements TemplateService {
     String mergeTemplateIntoString(final @NonNull String templateReference,
                                    final @NonNull Map<String, Object> model)
             throws IOException, TemplateException {
-        checkArgument(!isNullOrEmpty(templateReference.trim()), "The given templateName is null, empty or blank");
-        checkArgument(Objects.equals(getFileExtension(templateReference), expectedTemplateExtension()),
-                "Expected a Mustache template file with extension '%s', while '%s' was given. To check " +
-                        "the default extension look at 'spring.mustache.suffix' in your application.properties file",
-                expectedTemplateExtension(), getFileExtension(templateReference));
+        final String trimmedTemplateReference = templateReference.trim();
+        checkArgument(!isNullOrEmpty(trimmedTemplateReference), "The given templateName is null, empty or blank");
+        if (trimmedTemplateReference.contains("."))
+            checkArgument(Objects.equals(getFileExtension(trimmedTemplateReference), expectedTemplateExtension()),
+                    "Expected a Mustache template file with extension '%s', while '%s' was given. To check " +
+                            "the default extension look at 'spring.mustache.suffix' in your application.properties file",
+                    expectedTemplateExtension(), getFileExtension(trimmedTemplateReference));
 
 
         try {
             final Reader template = mustacheAutoConfiguration.mustacheTemplateLoader()
-                    .getTemplate(normalizeTemplateReference(templateReference));
+                    .getTemplate(normalizeTemplateReference(trimmedTemplateReference));
 
             return mustacheAutoConfiguration.mustacheCompiler(mustacheAutoConfiguration.mustacheTemplateLoader())
                     .compile(template)
@@ -73,8 +75,12 @@ public class MustacheTemplateService implements TemplateService {
     }
 
     private String normalizeTemplateReference(final String templateReference) {
-        final String expectedSuffix = ("." + mustacheSuffix).replace("..", ".");
-        return templateReference.substring(0, templateReference.lastIndexOf(expectedSuffix));
+        if (templateReference.endsWith(mustacheSuffix)) {
+            final String expectedSuffix = ("." + mustacheSuffix).replace("..", ".");
+            return templateReference.substring(0, templateReference.lastIndexOf(expectedSuffix));
+        } else {
+            return templateReference;
+        }
     }
 
 }

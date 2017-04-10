@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - `SchedulerService` has now a more semantic name, i.e. `EmailSchedulerService`. This change breaks backward compatibility.
+- Template engines now accept template names with no extension.
 
 ### Fixed
 - Fixed bug in the email logger due to null collections.

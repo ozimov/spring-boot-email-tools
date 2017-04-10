@@ -17,6 +17,7 @@
 package it.ozimov.springboot.mail.service;
 
 import it.ozimov.springboot.mail.service.exception.TemplateException;
+import lombok.NonNull;
 
 import java.io.IOException;
 import java.util.Map;
@@ -43,6 +44,11 @@ public interface TemplateService {
             throws IOException, TemplateException;
 
 
+    /**
+     * Return the expected template file extension. The String must not start with '.'.
+     *
+     * @return The expected extension of thr accepted template file
+     */
     String expectedTemplateExtension();
 
 }

@@ -203,7 +203,7 @@ public abstract class BaseRedisTest implements ContextBasedTest {
         }
 
         @Bean
-        public EmailSchedulerProperties schedulerProperties() {
+        public EmailSchedulerProperties emailSchedulerProperties() {
             return EmailSchedulerProperties.builder()
                     .priorityLevels(1)
                     .persistence(EmailSchedulerProperties.Persistence.builder()

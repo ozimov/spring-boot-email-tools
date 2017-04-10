@@ -63,7 +63,7 @@ import static java.util.Objects.nonNull;
  * <p>
  * Main logic for the thread wait-notify mechanism comes from {@see http://stackoverflow.com/a/8980307/1339429 }
  */
-@Service("priorityQueueSchedulerService")
+@Service("priorityQueueEmailSchedulerService")
 @ConditionalOnExpression(SCHEDULER_IS_ENABLED)
 @Slf4j
 public class PriorityQueueEmailSchedulerService implements EmailSchedulerService {
