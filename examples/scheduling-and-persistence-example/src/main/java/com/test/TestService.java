@@ -9,7 +9,7 @@ import it.ozimov.springboot.mail.model.InlinePicture;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmail;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmailAttachment;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultInlinePicture;
-import it.ozimov.springboot.mail.service.SchedulerService;
+import it.ozimov.springboot.mail.service.EmailSchedulerService;
 import it.ozimov.springboot.mail.service.exception.CannotSendEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,7 +28,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class TestService {
 
     @Autowired
-    private SchedulerService schedulerService;
+    private EmailSchedulerService emailSchedulerService;
 
     public void scheduleTwoEmails() throws UnsupportedEncodingException, CannotSendEmailException {
         OffsetDateTime when = OffsetDateTime.now().plusSeconds(20);
@@ -47,7 +47,7 @@ public class TestService {
                 .body("Hello Planet!")
                 .encoding("UTF-8").build();
 
-        schedulerService.schedule(email, when, priority);
+        emailSchedulerService.schedule(email, when, priority);
     }
 
     private void scheduleMimeEmail(OffsetDateTime when, int priority) throws UnsupportedEncodingException, CannotSendEmailException {
@@ -71,7 +71,7 @@ public class TestService {
                 "name", "Cleon I"
         );
 
-        schedulerService.schedule(email, when, priority,
+        emailSchedulerService.schedule(email, when, priority,
                 template, modelObject, inlinePicture);
     }
 

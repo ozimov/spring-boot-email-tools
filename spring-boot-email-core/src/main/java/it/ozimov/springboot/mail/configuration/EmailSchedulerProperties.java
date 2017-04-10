@@ -32,7 +32,7 @@ import static java.util.Objects.isNull;
 @AllArgsConstructor
 @Component
 @ConfigurationProperties(prefix = __SPRING_MAIL_SCHEDULER)
-public class SchedulerProperties {
+public class EmailSchedulerProperties {
 
     @Getter(AccessLevel.NONE)
     private boolean enabled;
@@ -70,26 +70,26 @@ public class SchedulerProperties {
         return true;
     }
 
-    public static void checkIsValid(@NonNull final SchedulerProperties schedulerProperties) {
-        Preconditions.checkState(schedulerProperties.getPriorityLevels() > 0,
+    public static void checkIsValid(@NonNull final EmailSchedulerProperties emailSchedulerProperties) {
+        Preconditions.checkState(emailSchedulerProperties.getPriorityLevels() > 0,
                 "Expected at least one priority level. Review property 'spring.mail.scheduler.priorityLevels'.");
 
-        Preconditions.checkState(isNull(schedulerProperties.getPersistence()) || schedulerProperties.getPersistence().getDesiredBatchSize() > 0,
+        Preconditions.checkState(isNull(emailSchedulerProperties.getPersistence()) || emailSchedulerProperties.getPersistence().getDesiredBatchSize() > 0,
                 "Expected at least a batch of size one, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistence.desiredBatchSize'.");
 
-        Preconditions.checkState(isNull(schedulerProperties.getPersistence()) || schedulerProperties.getPersistence().getMinKeptInMemory() >= 0,
+        Preconditions.checkState(isNull(emailSchedulerProperties.getPersistence()) || emailSchedulerProperties.getPersistence().getMinKeptInMemory() >= 0,
                 "Expected a non negative amount of email to be kept in memory. Review property 'spring.mail.scheduler.persistence.minKeptInMemory'.");
 
-        Preconditions.checkState(isNull(schedulerProperties.getPersistence()) || schedulerProperties.getPersistence().getMaxKeptInMemory() > 0,
+        Preconditions.checkState(isNull(emailSchedulerProperties.getPersistence()) || emailSchedulerProperties.getPersistence().getMaxKeptInMemory() > 0,
                 "Expected at least one email to be available in memory, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistence.maxKeptInMemory'.");
 
-        Preconditions.checkState(isNull(schedulerProperties.getPersistence()) ||
-                        (schedulerProperties.getPersistence().getMaxKeptInMemory() >= schedulerProperties.getPersistence().getMinKeptInMemory()),
+        Preconditions.checkState(isNull(emailSchedulerProperties.getPersistence()) ||
+                        (emailSchedulerProperties.getPersistence().getMaxKeptInMemory() >= emailSchedulerProperties.getPersistence().getMinKeptInMemory()),
                 "The application properties key '%s' should not have a value smaller than the value in property '%s'.",
                 "spring.mail.scheduler.persistence.maxKeptInMemory", "spring.mail.scheduler.persistence.minKeptInMemory");
 
-        Preconditions.checkState(isNull(schedulerProperties.getPersistence()) ||
-                        (schedulerProperties.getPersistence().getMaxKeptInMemory() >= schedulerProperties.getPersistence().getDesiredBatchSize()),
+        Preconditions.checkState(isNull(emailSchedulerProperties.getPersistence()) ||
+                        (emailSchedulerProperties.getPersistence().getMaxKeptInMemory() >= emailSchedulerProperties.getPersistence().getDesiredBatchSize()),
                 "The application properties key '%s' should not have a value smaller than the value in property '%s'.",
                 "spring.mail.scheduler.persistence.maxKeptInMemory", "spring.mail.scheduler.persistence.desiredBatchSize");
     }

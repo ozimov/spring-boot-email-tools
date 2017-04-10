@@ -18,7 +18,7 @@ package it.ozimov.springboot.mail;
 
 import com.google.common.collect.ImmutableSet;
 import it.ozimov.springboot.mail.configuration.EmailEmbeddedRedis;
-import it.ozimov.springboot.mail.configuration.SchedulerProperties;
+import it.ozimov.springboot.mail.configuration.EmailSchedulerProperties;
 import it.ozimov.springboot.mail.model.EmailSchedulingData;
 import lombok.NonNull;
 import org.junit.Before;
@@ -203,10 +203,10 @@ public abstract class BaseRedisTest implements ContextBasedTest {
         }
 
         @Bean
-        public SchedulerProperties schedulerProperties() {
-            return SchedulerProperties.builder()
+        public EmailSchedulerProperties schedulerProperties() {
+            return EmailSchedulerProperties.builder()
                     .priorityLevels(1)
-                    .persistence(SchedulerProperties.Persistence.builder()
+                    .persistence(EmailSchedulerProperties.Persistence.builder()
                             .desiredBatchSize(1)
                             .maxKeptInMemory(1)
                             .build())

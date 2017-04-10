@@ -24,7 +24,7 @@ import org.junit.rules.ExpectedException;
 
 import static junit.framework.TestCase.fail;
 
-public class SchedulerPropertiesTest implements UnitTest {
+public class EmailSchedulerPropertiesTest implements UnitTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
@@ -35,10 +35,10 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldReturnDefaultPriorityLevelsWhenNotProvided() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = new SchedulerProperties();
+        EmailSchedulerProperties emailSchedulerProperties = new EmailSchedulerProperties();
 
         //Act
-        int givenPriorityLevels = schedulerProperties.getPriorityLevels();
+        int givenPriorityLevels = emailSchedulerProperties.getPriorityLevels();
 
         //Assert
         assertions.assertThat(givenPriorityLevels).isEqualTo(10);
@@ -47,10 +47,10 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldReturnDefaultPersistencePropertiesWhenNotProvided() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = new SchedulerProperties();
+        EmailSchedulerProperties emailSchedulerProperties = new EmailSchedulerProperties();
 
         //Act
-        SchedulerProperties.Persistence givenPersistenceProperties = schedulerProperties.getPersistence();
+        EmailSchedulerProperties.Persistence givenPersistenceProperties = emailSchedulerProperties.getPersistence();
 
         //Assert
         assertions.assertThat(givenPersistenceProperties.getDesiredBatchSize()).isEqualTo(500);
@@ -61,13 +61,13 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldValidateReturnTrueWhenNumberOfPriorityLevelsIsPositiveAndSchedulerIsEnabled() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = SchedulerProperties.builder()
+        EmailSchedulerProperties emailSchedulerProperties = EmailSchedulerProperties.builder()
                 .enabled(true)
                 .priorityLevels(1)
                 .build();
 
         //Act
-        boolean givenValidationResult = schedulerProperties.validate();
+        boolean givenValidationResult = emailSchedulerProperties.validate();
 
         //Arrange
         assertions.assertThat(givenValidationResult).isTrue();
@@ -79,10 +79,10 @@ public class SchedulerPropertiesTest implements UnitTest {
         final int negativeInt = -100;
         assertions.assertThat(negativeInt).isNegative();
 
-        SchedulerProperties schedulerProperties = SchedulerProperties.builder()
+        EmailSchedulerProperties emailSchedulerProperties = EmailSchedulerProperties.builder()
                 .enabled(false)
                 .priorityLevels(negativeInt)
-                .persistence(SchedulerProperties.Persistence.builder()
+                .persistence(EmailSchedulerProperties.Persistence.builder()
                         .desiredBatchSize(negativeInt)
                         .minKeptInMemory(negativeInt)
                         .maxKeptInMemory(negativeInt)
@@ -90,7 +90,7 @@ public class SchedulerPropertiesTest implements UnitTest {
                 .build();
 
         //Act
-        boolean givenValidationResult = schedulerProperties.validate();
+        boolean givenValidationResult = emailSchedulerProperties.validate();
 
         //Arrange
         assertions.assertThat(givenValidationResult).isTrue();
@@ -99,12 +99,12 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldValidateThrowExceptionWhenNumberOfPriorityLevelsIsZeroAndSchedulerIsEnabled() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = SchedulerProperties.builder().enabled(true).priorityLevels(0).build();
+        EmailSchedulerProperties emailSchedulerProperties = EmailSchedulerProperties.builder().enabled(true).priorityLevels(0).build();
 
         expectedException.expect(IllegalStateException.class);
 
         //Act
-        schedulerProperties.validate();
+        emailSchedulerProperties.validate();
 
         //Assert
         fail("IllegalStateException expected");
@@ -113,7 +113,7 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldValidateThrowExceptionWhenNumberOfPriorityLevelsIsNegativeAndSchedulerIsEnabled() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = SchedulerProperties.builder()
+        EmailSchedulerProperties emailSchedulerProperties = EmailSchedulerProperties.builder()
                 .enabled(true)
                 .priorityLevels(-1)
                 .build();
@@ -122,7 +122,7 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expectMessage("Expected at least one priority level. Review property 'spring.mail.scheduler.priorityLevels'.");
 
         //Act
-        schedulerProperties.validate();
+        emailSchedulerProperties.validate();
 
         //Assert
         fail("IllegalStateException expected");
@@ -132,10 +132,10 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldValidateThrowExceptionWhenDesiredBatchSizeIsZeroAndSchedulerIsEnabled() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = SchedulerProperties.builder()
+        EmailSchedulerProperties emailSchedulerProperties = EmailSchedulerProperties.builder()
                 .enabled(true)
                 .priorityLevels(1)
-                .persistence(SchedulerProperties.Persistence.builder()
+                .persistence(EmailSchedulerProperties.Persistence.builder()
                         .desiredBatchSize(0)
                         .minKeptInMemory(100)
                         .maxKeptInMemory(10)
@@ -146,7 +146,7 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expectMessage("Expected at least a batch of size one, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistence.desiredBatchSize'.");
 
         //Act
-        schedulerProperties.validate();
+        emailSchedulerProperties.validate();
 
         //Assert
         fail("IllegalStateException expected");
@@ -155,10 +155,10 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldValidateThrowExceptionWhenMaxKeptInMemoryIsNegativeAndSchedulerIsEnabled() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = SchedulerProperties.builder()
+        EmailSchedulerProperties emailSchedulerProperties = EmailSchedulerProperties.builder()
                 .enabled(true)
                 .priorityLevels(1)
-                .persistence(SchedulerProperties.Persistence.builder()
+                .persistence(EmailSchedulerProperties.Persistence.builder()
                         .desiredBatchSize(1)
                         .minKeptInMemory(-1)
                         .maxKeptInMemory(10)
@@ -169,7 +169,7 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expectMessage("Expected a non negative amount of email to be kept in memory. Review property 'spring.mail.scheduler.persistence.minKeptInMemory'.");
 
         //Act
-        schedulerProperties.validate();
+        emailSchedulerProperties.validate();
 
         //Assert
         fail("IllegalStateException expected");
@@ -178,10 +178,10 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldValidateThrowExceptionWhenMaxKeptInMemoryIsZeroAndSchedulerIsEnabled() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = SchedulerProperties.builder()
+        EmailSchedulerProperties emailSchedulerProperties = EmailSchedulerProperties.builder()
                 .enabled(true)
                 .priorityLevels(1)
-                .persistence(SchedulerProperties.Persistence.builder()
+                .persistence(EmailSchedulerProperties.Persistence.builder()
                         .desiredBatchSize(1)
                         .minKeptInMemory(100)
                         .maxKeptInMemory(0)
@@ -192,7 +192,7 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expectMessage("Expected at least one email to be available in memory, otherwise the persistence layer will not work. Review property 'spring.mail.scheduler.persistence.maxKeptInMemory'.");
 
         //Act
-        schedulerProperties.validate();
+        emailSchedulerProperties.validate();
 
         //Assert
         fail("IllegalStateException expected");
@@ -201,10 +201,10 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldValidateThrowExceptionWhenMaxInMemoryIsSmallerThanMinInMemoryAndSchedulerIsEnabled() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = SchedulerProperties.builder()
+        EmailSchedulerProperties emailSchedulerProperties = EmailSchedulerProperties.builder()
                 .enabled(true)
                 .priorityLevels(1)
-                .persistence(SchedulerProperties.Persistence.builder()
+                .persistence(EmailSchedulerProperties.Persistence.builder()
                         .desiredBatchSize(1)
                         .minKeptInMemory(100)
                         .maxKeptInMemory(10)
@@ -215,7 +215,7 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expectMessage("The application properties key 'spring.mail.scheduler.persistence.maxKeptInMemory' should not have a value smaller than the value in property 'spring.mail.scheduler.persistence.minKeptInMemory'.");
 
         //Act
-        schedulerProperties.validate();
+        emailSchedulerProperties.validate();
 
         //Assert
         fail("IllegalStateException expected");
@@ -224,10 +224,10 @@ public class SchedulerPropertiesTest implements UnitTest {
     @Test
     public void shouldValidateThrowExceptionWhenMaxInMemoryIsSmallerThanDesiredBatchSizeAndSchedulerIsEnabled() throws Exception {
         //Arrange
-        SchedulerProperties schedulerProperties = SchedulerProperties.builder()
+        EmailSchedulerProperties emailSchedulerProperties = EmailSchedulerProperties.builder()
                 .enabled(true)
                 .priorityLevels(1)
-                .persistence(SchedulerProperties.Persistence.builder()
+                .persistence(EmailSchedulerProperties.Persistence.builder()
                         .desiredBatchSize(100)
                         .minKeptInMemory(1)
                         .maxKeptInMemory(10)
@@ -238,7 +238,7 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expectMessage("The application properties key 'spring.mail.scheduler.persistence.maxKeptInMemory' should not have a value smaller than the value in property 'spring.mail.scheduler.persistence.desiredBatchSize'.");
 
         //Act
-        schedulerProperties.validate();
+        emailSchedulerProperties.validate();
 
         //Assert
         fail("IllegalStateException expected");
@@ -250,7 +250,7 @@ public class SchedulerPropertiesTest implements UnitTest {
         expectedException.expect(NullPointerException.class);
 
         //Act
-        SchedulerProperties.checkIsValid(null);
+        EmailSchedulerProperties.checkIsValid(null);
 
         //Assert
         fail("IllegalStateException expected");

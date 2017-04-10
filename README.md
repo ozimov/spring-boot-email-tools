@@ -275,18 +275,18 @@ spring.mail.scheduler.priorityLevels=5
 
 If not provided, by default 10 priority levels are considered.
 
-Scheduling an email is actually easy and the `SchedulerService` allows to schedule an email with or without
+Scheduling an email is actually easy and the `EmailSchedulerService` allows to schedule an email with or without
 the use of a template engine.
 
 In order to schedule a plain text email, just create your service (or controller) where you autowire 
-the service `SchedulerService` and call a method `scheduleEmail` defined as in the following example
+the service `EmailSchedulerService` and call a method `scheduleEmail` defined as in the following example
 
 ```java
 @Service
 public void MyEmailSenderService {
 
     @Autowired
-    private SchedulerService schedulerService;
+    private EmailSchedulerService EmailSchedulerService;
     
     
     public void scheduleEmail() throws CannotSendEmailException {
@@ -299,7 +299,7 @@ public void MyEmailSenderService {
                                   .build();
         final OffsetDateTime scheduledDateTime = OffsetDateTime.now().plusDays(1);
         final int priorityLevel = 1;
-      schedulerService.schedule(mimeEmail, scheduledDateTime, priorityLevel);
+      EmailSchedulerService.schedule(mimeEmail, scheduledDateTime, priorityLevel);
     }
 }
 ```
@@ -315,7 +315,7 @@ To schedule an email with a template and inline images, just call a new method c
 public void MyEmailWithTemplateSenderService {
 
     @Autowired
-    private SchedulerService schedulerService;
+    private EmailSchedulerService EmailSchedulerService;
     
     
     public void scheduleEmailWithTemplate() throws CannotSendEmailException {
@@ -338,7 +338,7 @@ public void MyEmailWithTemplateSenderService {
         final OffsetDateTime scheduledDateTime = OffsetDateTime.now().plusDays(1);
         final int priorityLevel = 1;
       
-        schedulerService.schedule(mimeEmail, scheduledDateTime, priorityLevel, 
+        EmailSchedulerService.schedule(mimeEmail, scheduledDateTime, priorityLevel, 
             "idus_martii.ftl", modelObject, inlinePicture);
     }
     
@@ -380,7 +380,7 @@ Observe that the persistence layer makes the emails being stored to be reloaded 
 In particular, the emails are loaded when scheduler is constructed. 
 
 ###Impact of the Persistence layer on the default priority-based scheduler
-The default scheduler is `PriorityQueueSchedulerService`, which by default stores everything in memory. Clerarly, having
+The default scheduler is `PriorityQueueEmailSchedulerService`, which by default stores everything in memory. Clerarly, having
 thousands email being scheduled, storing everything in memory could drive to a potential `OutOfMemoryException`. 
 Enabling the persistence layer should allow to use REDIS for persisting scheduled emails. Anyway, you may want to
 customize the behavior of the scheduler when interacting with the persistence layer, you can use the following params:

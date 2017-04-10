@@ -17,9 +17,9 @@
 package it.ozimov.springboot.mail.service.defaultimpl;
 
 import it.ozimov.springboot.mail.ContextBasedTest;
-import it.ozimov.springboot.mail.configuration.SchedulerProperties;
+import it.ozimov.springboot.mail.configuration.EmailSchedulerProperties;
+import it.ozimov.springboot.mail.service.EmailSchedulerService;
 import it.ozimov.springboot.mail.service.EmailService;
-import it.ozimov.springboot.mail.service.SchedulerService;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import static it.ozimov.springboot.mail.configuration.ApplicationPropertiesConst
 import static it.ozimov.springboot.mail.configuration.ApplicationPropertiesConstants.SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS;
 
 @RunWith(Enclosed.class)
-public class PriorityQueueSchedulerConditionalAutowiringTest {
+public class PriorityQueueEmailSchedulerConditionalAutowiringTest {
 
     @RunWith(SpringRunner.class)
     @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -49,7 +49,7 @@ public class PriorityQueueSchedulerConditionalAutowiringTest {
                     {
                             SPRING_MAIL_SCHEDULER_ENABLED + "=false"
                     })
-    public static class SchedulerServiceDisabledContextBasedTest implements ContextBasedTest {
+    public static class EmailSchedulerServiceDisabledContextBasedTest implements ContextBasedTest {
 
         @Rule
         public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -58,7 +58,7 @@ public class PriorityQueueSchedulerConditionalAutowiringTest {
         public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
         @MockBean
-        private SchedulerProperties schedulerProperties;
+        private EmailSchedulerProperties emailSchedulerProperties;
 
         @MockBean
         private EmailService emailService;
@@ -67,7 +67,7 @@ public class PriorityQueueSchedulerConditionalAutowiringTest {
         private MimeMessage mimeMessage;
 
         @Autowired(required = false)
-        private SchedulerService schedulerService;
+        private EmailSchedulerService schedulerService;
 
         @Test
         public void shouldSchedulerServiceNotBeAutowired() throws Exception {
@@ -87,7 +87,7 @@ public class PriorityQueueSchedulerConditionalAutowiringTest {
                             SPRING_MAIL_SCHEDULER_PRIORITY_LEVELS + "=10",
 
                     })
-    public static class SchedulerPropertiesWithPersistenceContextBasedTest implements ContextBasedTest {
+    public static class EmailEmailSchedulerPropertiesWithPersistenceContextBasedTest implements ContextBasedTest {
 
         @Rule
         public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -96,7 +96,7 @@ public class PriorityQueueSchedulerConditionalAutowiringTest {
         public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
         @Autowired
-        private SchedulerProperties schedulerProperties;
+        private EmailSchedulerProperties schedulerProperties;
 
         @MockBean
         private EmailService emailService;
@@ -105,7 +105,7 @@ public class PriorityQueueSchedulerConditionalAutowiringTest {
         private MimeMessage mimeMessage;
 
         @Autowired
-        private SchedulerService schedulerService;
+        private EmailSchedulerService schedulerService;
 
         @Test
         public void shouldSchedulerBeAutowired() throws Exception {

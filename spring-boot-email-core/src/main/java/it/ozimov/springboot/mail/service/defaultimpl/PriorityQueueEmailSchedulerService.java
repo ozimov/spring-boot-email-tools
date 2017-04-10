@@ -16,7 +16,7 @@
 
 package it.ozimov.springboot.mail.service.defaultimpl;
 
-import it.ozimov.springboot.mail.configuration.SchedulerProperties;
+import it.ozimov.springboot.mail.configuration.EmailSchedulerProperties;
 import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.EmailSchedulingData;
@@ -25,7 +25,7 @@ import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmailSchedulingData;
 import it.ozimov.springboot.mail.model.defaultimpl.TemplateEmailSchedulingData;
 import it.ozimov.springboot.mail.service.EmailService;
 import it.ozimov.springboot.mail.service.PersistenceService;
-import it.ozimov.springboot.mail.service.SchedulerService;
+import it.ozimov.springboot.mail.service.EmailSchedulerService;
 import it.ozimov.springboot.mail.service.ServiceStatus;
 import it.ozimov.springboot.mail.service.exception.CannotSendEmailException;
 import it.ozimov.springboot.mail.utils.TimeUtils;
@@ -59,14 +59,14 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.nonNull;
 
 /**
- * The class provides a {@linkplain SchedulerService} implementation with priority queues and persistence.
+ * The class provides a {@linkplain EmailSchedulerService} implementation with priority queues and persistence.
  * <p>
  * Main logic for the thread wait-notify mechanism comes from {@see http://stackoverflow.com/a/8980307/1339429 }
  */
 @Service("priorityQueueSchedulerService")
 @ConditionalOnExpression(SCHEDULER_IS_ENABLED)
 @Slf4j
-public class PriorityQueueSchedulerService implements SchedulerService {
+public class PriorityQueueEmailSchedulerService implements EmailSchedulerService {
 
     /**
      * millisecs elapsed form the call of the send method and the actual sending by SMTP server
@@ -103,9 +103,9 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     private final Lock schedulerLock = new ReentrantLock();
 
     @Autowired
-    public PriorityQueueSchedulerService(
+    public PriorityQueueEmailSchedulerService(
             final EmailService emailService,
-            final SchedulerProperties schedulerProperties,
+            final EmailSchedulerProperties emailSchedulerProperties,
             final Optional<PersistenceService> persistenceServiceOptional,
             final EmailLogRenderer emailLogRenderer) throws InterruptedException {
 
@@ -115,14 +115,14 @@ public class PriorityQueueSchedulerService implements SchedulerService {
 
         timeOfNextScheduledMessage = new AtomicLong();
 
-        batchSize = nonNull(schedulerProperties.getPersistence()) ?
-                schedulerProperties.getPersistence().getDesiredBatchSize() : 0;
-        minInMemory = nonNull(schedulerProperties.getPersistence()) ?
-                schedulerProperties.getPersistence().getMinKeptInMemory() : 1;
-        maxInMemory = nonNull(schedulerProperties.getPersistence()) ?
-                schedulerProperties.getPersistence().getMaxKeptInMemory() : Integer.MAX_VALUE;
+        batchSize = nonNull(emailSchedulerProperties.getPersistence()) ?
+                emailSchedulerProperties.getPersistence().getDesiredBatchSize() : 0;
+        minInMemory = nonNull(emailSchedulerProperties.getPersistence()) ?
+                emailSchedulerProperties.getPersistence().getMinKeptInMemory() : 1;
+        maxInMemory = nonNull(emailSchedulerProperties.getPersistence()) ?
+                emailSchedulerProperties.getPersistence().getMaxKeptInMemory() : Integer.MAX_VALUE;
 
-        final int numberOfPriorityLevels = schedulerProperties.getPriorityLevels();
+        final int numberOfPriorityLevels = emailSchedulerProperties.getPriorityLevels();
         priorityQueueManager = new PriorityQueueManager(numberOfPriorityLevels, persistenceServiceOptional.isPresent(),
                 maxInMemory, CONSUMER_CYCLE_LENGTH);
 
@@ -427,7 +427,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     private class Consumer extends Thread {
 
         public Consumer() {
-            super(PriorityQueueSchedulerService.class.getSimpleName() + " -- " + Consumer.class.getSimpleName());
+            super(PriorityQueueEmailSchedulerService.class.getSimpleName() + " -- " + Consumer.class.getSimpleName());
         }
 
         public void run() {
@@ -503,7 +503,7 @@ public class PriorityQueueSchedulerService implements SchedulerService {
     private class Resumer extends Thread {
 
         public Resumer() {
-            super(PriorityQueueSchedulerService.class.getSimpleName() + " -- " + Resumer.class.getSimpleName());
+            super(PriorityQueueEmailSchedulerService.class.getSimpleName() + " -- " + Resumer.class.getSimpleName());
         }
 
         public void run() {

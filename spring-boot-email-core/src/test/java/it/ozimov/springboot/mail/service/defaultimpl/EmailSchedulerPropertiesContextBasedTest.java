@@ -17,7 +17,7 @@
 package it.ozimov.springboot.mail.service.defaultimpl;
 
 import it.ozimov.springboot.mail.ContextBasedTest;
-import it.ozimov.springboot.mail.configuration.SchedulerProperties;
+import it.ozimov.springboot.mail.configuration.EmailSchedulerProperties;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +35,7 @@ import static it.ozimov.springboot.mail.configuration.ApplicationPropertiesConst
 
 
 @RunWith(Enclosed.class)
-public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
+public class EmailSchedulerPropertiesContextBasedTest implements ContextBasedTest {
 
     @RunWith(SpringRunner.class)
     @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -44,7 +44,7 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
                     {
                             SPRING_MAIL_SCHEDULER_ENABLED + "=false"
                     })
-    public static class SchedulerPropertiesWithoutSchedulerContextBasedTest implements ContextBasedTest {
+    public static class SchedulerPropertiesWithoutEmailSchedulerContextBasedTest implements ContextBasedTest {
 
         @Rule
         public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -53,12 +53,12 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
         public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
         @Autowired
-        private SchedulerProperties schedulerProperties;
+        private EmailSchedulerProperties emailSchedulerProperties;
 
         @Test
         public void shouldSchedulerPropertiesHaveExpectedValues() throws Exception {
             //Assert
-            assertions.assertThat(schedulerProperties)
+            assertions.assertThat(emailSchedulerProperties)
                     .isNotNull()
                     .hasFieldOrPropertyWithValue("enabled", false)
                     .hasFieldOrPropertyWithValue("priorityLevels", null)
@@ -82,7 +82,7 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MIN_KEPT_IN_MEMORY + "=1",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY + "=1"
                     })
-    public static class SchedulerPropertiesWithoutPersistenceContextBasedTest implements ContextBasedTest {
+    public static class EmailSchedulerPropertiesWithoutPersistenceContextBasedTest implements ContextBasedTest {
 
         @Rule
         public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -91,16 +91,16 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
         public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
         @Autowired
-        private SchedulerProperties schedulerProperties;
+        private EmailSchedulerProperties emailSchedulerProperties;
 
         @Test
         public void shouldSchedulerPropertiesHaveExpectedValues() throws Exception {
             //Assert
-            assertions.assertThat(schedulerProperties)
+            assertions.assertThat(emailSchedulerProperties)
                     .isNotNull()
                     .hasFieldOrPropertyWithValue("enabled", true)
                     .hasFieldOrPropertyWithValue("priorityLevels", 123)
-                    .hasFieldOrPropertyWithValue("persistence", SchedulerProperties.Persistence.builder()
+                    .hasFieldOrPropertyWithValue("persistence", EmailSchedulerProperties.Persistence.builder()
                             .desiredBatchSize(1).minKeptInMemory(1).maxKeptInMemory(1).build());
         }
 
@@ -121,7 +121,7 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MIN_KEPT_IN_MEMORY + "=25",
                             SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY + "=123456"
                     })
-    public static class SchedulerPropertiesWithPersistenceContextBasedTest implements ContextBasedTest {
+    public static class EmailSchedulerPropertiesWithPersistenceContextBasedTest implements ContextBasedTest {
 
         @Rule
         public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -130,16 +130,16 @@ public class SchedulerPropertiesContextBasedTest implements ContextBasedTest {
         public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
         @Autowired
-        private SchedulerProperties schedulerProperties;
+        private EmailSchedulerProperties emailSchedulerProperties;
 
         @Test
         public void shouldSchedulerPropertiesHaveExpectedValues() throws Exception {
             //Assert
-            assertions.assertThat(schedulerProperties)
+            assertions.assertThat(emailSchedulerProperties)
                     .isNotNull()
                     .hasFieldOrPropertyWithValue("enabled", true)
                     .hasFieldOrPropertyWithValue("priorityLevels", 321)
-                    .hasFieldOrPropertyWithValue("persistence", SchedulerProperties.Persistence.builder()
+                    .hasFieldOrPropertyWithValue("persistence", EmailSchedulerProperties.Persistence.builder()
                             .desiredBatchSize(125).minKeptInMemory(25).maxKeptInMemory(123456).build());
         }
 

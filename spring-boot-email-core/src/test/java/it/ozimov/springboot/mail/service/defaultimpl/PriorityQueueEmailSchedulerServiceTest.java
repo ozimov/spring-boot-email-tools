@@ -18,7 +18,7 @@ package it.ozimov.springboot.mail.service.defaultimpl;
 
 import it.ozimov.mockito.helpers.captors.ResultCaptor;
 import it.ozimov.springboot.mail.ContextBasedTest;
-import it.ozimov.springboot.mail.configuration.SchedulerProperties;
+import it.ozimov.springboot.mail.configuration.EmailSchedulerProperties;
 import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.service.EmailService;
@@ -51,7 +51,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
+public class PriorityQueueEmailSchedulerServiceTest implements ContextBasedTest {
 
     @Rule
     public final Timeout timeout = new Timeout(30, SECONDS);
@@ -66,7 +66,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     private EmailService emailService;
 
     @MockBean
-    private SchedulerProperties schedulerProperties;
+    private EmailSchedulerProperties emailSchedulerProperties;
 
     @MockBean
     private EmailLogRenderer emailLogRenderer;
@@ -108,15 +108,15 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
 
     @Before
     public void setUp() {
-        when(schedulerProperties.getPriorityLevels()).thenReturn(1);
-        when(schedulerProperties.getPersistence()).thenReturn(
-                SchedulerProperties.Persistence.builder().desiredBatchSize(0).maxKeptInMemory(Integer.MAX_VALUE).build());
+        when(emailSchedulerProperties.getPriorityLevels()).thenReturn(1);
+        when(emailSchedulerProperties.getPersistence()).thenReturn(
+                EmailSchedulerProperties.Persistence.builder().desiredBatchSize(0).maxKeptInMemory(Integer.MAX_VALUE).build());
     }
 
     @Test
     public void shouldScheduleAndSendEmailWithoutTemplateAndOffsetDateTime() throws Exception {
         //Arrange
-        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
+        final PriorityQueueEmailSchedulerService priorityQueueSchedulerService = scheduler(1);
         final Email email = getSimpleMail();
 
         //Act
@@ -130,7 +130,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     @Test
     public void shouldScheduleAndSendEmailWithoutTemplate() throws Exception {
         //Arrange
-        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
+        final PriorityQueueEmailSchedulerService priorityQueueSchedulerService = scheduler(1);
         final Email email = getSimpleMail();
 
         //Act
@@ -144,7 +144,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     @Test
     public void shouldScheduleAndSendEmailWithTemplateAndOffsetDateTime() throws Exception {
         //Arrange
-        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
+        final PriorityQueueEmailSchedulerService priorityQueueSchedulerService = scheduler(1);
         final Email email = getSimpleMail();
 
         //Act
@@ -161,7 +161,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     @Test
     public void shouldScheduleAndSendEmailWithTemplate() throws Exception {
         //Arrange
-        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
+        final PriorityQueueEmailSchedulerService priorityQueueSchedulerService = scheduler(1);
         final Email email = getSimpleMail();
 
         //Act
@@ -178,7 +178,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     @Test
     public void shouldRespectPriorityForSameDateTime() throws Exception {
         //Arrange
-        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(3);
+        final PriorityQueueEmailSchedulerService priorityQueueSchedulerService = scheduler(3);
         final Email emailLowPriority = lowPriority();
         final Email emailMidPriority = midPriority();
         final Email emailHighPriority = highPriority();
@@ -202,7 +202,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     @Test
     public void shouldRespectPriorityWhenDifferentDateTime() throws Exception {
         //Arrange
-        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(3);
+        final PriorityQueueEmailSchedulerService priorityQueueSchedulerService = scheduler(3);
         final Email emailLowPriority = lowPriority();
         final Email emailMidPriority = midPriority();
         final Email emailHighPriority = highPriority();
@@ -229,7 +229,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
         final int nonAvailablePriorityLevel = 2;
         assertions.assertThat(nonAvailablePriorityLevel).isGreaterThan(maxPriorityLevels);
 
-        final PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(maxPriorityLevels);
+        final PriorityQueueEmailSchedulerService priorityQueueSchedulerService = scheduler(maxPriorityLevels);
         final Email email = getSimpleMail(new InternetAddress("virgilio@marone.roma", "Publio Virgilio Marone"));
 
         final OffsetDateTime dateTime = TimeUtils.offsetDateTimeNow();
@@ -249,7 +249,7 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
     @Test
     public void shouldClose() throws Exception {
         //Arrange
-        PriorityQueueSchedulerService priorityQueueSchedulerService = scheduler(1);
+        PriorityQueueEmailSchedulerService priorityQueueSchedulerService = scheduler(1);
 
         //Act
         priorityQueueSchedulerService.cleanUp();
@@ -259,12 +259,12 @@ public class PriorityQueueSchedulerServiceTest implements ContextBasedTest {
         given(priorityQueueSchedulerService.status()).assertThat(CoreMatchers.is(ServiceStatus.CLOSED));
     }
 
-    private PriorityQueueSchedulerService scheduler(int numPriorityLevels) throws InterruptedException {
-        when(schedulerProperties.getPriorityLevels()).thenReturn(numPriorityLevels);
+    private PriorityQueueEmailSchedulerService scheduler(int numPriorityLevels) throws InterruptedException {
+        when(emailSchedulerProperties.getPriorityLevels()).thenReturn(numPriorityLevels);
         when(emailLogRenderer.registerLogger(any(Logger.class))).thenReturn(emailLogRenderer);
 
-        final PriorityQueueSchedulerService schedulerService = spy(new PriorityQueueSchedulerService(emailService,
-                schedulerProperties,
+        final PriorityQueueEmailSchedulerService schedulerService = spy(new PriorityQueueEmailSchedulerService(emailService,
+                emailSchedulerProperties,
                 Optional.empty(),
                 emailLogRenderer));
         return schedulerService;

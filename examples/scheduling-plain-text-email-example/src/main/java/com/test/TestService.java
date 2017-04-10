@@ -2,7 +2,7 @@ package com.test;
 
 import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmail;
-import it.ozimov.springboot.mail.service.SchedulerService;
+import it.ozimov.springboot.mail.service.EmailSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class TestService {
 
     @Autowired
-    private SchedulerService schedulerService;
+    private EmailSchedulerService emailSchedulerService;
 
     public void scheduleSixEmails() throws UnsupportedEncodingException {
         OffsetDateTime now = OffsetDateTime.now();
@@ -43,7 +43,7 @@ public class TestService {
                 .body("Hello Planet!")
                 .encoding("UTF-8").build();
 
-        schedulerService.schedule(email, when, priority);
+        emailSchedulerService.schedule(email, when, priority);
     }
 
 }

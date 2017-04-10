@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import it.ozimov.mockito.helpers.captors.ResultCaptor;
 import it.ozimov.springboot.mail.BaseRedisTest;
-import it.ozimov.springboot.mail.configuration.SchedulerProperties;
+import it.ozimov.springboot.mail.configuration.EmailSchedulerProperties;
 import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.EmailSchedulingData;
 import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmailSchedulingData;
@@ -49,8 +49,8 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import static it.ozimov.springboot.mail.service.defaultimpl.EmailSchedulingDataUtils.createDefaultEmailSchedulingDataWithPriority;
-import static it.ozimov.springboot.mail.service.defaultimpl.PriorityQueueSchedulerService.CONSUMER_CYCLE_LENGTH;
-import static it.ozimov.springboot.mail.service.defaultimpl.PriorityQueueSchedulerService.RESUMER_CYCLE_LENGTH;
+import static it.ozimov.springboot.mail.service.defaultimpl.PriorityQueueEmailSchedulerService.CONSUMER_CYCLE_LENGTH;
+import static it.ozimov.springboot.mail.service.defaultimpl.PriorityQueueEmailSchedulerService.RESUMER_CYCLE_LENGTH;
 import static java.lang.Math.max;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.*;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = BaseRedisTest.ContextConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest {
+public class PriorityQueueEmailSchedulerServicePersistenceTest extends BaseRedisTest {
 
     private static final long HALF_RESUMER_CYCLE_LENGTH_IN_MILLIS = (long) Math.ceil(RESUMER_CYCLE_LENGTH.toMillis() / 2.0);
     private static final long RESUMER_CYCLE_LENGTH_PLUS_HALF_IN_MILLIS = RESUMER_CYCLE_LENGTH.toMillis() + HALF_RESUMER_CYCLE_LENGTH_IN_MILLIS;
@@ -76,7 +76,7 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     public final JUnitSoftAssertions assertions = new JUnitSoftAssertions();
 
     @MockBean
-    private SchedulerProperties schedulerProperties;
+    private EmailSchedulerProperties emailSchedulerProperties;
 
     @MockBean
     private EmailService emailService;
@@ -92,9 +92,9 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
     private DefaultPersistenceService defaultPersistenceService;
 
     @MockBean
-    private PriorityQueueSchedulerService neverUsedSchedulerService;
+    private PriorityQueueEmailSchedulerService neverUsedSchedulerService;
 
-    private PriorityQueueSchedulerService priorityQueueSchedulerService;
+    private PriorityQueueEmailSchedulerService priorityQueueSchedulerService;
 
     private int priorityLevels = 5;
     private int desiredBatchSize = 10_000;
@@ -602,18 +602,18 @@ public class PriorityQueueSchedulerServicePersistenceTest extends BaseRedisTest 
 
     protected void createScheduler() throws InterruptedException {
         //Sometimes Spring fails in creating the mock for the bean. Bad Spring! Bad!
-        schedulerProperties = mock(SchedulerProperties.class);
-        SchedulerProperties.Persistence persistence = SchedulerProperties.Persistence.builder()
+        emailSchedulerProperties = mock(EmailSchedulerProperties.class);
+        EmailSchedulerProperties.Persistence persistence = EmailSchedulerProperties.Persistence.builder()
                 .minKeptInMemory(minKeptInMemory)
                 .maxKeptInMemory(maxKeptInMemory)
                 .desiredBatchSize(desiredBatchSize)
                 .build();
 
-        when(schedulerProperties.getPriorityLevels()).thenReturn(priorityLevels);
-        when(schedulerProperties.getPersistence()).thenReturn(persistence);
-        SchedulerProperties.checkIsValid(schedulerProperties);
+        when(emailSchedulerProperties.getPriorityLevels()).thenReturn(priorityLevels);
+        when(emailSchedulerProperties.getPersistence()).thenReturn(persistence);
+        EmailSchedulerProperties.checkIsValid(emailSchedulerProperties);
         when(emailLogRenderer.registerLogger(any(Logger.class))).thenReturn(emailLogRenderer);
-        priorityQueueSchedulerService = spy(new PriorityQueueSchedulerService(emailService, schedulerProperties, Optional.of(defaultPersistenceService), emailLogRenderer));
+        priorityQueueSchedulerService = spy(new PriorityQueueEmailSchedulerService(emailService, emailSchedulerProperties, Optional.of(defaultPersistenceService), emailLogRenderer));
     }
 
 }

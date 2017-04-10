@@ -24,7 +24,7 @@ import org.springframework.scheduling.annotation.Async;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
-public interface SchedulerService {
+public interface EmailSchedulerService {
 
     /**
      * Schedules the sending of an email message at time <strong>now</strong> (UTC).
