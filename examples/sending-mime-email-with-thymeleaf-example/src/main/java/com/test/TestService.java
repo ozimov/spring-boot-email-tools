@@ -43,7 +43,7 @@ public class TestService {
                 .attachment(getCsvForecastAttachment("forecast"))
                 .encoding("UTF-8").build();
 
-        String template = "emailTemplate.html";
+        String template = "subfolder/emailTemplate";
 
         Map<String, Object> modelObject = ImmutableMap.of(
                 "title", "Emperor",

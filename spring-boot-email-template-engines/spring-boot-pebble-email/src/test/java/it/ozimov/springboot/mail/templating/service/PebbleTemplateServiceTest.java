@@ -65,6 +65,20 @@ public class PebbleTemplateServiceTest {
     }
 
     @Test
+    public void shouldMergeTemplateIntoStringGivenTemplateInSubfolder() throws Exception {
+        //Arrange
+        final String expectedBody = TemplatingTestUtils.getExpectedBody();
+        final String templateInSubfolder = TemplatingTestUtils.TEMPLATE_IN_SUBFOLDER;
+        assertions.assertThat(templateInSubfolder).contains("/");
+
+        //Act
+        final String body = templateService.mergeTemplateIntoString(templateInSubfolder, TemplatingTestUtils.MODEL_OBJECT);
+
+        //Assert
+        assertions.assertThat(body).isEqualTo(expectedBody);
+    }
+
+    @Test
     public void shouldMergeTemplateIntoStringWhenNoDotsIsAvailable() throws Exception {
         //Arrange
         final String expectedBody = TemplatingTestUtils.getExpectedBody();

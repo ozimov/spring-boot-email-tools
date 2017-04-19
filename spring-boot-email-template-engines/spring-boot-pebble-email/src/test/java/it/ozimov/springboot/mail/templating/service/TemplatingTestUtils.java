@@ -28,6 +28,7 @@ public class TemplatingTestUtils {
 
     public static final String WRONG_TEMPLATE = "wrong_email_template.html";
     public static final String TEMPLATE = "email_template.html";
+    public static final String TEMPLATE_IN_SUBFOLDER = "subfolder/email_template_in_subfolder.html";
     public static final String NAME = "Titus";
     public static final Map<String, Object> MODEL_OBJECT = new ImmutableMap.Builder<String, Object>()
             .put("name", NAME)

@@ -47,7 +47,7 @@ public class ThymeleafTemplateServiceTest {
     private TemplateService templateService;
 
     @Test
-    public void testMergeTemplateIntoString() throws Exception {
+    public void shouldMergeTemplateIntoString() throws Exception {
         //Arrange
         final String expectedBody = TemplatingTestUtils.getExpectedBody();
         final String templateWithExtension = TemplatingTestUtils.TEMPLATE;
@@ -55,6 +55,20 @@ public class ThymeleafTemplateServiceTest {
 
         //Act
         final String body = templateService.mergeTemplateIntoString(templateWithExtension, TemplatingTestUtils.MODEL_OBJECT);
+
+        //Assert
+        assertions.assertThat(body).isEqualTo(expectedBody);
+    }
+
+    @Test
+    public void shouldMergeTemplateIntoStringGivenTemplateInSubfolder() throws Exception {
+        //Arrange
+        final String expectedBody = TemplatingTestUtils.getExpectedBody();
+        final String templateInSubfolder = TemplatingTestUtils.TEMPLATE_IN_SUBFOLDER;
+        assertions.assertThat(templateInSubfolder).contains("/");
+
+        //Act
+        final String body = templateService.mergeTemplateIntoString(templateInSubfolder, TemplatingTestUtils.MODEL_OBJECT);
 
         //Assert
         assertions.assertThat(body).isEqualTo(expectedBody);
@@ -104,7 +118,7 @@ public class ThymeleafTemplateServiceTest {
     }
 
     @Test
-    public void testCannotAcceptEmptyTemplateName() throws Exception {
+    public void shouldNotAcceptEmptyTemplateName() throws Exception {
         //Arrange
         final Map<String, Object> modelObject = new ImmutableMap.Builder<String, Object>()
                 .build();
@@ -118,7 +132,7 @@ public class ThymeleafTemplateServiceTest {
     }
 
     @Test
-    public void testCannotAcceptTemplateNameWithoutFtlExtension() throws Exception {
+    public void shouldNotAcceptTemplateNameWithoutFtlExtension() throws Exception {
         //Arrange
         final Map<String, Object> modelObject = new ImmutableMap.Builder<String, Object>()
                 .build();

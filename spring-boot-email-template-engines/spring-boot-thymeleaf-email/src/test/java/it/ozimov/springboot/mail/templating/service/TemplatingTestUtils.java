@@ -27,6 +27,7 @@ import java.util.Map;
 public class TemplatingTestUtils {
 
     public static final String TEMPLATE = "email_template.html";
+    public static final String TEMPLATE_IN_SUBFOLDER = "subfolder/email_template_in_subfolder.html";
     public static final String NAME = "Titus";
     public static final String URL = "http://www.something.com/segment?key=val";
 
@@ -48,6 +49,5 @@ public class TemplatingTestUtils {
         final byte[] encoded = Files.readAllBytes(file.toPath());
         return new String(encoded, Charset.forName("UTF-8"));
     }
-
 
 }
