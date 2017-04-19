@@ -8,6 +8,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Append a listener to be notified on email sent.
 
 ## [Unreleased]
+
+## [0.6.1] -  2017-04-19
+### Fixed
+- Thymeleaf template engine was not receiving templates with subpath from the `resources/template` folder.
+
+
 ## [0.6.0] -  2017-04-10
 
 ### Changed

@@ -19,6 +19,7 @@ package it.ozimov.springboot.mail.templating.service;
 import it.ozimov.springboot.mail.service.TemplateService;
 import it.ozimov.springboot.mail.service.exception.TemplateException;
 import lombok.NonNull;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,6 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.io.Files.getFileExtension;
-import static com.google.common.io.Files.getNameWithoutExtension;
 
 @Service
 public class ThymeleafTemplateService implements TemplateService {
@@ -60,7 +60,7 @@ public class ThymeleafTemplateService implements TemplateService {
         final Context context = new Context();
         context.setVariables(model);
 
-        return thymeleafEngine.process(getNameWithoutExtension(trimmedTemplateReference), context);
+        return thymeleafEngine.process(FilenameUtils.removeExtension(trimmedTemplateReference), context);
     }
 
     @Override
