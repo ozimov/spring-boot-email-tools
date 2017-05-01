@@ -5,3 +5,7 @@ spring.mail.password: V3ry_Str0ng_Password
 spring.mail.properties.mail.smtp.auth: true
 spring.mail.properties.mail.smtp.starttls.enable: true
 spring.mail.properties.mail.smtp.starttls.required: true
+
+spring.mail.scheduler.persistence.enabled: false
+spring.mail.scheduler.persistence.redis.embedded: false
+spring.mail.scheduler.persistence.redis.enabled: false
