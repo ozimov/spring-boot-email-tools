@@ -17,10 +17,7 @@
 package it.ozimov.springboot.mail.configuration;
 
 import it.ozimov.springboot.mail.logging.LoggingStrategy;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +25,7 @@ import static it.ozimov.springboot.mail.configuration.ApplicationPropertiesConst
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Component
 @ConfigurationProperties(prefix = __SPRING_MAIL_LOGGING)
 public class LoggingProperties {
@@ -40,6 +38,7 @@ public class LoggingProperties {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class Strategy {
 
         // spring.mail.logging.strategy.from
