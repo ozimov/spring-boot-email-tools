@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.2] -  2017-05-02
+### Fixed
+- Change in LoggingProperties to have constructors with all arguments.
+
 ## [0.6.1] -  2017-04-19
 ### Fixed
 - Thymeleaf template engine was not receiving templates with subpath from the `resources/template` folder.
