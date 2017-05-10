@@ -447,6 +447,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+## How to open an issues
+
+Are you experiencing an issue? Please, post a question on _StackOverflow_ or open an issue on GitHub.
+
+Issues that are not reporting a minimal set of info to reproduce the bug will be closed with no further comments.
+
+Information that should be provided for investigations:
+- version used
+- pom.xml
+- application.properties
+- exception stacktrace
+- Are the provided examples run with success?
+
 
 ==============================================
 [![forthebadge](http://forthebadge.com/images/badges/built-by-developers.svg)](http://forthebadge.com)
