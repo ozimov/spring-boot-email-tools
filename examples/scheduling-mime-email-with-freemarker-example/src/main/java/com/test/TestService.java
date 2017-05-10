@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.InternetAddress;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class TestService {
     @Autowired
     private EmailSchedulerService emailSchedulerService;
 
-    public void scheduleSixMimeEmails() throws UnsupportedEncodingException, CannotSendEmailException {
+    public void scheduleSixMimeEmails() throws UnsupportedEncodingException, CannotSendEmailException, URISyntaxException {
         OffsetDateTime now = OffsetDateTime.now();
         OffsetDateTime whenFirstGroup = now.plusSeconds(5);
         OffsetDateTime whenSecondGroup = now.plusSeconds(10);
@@ -44,7 +45,7 @@ public class TestService {
         scheduleMimeEmail(whenThirdGroup, 1);
     }
 
-    private void scheduleMimeEmail(OffsetDateTime when, int priority) throws UnsupportedEncodingException, CannotSendEmailException {
+    private void scheduleMimeEmail(OffsetDateTime when, int priority) throws UnsupportedEncodingException, CannotSendEmailException, URISyntaxException {
         InlinePicture inlinePicture = createGalaxyInlinePicture();
 
         final Email email = DefaultEmail.builder()
@@ -69,9 +70,9 @@ public class TestService {
                 template, modelObject, inlinePicture);
     }
 
-    private InlinePicture createGalaxyInlinePicture() {
+    private InlinePicture createGalaxyInlinePicture() throws URISyntaxException {
         ClassLoader classLoader = getClass().getClassLoader();
-        File pictureFile = new File(classLoader.getResource("images" + File.separator + "galaxy.jpeg").getFile());
+        File pictureFile = new File(classLoader.getResource("images" + File.separator + "galaxy.jpeg").toURI());
         Preconditions.checkState(pictureFile.exists(), "There is not picture %s", pictureFile.getName());
 
         return DefaultInlinePicture.builder()

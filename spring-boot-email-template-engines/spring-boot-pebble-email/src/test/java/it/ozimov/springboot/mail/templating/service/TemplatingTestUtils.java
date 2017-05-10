@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Map;
@@ -34,9 +35,9 @@ public class TemplatingTestUtils {
             .put("name", NAME)
             .build();
 
-    public static String getExpectedBody() throws IOException {
+    public static String getExpectedBody() throws IOException, URISyntaxException {
         final File file = new File(PebbleTemplateServiceTest.class.getClassLoader()
-                .getResource("templates" + File.separator + TEMPLATE).getFile());
+                .getResource("templates" + File.separator + TEMPLATE).toURI());
         final String template = readFile(file);
         return template.replace("{{name}}", NAME);
     }

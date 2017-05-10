@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Using Spring Boot _1.5.3.RELEASE_
+
+
 ## [0.6.2] -  2017-05-02
 ### Fixed
 - Change in LoggingProperties to have constructors with all arguments.

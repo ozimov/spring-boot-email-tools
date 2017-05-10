@@ -46,6 +46,7 @@ import javax.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import static it.ozimov.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMail;
@@ -138,7 +139,7 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
     }
 
     @Test
-    public void sendMailWithTemplateAndInlinePicture() throws MessagingException, IOException, TemplateException, CannotSendEmailException {
+    public void sendMailWithTemplateAndInlinePicture() throws MessagingException, IOException, TemplateException, CannotSendEmailException, URISyntaxException {
         //Arrange
         final Email email = getSimpleMail();
         assertThat(email.getSentAt(), is(nullValue()));
@@ -149,7 +150,7 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenReturn(bodyToBeReturned);
 
         final File inlineImageFile = new File(getClass().getClassLoader()
-                .getResource("images" + File.separator + imageName).getFile());
+                .getResource("images" + File.separator + imageName).toURI());
 
         //Act
         final MimeMessage sentMessage = mailService.send(email, "never_called.ftl", Maps.newHashMap(),
