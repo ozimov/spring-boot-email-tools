@@ -22,8 +22,6 @@ public class TestService {
                 .from(new InternetAddress("hari.seldon@gmail.com",
                         "Hari Seldon"))
                 .to(newArrayList(
-                        new InternetAddress("roberto.trunfio@gmail.com",
-                                "Cleon I"),
                         new InternetAddress("the-real-cleon@trantor.gov",
                                 "Cleon I")))
                 .subject("You shall die! It's not me, it's Psychohistory")

@@ -133,6 +133,7 @@ public class DefaultEmailService implements EmailService {
             content.addBodyPart(textPart);
 
             mimeMessage.setContent(content);
+            mimeMessage.saveChanges();
             javaMailSender.send(mimeMessage);
             emailLogRenderer.info("Sent email {}.", emailWithCompiledBody(email, text));
         } catch (IOException e) {

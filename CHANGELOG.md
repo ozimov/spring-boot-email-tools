@@ -10,9 +10,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Changed
-- Using Spring Boot _1.5.3.RELEASE_
-- Using Pebble _2.4.0.RELEASE_
+- Using Spring Boot _1.5.5.RELEASE_.
+- Using Pebble _2.4.0.RELEASE_.
 
+### Fixed
+- Fixed issue with `MimeMessage` not saved after changes.
 
 ## [0.6.2] -  2017-05-02
 ### Fixed

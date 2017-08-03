@@ -99,6 +99,7 @@ public class EmailToMimeMessage implements Function<Email, MimeMessage> {
                 setCustomHeaders(email, mimeMessage);
             }
 
+            mimeMessage.saveChanges();
         } catch (MessagingException e) {
             log.error("Error while converting DefaultEmail to MimeMessage");
             throw new EmailConversionException(e);
