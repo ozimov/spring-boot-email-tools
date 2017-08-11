@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import javax.annotation.PostConstruct;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,7 +36,7 @@ public class MimeEmailWithThymeleafApplication implements ApplicationContextAwar
     }
 
     @PostConstruct
-    public void sendEmail() throws UnsupportedEncodingException, InterruptedException, CannotSendEmailException, URISyntaxException {
+    public void sendEmail() throws IOException, InterruptedException, CannotSendEmailException, URISyntaxException {
         testService.sendMimeEmailWithThymeleaf();
 
         close();
