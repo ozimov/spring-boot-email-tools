@@ -17,9 +17,9 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.internet.InternetAddress;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -30,7 +30,7 @@ public class TestService {
     @Autowired
     private EmailService emailService;
 
-    public void sendMimeEmailWithThymeleaf() throws UnsupportedEncodingException, CannotSendEmailException, URISyntaxException {
+    public void sendMimeEmailWithThymeleaf() throws IOException, CannotSendEmailException, URISyntaxException {
         InlinePicture inlinePicture = createGalaxyInlinePicture();
 
         final Email email = DefaultEmail.builder()
@@ -41,7 +41,7 @@ public class TestService {
                                 "Cleon I")))
                 .subject("You shall die! It's not me, it's Psychohistory")
                 .body("")//this will be overridden by the template, anyway
-                .attachment(getCsvForecastAttachment("forecast"))
+                .attachment(getPdfWithAccentedCharsAttachment("Conditions_Générales_Service"))
                 .encoding("UTF-8").build();
 
         String template = "subfolder/emailTemplate";
@@ -65,12 +65,14 @@ public class TestService {
                 .templateName("galaxy.jpeg").build();
     }
 
-    private EmailAttachment getCsvForecastAttachment(String filename) {
-        final String testData = "years from now,death probability\n1,0.9\n2,0.95\n3,1.0";
+    private EmailAttachment getPdfWithAccentedCharsAttachment(String filename) throws URISyntaxException, IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File pdfFile = new File(classLoader.getResource("attachments" + File.separator + "Questo documento è un test.pdf").toURI());
+
         final DefaultEmailAttachment attachment = DefaultEmailAttachment.builder()
-                .attachmentName(filename + ".csv")
-                .attachmentData(testData.getBytes(Charset.forName("UTF-8")))
-                .mediaType(MediaType.TEXT_PLAIN).build();
+                .attachmentName(filename + ".pdf")
+                .attachmentData(Files.readAllBytes(pdfFile.toPath()))
+                .mediaType(MediaType.APPLICATION_PDF).build();
         return attachment;
     }
 
