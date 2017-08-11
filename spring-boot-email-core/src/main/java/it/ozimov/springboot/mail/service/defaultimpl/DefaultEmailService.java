@@ -42,6 +42,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -123,7 +124,7 @@ public class DefaultEmailService implements EmailService {
                 DataSource source = new ByteArrayDataSource(emailAttachment.getAttachmentData(),
                         emailAttachment.getContentType().toString());
                 attachmentPart.setDataHandler(new DataHandler(source));
-                attachmentPart.setFileName(emailAttachment.getAttachmentName());
+                attachmentPart.setFileName(MimeUtility.encodeText(emailAttachment.getAttachmentName()));
                 content.addBodyPart(attachmentPart);
             }
 
