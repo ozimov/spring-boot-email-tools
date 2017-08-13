@@ -334,7 +334,7 @@ public void MyEmailWithTemplateSenderService {
        final InlinePicture inlinePicture = DefaultInlinePicture.builder()
                                .file(imageFile)
                                .imageType(ImageType.JPG)
-                               .templateName("my_image.jpg").build());
+                               .templateName("my_image.jpg").build();
         final OffsetDateTime scheduledDateTime = OffsetDateTime.now().plusDays(1);
         final int priorityLevel = 1;
       
