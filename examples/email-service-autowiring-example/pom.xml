@@ -6,7 +6,7 @@
 
     <groupId>it.ozimov</groupId>
     <artifactId>email-service-autowiring-example</artifactId>
-    <version>0.6.2</version>
+    <version>0.6.3</version>
     <packaging>jar</packaging>
 
     <name>Spring Boot Email - EmailService Autowiring Example</name>
@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.2.RELEASE</version>
+        <version>1.5.6.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>spring-boot-email-core</artifactId>
-            <version>0.6.2</version>
+            <version>0.6.3</version>
         </dependency>
     </dependencies>
 
