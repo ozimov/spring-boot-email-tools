@@ -9,12 +9,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [0.6.3] -  2017-08-13
+
 ### Changed
-- Using Spring Boot _1.5.5.RELEASE_.
+- Using Spring Boot _1.5.6.RELEASE_.
 - Using Pebble _2.4.0.RELEASE_.
 
 ### Fixed
 - Fixed issue with `MimeMessage` not saved after changes.
+- Fixed encoding of attachment file names.
 
 ## [0.6.2] -  2017-05-02
 ### Fixed
