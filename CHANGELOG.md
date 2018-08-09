@@ -9,6 +9,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Using Spring Boot _2.0.0.RELEASE_.
+- Upgraded several libs.
 
 ## [0.6.3] -  2017-08-13
 

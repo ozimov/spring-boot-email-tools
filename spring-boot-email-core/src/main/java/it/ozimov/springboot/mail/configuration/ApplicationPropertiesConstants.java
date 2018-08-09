@@ -55,16 +55,6 @@ public class ApplicationPropertiesConstants {
 
     public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY = __SPRING_MAIL_SCHEDULER + DOT + "persistence.maxKeptInMemory";
 
-    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_ENABLED = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.enabled";
-
-    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_EMBEDDED = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.embedded";
-
-    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_HOST = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.host";
-
-    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_PORT = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.port";
-
-    public static final String SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_SETTINGS = __SPRING_MAIL_SCHEDULER + DOT + "persistence.redis.settings";
-
     public static final String SPRING_MAIL_LOGGING_ENABLED = __SPRING_MAIL_LOGGING + DOT + "enabled";
 
     public static final String SPRING_MAIL_LOGGING_STRATEGY_FROM = __SPRING_MAIL_LOGGING_STRATEGY + DOT + "from";

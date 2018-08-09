@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>2.0.3.RELEASE</version>
     </parent>
 
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-build</artifactId>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Spring Boot Email Build</name>
@@ -21,6 +21,10 @@
 
     <modules>
         <module>spring-boot-email-core</module>
+
+<!-- This module is on hold for now. Migration to Spring Boot 2 is painful
+        <module>spring-boot-email-redis-persistence</module>
+-->
         <module>spring-boot-email-template-engines</module>
     </modules>
 
@@ -43,15 +47,13 @@
     </licenses>
 
     <properties>
-        <spring.boot.version>1.5.3.RELEASE</spring.boot.version>
+        <spring.boot.version>2.0.3.RELEASE</spring.boot.version>
         <it.ozimov.cirneco.version>1.2.0</it.ozimov.cirneco.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <developers>
@@ -84,14 +86,14 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>21.0</version>
+            <version>22.0</version>
         </dependency>
 
         <!--  Boilerplate code killer  -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.14</version>
+            <version>1.16.18</version>
             <scope>provided</scope>
         </dependency>
 
@@ -123,7 +125,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.6.2</version>
+            <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -170,11 +172,25 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+            </plugin>
             <!-- MAVEN SUREFIRE +  FAILSAFE -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>2.20.1</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -310,7 +326,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.4</version>
                 <reportSets>
                     <reportSet>
                         <reports>

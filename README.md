@@ -4,7 +4,7 @@ a template engine to generate dynamic content.
 
 **Source Website:** *[github.com/ozimov/spring-boot-email-tools](http://github.com/ozimov/spring-boot-email-tools/)*<br />
 
-**Latest Release:** *0.6.3* <br />
+**Latest Release:** *0.7.0* <br />
 **Latest Artifacts:** *it.ozimov:spring-boot-email-core*, *it.ozimov:spring-boot-freemarker-email*,
     *it.ozimov:spring-boot-mustache-email*, *it.ozimov:spring-boot-pebble-email*, *it.ozimov:spring-boot-thymeleaf-email* <br />
 **Continuous Integration:** <br />
@@ -28,14 +28,27 @@ _Mustache_, _Pebble_ and _Thymeleaf_), you can use the dedicated templatefull
 module that is shipped with the core module. The standard naming for the templatefull module is
 `it.ozimov:spring-boot-{template_engine_name}-email` (where `{template_engine_name}` is for instance `pebble`).
 
+The project has been tested with **JDK8** and **Spring Boot 2.0.2**. Any other version may not work.
+
 ## Dependency
-Latest release is **`0.6.3`**. To use the core module, you can import the following dependency in Maven
+Latest release is **`0.7.0`**. To use the core module, you can import the following dependency in Maven
 
 ```xml
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-core</artifactId>
-    <version>0.6.3</version>
+    <version>0.7.0</version>
+</dependency>
+```
+
+To persist the emails using REDIS, a default implementation is provided in a separate module (prior to version 0.7.0, 
+it was shipped with the core module). To use the REDIS persistence service, add the following dependency:
+
+```xml
+<dependency>
+    <groupId>it.ozimov</groupId>
+    <artifactId>spring-boot-email-redis-persistence</artifactId>
+    <version>0.7.0</version>
 </dependency>
 ```
 
@@ -45,7 +58,7 @@ To embed the module that includes the _Freemarker_ template engine, you can use 
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-freemarker-email</artifactId>
-    <version>0.6.3</version>
+    <version>0.7.0</version>
 </dependency>
 ```
 
@@ -55,7 +68,7 @@ for _Mustache_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-mustache-email</artifactId>
-    <version>0.6.3</version>
+    <version>0.7.0</version>
 </dependency>
 ```
 
@@ -65,7 +78,7 @@ for _Pebble_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-pebble-email</artifactId>
-    <version>0.6.3</version>
+    <version>0.7.0</version>
 </dependency>
 ```
 
@@ -75,7 +88,7 @@ and for _Thymeleaf_:
 <dependency>
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-thymeleaf-email</artifactId>
-    <version>0.6.3</version>
+    <version>0.7.0</version>
 </dependency>
 ```
 
@@ -256,7 +269,7 @@ This is required to set the a proper content-id.
 
 ## Email scheduling
 
-The library supports email scheduling, but since version _0.6.3_ the scheduler is disabled by default. To enable 
+The library supports email scheduling, but since version _0.7.0_ the scheduler is disabled by default. To enable 
 email scheduling, the following property has to be provided:
  
 ```properties
@@ -425,6 +438,10 @@ spring.mail.logging.strategy.ignore.nullAndEmptyCollections=true
 Allowed logging strategies are defined in the enum `it.ozimov.springboot.mail.logging.LoggingStrategy`.
 Do not pretend to apply a date-only strategy to an email address, or an email address-only strategy to 
 a text field. Usage should be straightforward.
+
+## Legacy: Spring Boot 1.5.x compatible version
+Please, for a version of this lib compatible with _Spring Boot 1.5.x_, checkout **branch 0.6** of this project [here](https://github.com/ozimov/spring-boot-email-tools/tree/release/0.6).
+
 
 ## Future plans
 

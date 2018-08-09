@@ -63,19 +63,6 @@ public class ConditionalExpressionTest {
                 .as("The condition for enabling the persistence layer should not change")
                 .isEqualTo("'${spring.mail.scheduler.enabled:false}' == 'true'" +
                         " && '${spring.mail.scheduler.persistence.enabled:false}' == 'true'");
-
-        assertions.assertThat(PERSISTENCE_IS_ENABLED_WITH_REDIS)
-                .as("The condition for enabling the persistence layer using redis should not change")
-                .isEqualTo("'${spring.mail.scheduler.enabled:false}' == 'true'" +
-                        " && '${spring.mail.scheduler.persistence.enabled:false}' == 'true'" +
-                        " && '${spring.mail.scheduler.persistence.redis.enabled:false}' == 'true'");
-
-        assertions.assertThat(PERSISTENCE_IS_ENABLED_WITH_EMBEDDED_REDIS)
-                .as("The condition for enabling the persistence layer using embedded redis should not change")
-                .isEqualTo("'${spring.mail.scheduler.enabled:false}' == 'true'" +
-                        " && '${spring.mail.scheduler.persistence.enabled:false}' == 'true'" +
-                        " && '${spring.mail.scheduler.persistence.redis.enabled:false}' == 'true'" +
-                        " && '${spring.mail.scheduler.persistence.redis.embedded:false}' == 'true'");
     }
 
 }

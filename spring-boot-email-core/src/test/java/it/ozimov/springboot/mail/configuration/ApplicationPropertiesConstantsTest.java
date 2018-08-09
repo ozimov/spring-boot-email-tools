@@ -69,11 +69,6 @@ public class ApplicationPropertiesConstantsTest {
         assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_DESIRED_BATCH_SIZE).isEqualTo("spring.mail.scheduler.persistence.desiredBatchSize");
         assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_MIN_KEPT_IN_MEMORY).isEqualTo("spring.mail.scheduler.persistence.minKeptInMemory");
         assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_MAX_KEPT_IN_MEMORY).isEqualTo("spring.mail.scheduler.persistence.maxKeptInMemory");
-        assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_ENABLED).isEqualTo("spring.mail.scheduler.persistence.redis.enabled");
-        assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_EMBEDDED).isEqualTo("spring.mail.scheduler.persistence.redis.embedded");
-        assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_HOST).isEqualTo("spring.mail.scheduler.persistence.redis.host");
-        assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_PORT).isEqualTo("spring.mail.scheduler.persistence.redis.port");
-        assertions.assertThat(SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_SETTINGS).isEqualTo("spring.mail.scheduler.persistence.redis.settings");
         assertions.assertThat(SPRING_MAIL_LOGGING_ENABLED).isEqualTo("spring.mail.logging.enabled");
         assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_FROM).isEqualTo("spring.mail.logging.strategy.from");
         assertions.assertThat(SPRING_MAIL_LOGGING_STRATEGY_REPLY_TO).isEqualTo("spring.mail.logging.strategy.replyTo");
