@@ -16,6 +16,7 @@
 
 package it.ozimov.springboot.mail.service.defaultimpl;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import it.ozimov.springboot.mail.logging.EmailLogRenderer;
 import it.ozimov.springboot.mail.model.Email;
@@ -150,7 +151,8 @@ public class DefaultEmailService implements EmailService {
         return mimeMessage;
     }
 
-    private MimeMessage toMimeMessage(@NotNull Email email) {
+    @VisibleForTesting
+    MimeMessage toMimeMessage(@NotNull Email email) {
         return emailToMimeMessage.apply(email);
     }
 

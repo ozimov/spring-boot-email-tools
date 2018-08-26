@@ -34,7 +34,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -53,7 +54,6 @@ import static it.ozimov.springboot.mail.utils.EmailToMimeMessageTest.getSimpleMa
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -78,12 +78,12 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
     @Before
     public void setUp() {
         emailToMimeMessage = new EmailToMimeMessage(javaMailSender);
-        when(emailLogRenderer.registerLogger(any(Logger.class))).thenReturn(emailLogRenderer);
+        when(emailLogRenderer.registerLogger(Mockito.any(Logger.class))).thenReturn(emailLogRenderer);
 
-        mailService = new DefaultEmailService(javaMailSender, templateService, emailToMimeMessage, emailLogRenderer);
+        mailService = Mockito.spy(new DefaultEmailService(javaMailSender, templateService, emailToMimeMessage, emailLogRenderer));
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
-        doNothing().when(javaMailSender).send(any(MimeMessage.class));
+        doNothing().when(javaMailSender).send(Mockito.any(MimeMessage.class));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         validateBody(email, sentMessage);
 
         verify(javaMailSender, times(1)).createMimeMessage();
-        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
+        verify(javaMailSender, times(1)).send(Mockito.any(MimeMessage.class));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         assertThat(email.getSentAt(), is(nullValue()));
         final String toBeOverriddenBody = email.getBody();
         final String bodyToBeReturned = "Ciao Tito";
-        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenReturn(bodyToBeReturned);
+        when(templateService.mergeTemplateIntoString(Mockito.any(String.class), Mockito.any(Map.class))).thenReturn(bodyToBeReturned);
 
         //Act
         final MimeMessage sentMessage = mailService.send(email, "never_called.ftl", Maps.newHashMap());
@@ -132,10 +132,10 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         assertThat(((MimeMultipart) sentMessage.getContent()).getBodyPart(0).getContent(),
                 allOf(not(is(toBeOverriddenBody)), is(bodyToBeReturned)));
 
-        verify(templateService, times(1)).mergeTemplateIntoString(any(String.class), any(Map.class));
+        verify(templateService, times(1)).mergeTemplateIntoString(Mockito.any(String.class), Mockito.any(Map.class));
 
         verify(javaMailSender, times(1)).createMimeMessage();
-        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
+        verify(javaMailSender, times(1)).send(Mockito.any(MimeMessage.class));
     }
 
     @Test
@@ -147,7 +147,7 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         final String bodyToBeReturned = "<img src=\"100_percent_free.jpg\" />";
         final String imageName = "100_percent_free.jpg";
 
-        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenReturn(bodyToBeReturned);
+        when(templateService.mergeTemplateIntoString(Mockito.any(String.class), Mockito.any(Map.class))).thenReturn(bodyToBeReturned);
 
         final File inlineImageFile = new File(getClass().getClassLoader()
                 .getResource("images" + File.separator + imageName).toURI());
@@ -172,7 +172,7 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
                                 imageId.substring(1, imageId.length() - 1)
                                 + "\" />")));
 
-        verify(templateService, times(1)).mergeTemplateIntoString(any(String.class), any(Map.class));
+        verify(templateService, times(1)).mergeTemplateIntoString(Mockito.any(String.class), Mockito.any(Map.class));
     }
 
     @Test
@@ -231,8 +231,6 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         final Email email = getSimpleMail();
         assertThat(email.getSentAt(), is(nullValue()));
 
-        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenReturn("doesn't matter");
-
         thrown.expect(NullPointerException.class);
 
         //Act
@@ -247,7 +245,7 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         //Arrange
         final Email email = getSimpleMail();
         assertThat(email.getSentAt(), is(nullValue()));
-        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenThrow(IOException.class);
+        when(templateService.mergeTemplateIntoString(Mockito.any(String.class), Mockito.any(Map.class))).thenThrow(IOException.class);
 
         thrown.expect(CannotSendEmailException.class);
         thrown.expectMessage("Error while sending the email due to problems with the template file.");
@@ -264,7 +262,7 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         //Arrange
         final Email email = getSimpleMail();
         assertThat(email.getSentAt(), is(nullValue()));
-        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenThrow(TemplateException.class);
+        when(templateService.mergeTemplateIntoString(Mockito.any(String.class), Mockito.any(Map.class))).thenThrow(TemplateException.class);
 
         thrown.expect(CannotSendEmailException.class);
         thrown.expectMessage("Error while processing the template file with the given model object.");
@@ -282,7 +280,10 @@ public class DefaultEmailServiceTest extends EmailToMimeMessageValidators implem
         //Arrange
         final Email email = getSimpleMail();
         assertThat(email.getSentAt(), is(nullValue()));
-        when(templateService.mergeTemplateIntoString(any(String.class), any(Map.class))).thenThrow(MessagingException.class);
+
+        final MimeMessage mimeMessage = Mockito.mock(MimeMessage.class);
+        Mockito.doReturn(mimeMessage).when(mailService).toMimeMessage(email);
+        Mockito.doThrow(MessagingException.class).when(mimeMessage).saveChanges();
 
         thrown.expect(CannotSendEmailException.class);
         thrown.expectMessage("Error while sending the email due to problems with the mime content.");
