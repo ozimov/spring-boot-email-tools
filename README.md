@@ -139,7 +139,7 @@ public void sendEmailWithoutTemplating(){
 
 The previous code will send a plain text message. To obtain some more dynamic fancy emails, you have two options:
 _i)_ the former and easier-to-use is to use a templatefull module (e.g. based on Freemarker);
-_ii)_ the latter (which requires some effort on your side) needs an an implementation of the
+_ii)_ the latter (which requires some effort on your side) needs an implementation of the
 interface **`it.ozimov.springboot.templating.mail.service.TemplateService`**.
 
 The aforementioned interface requires a component that implements the following method
