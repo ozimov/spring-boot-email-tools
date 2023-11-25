@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static java.util.Objects.requireNonNull;
-import static org.apache.tika.metadata.TikaMetadataKeys.RESOURCE_NAME_KEY;
+import static org.apache.tika.metadata.TikaCoreProperties.RESOURCE_NAME_KEY;
 
 /**
  * A convenience singleton class that uses ApacheTika to guess the MIME type.

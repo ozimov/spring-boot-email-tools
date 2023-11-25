@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableSet;
 import it.ozimov.springboot.mail.configuration.EmailEmbeddedRedis;
 import it.ozimov.springboot.mail.configuration.EmailSchedulerProperties;
 import it.ozimov.springboot.mail.model.EmailSchedulingData;
+
 import lombok.NonNull;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.test.util.ReflectionTestUtils;
-import redis.clients.jedis.JedisShardInfo;
 import redis.embedded.RedisServer;
 
 import javax.sql.DataSource;
@@ -146,9 +146,9 @@ public abstract class BaseRedisTest implements ContextBasedTest {
 
             redisServer = (RedisServer) ReflectionTestUtils.getField(emailEmbeddedRedis, "redisServer");
 
-            JedisShardInfo shardInfo = new JedisShardInfo("localhost", redisPort);
             connectionFactory = new JedisConnectionFactory();
-            connectionFactory.setShardInfo(shardInfo);
+            connectionFactory.setHostName("localhost");
+            connectionFactory.setPort(redisPort);
             connectionFactory.setUsePool(true);
             connectionFactory.getPoolConfig().setMaxTotal(10_000);
         }

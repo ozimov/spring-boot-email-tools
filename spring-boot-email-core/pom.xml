@@ -7,13 +7,13 @@
     <parent>
         <groupId>it.ozimov</groupId>
         <artifactId>spring-boot-email-build</artifactId>
-        <version>0.6.4-SNAPSHOT</version>
+        <version>0.6.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-core</artifactId>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.6.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Spring Boot Email Core</name>
@@ -35,14 +35,14 @@
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
-            <version>1.14</version>
+            <version>2.9.1</version>
         </dependency>
 
         <!-- Validation -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.3.3.Final</version>
+            <version>8.0.1.Final</version>
         </dependency>
 
         <!-- Spring Redis -->
@@ -60,14 +60,14 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
-            <scope>test</scope>
+<!--            <scope>test</scope>-->
         </dependency>
 
         <!-- Security -->
         <dependency>
             <groupId>org.owasp.encoder</groupId>
             <artifactId>encoder</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.3</version>
         </dependency>
     </dependencies>
 

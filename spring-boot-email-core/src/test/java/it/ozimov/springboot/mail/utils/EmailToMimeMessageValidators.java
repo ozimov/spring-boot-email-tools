@@ -20,17 +20,17 @@ import it.ozimov.springboot.mail.model.Email;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 
-import javax.mail.Address;
-import javax.mail.Header;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Address;
+import jakarta.mail.Header;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static javax.mail.Message.RecipientType.*;
+import static jakarta.mail.Message.RecipientType.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 

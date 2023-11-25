@@ -29,7 +29,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.internal.matchers.Null;
 import org.springframework.http.MediaType;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;

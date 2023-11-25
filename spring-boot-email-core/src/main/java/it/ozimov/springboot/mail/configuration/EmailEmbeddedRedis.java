@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import redis.embedded.RedisServer;
 import redis.embedded.RedisServerBuilder;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

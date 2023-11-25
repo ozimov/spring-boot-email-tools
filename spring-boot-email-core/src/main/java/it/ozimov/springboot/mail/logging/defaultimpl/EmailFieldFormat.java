@@ -22,7 +22,7 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;

@@ -10,6 +10,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.6.4] -  2023-11-25
+
+### Changed
+- Using Spring Boot _3.2.0_.
+
+
 ## [0.6.3] -  2017-08-13
 
 ### Changed
