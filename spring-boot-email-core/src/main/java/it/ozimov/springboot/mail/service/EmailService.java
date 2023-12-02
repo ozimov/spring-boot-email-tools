@@ -20,7 +20,7 @@ import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.InlinePicture;
 import it.ozimov.springboot.mail.service.exception.CannotSendEmailException;
 
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 import java.util.Map;
 
 public interface EmailService {

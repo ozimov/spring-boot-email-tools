@@ -25,7 +25,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import redis.clients.jedis.JedisShardInfo;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import java.util.List;
 
 import static it.ozimov.springboot.mail.configuration.ApplicationPropertiesConstants.SPRING_MAIL_SCHEDULER_PERSISTENCE_REDIS_PORT;
@@ -52,9 +52,9 @@ public class EmailEmbeddedRedisConfiguration {
                 new EmailEmbeddedRedis(redisPort, redisSettings.stream().map(s -> s.trim()).collect(toSet()))
                         .start();
 
-        JedisShardInfo shardInfo = new JedisShardInfo("localhost", redisPort);
         connectionFactory = new JedisConnectionFactory();
-        connectionFactory.setShardInfo(shardInfo);
+        connectionFactory.setHostName("localhost");
+        connectionFactory.setPort(redisPort);
         connectionFactory.setUsePool(true);
         connectionFactory.getPoolConfig().setMaxTotal(10_000);
     }

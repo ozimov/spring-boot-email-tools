@@ -18,8 +18,8 @@ package it.ozimov.springboot.mail.utils;
 
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 public class MimeMessageHelperExt extends MimeMessageHelper {
 

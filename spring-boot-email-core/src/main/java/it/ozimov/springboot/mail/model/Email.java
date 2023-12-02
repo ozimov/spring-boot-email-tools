@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import it.ozimov.springboot.mail.utils.StringUtils;
 import lombok.NonNull;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;

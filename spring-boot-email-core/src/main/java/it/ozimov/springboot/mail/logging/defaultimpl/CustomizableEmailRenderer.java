@@ -22,7 +22,7 @@ import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.EmailAttachment;
 import lombok.NonNull;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;

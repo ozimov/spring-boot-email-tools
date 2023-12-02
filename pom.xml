@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>3.2.0</version>
     </parent>
 
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-build</artifactId>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.6.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Spring Boot Email Build</name>
@@ -43,15 +43,15 @@
     </licenses>
 
     <properties>
-        <spring.boot.version>1.5.3.RELEASE</spring.boot.version>
-        <it.ozimov.cirneco.version>1.2.0</it.ozimov.cirneco.version>
+        <spring.boot.version>3.2.0</spring.boot.version>
+        <it.ozimov.cirneco.version>1.3.0</it.ozimov.cirneco.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
     <developers>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.14</version>
+            <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
 
@@ -102,6 +102,13 @@
             <version>${it.ozimov.cirneco.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.10.0</version>
+        </dependency>
+
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>java8-hamcrest-matchers</artifactId>
@@ -123,13 +130,13 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.6.2</version>
+            <version>3.24.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-guava</artifactId>
-            <version>3.1.0</version>
+            <version>3.24.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -143,6 +150,30 @@
             <artifactId>greenmail</artifactId>
             <version>1.5.3</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
         </dependency>
     </dependencies>
 
@@ -174,7 +205,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>3.2.2</version>
+                <configuration>
+                    <reuseForks>false</reuseForks>
+                    <forkCount>1</forkCount>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -250,9 +285,10 @@
             <build>
                 <plugins>
                     <plugin>
+                        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin -->
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>3.3.0</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -326,18 +362,18 @@
     <!--DISCLAIMER: use as-->
     <!--mvn versions:display-dependency-updates-->
 
-    <repositories>
-        <repository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>spring-releases</id>-->
+<!--            <url>https://repo.spring.io/libs-release</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </pluginRepository>
-    </pluginRepositories>
+<!--    <pluginRepositories>-->
+<!--        <pluginRepository>-->
+<!--            <id>spring-releases</id>-->
+<!--            <url>https://repo.spring.io/libs-release</url>-->
+<!--        </pluginRepository>-->
+<!--    </pluginRepositories>-->
 
 </project>

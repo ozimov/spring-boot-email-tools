@@ -6,7 +6,7 @@ import it.ozimov.springboot.mail.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 
 import static com.google.common.collect.Lists.newArrayList;

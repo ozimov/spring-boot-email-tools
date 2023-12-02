@@ -23,7 +23,7 @@ import it.ozimov.springboot.mail.model.Email;
 import it.ozimov.springboot.mail.model.EmailAttachment;
 import lombok.*;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;

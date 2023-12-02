@@ -38,8 +38,8 @@ import org.slf4j.Logger;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.Optional;
