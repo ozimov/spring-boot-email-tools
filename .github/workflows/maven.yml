@@ -1,0 +1,88 @@
+# This workflow will build a Java project with Maven
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: "Define the release version"
+        required: true
+        default: ""
+      developmentVersion:
+        description: "Define the snapshot version"
+        required: true
+        default: ""
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17.0.9
+          distribution: 'temurin'
+          java-package: 'jdk'
+          cache: 'maven'
+          server-id: ossrh
+      - name: Configure Git User
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Import GPG Key
+        uses: crazy-max/ghaction-import-gpg@v5.0.0
+        with:
+          gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+      - name: Verify Whether a Release is Ready
+        id: release
+        shell: bash
+        run: |
+          if [ "${{ github.event.inputs.releaseVersion }}" != "" ] && [ "${{ github.event.inputs.developmentVersion }}" != "" ]; then
+            echo "auto_release=true" >> $GITHUB_ENV
+          else
+            echo "auto_release=false" >> $GITHUB_ENV
+          fi
+      - name: Release With Maven
+        run: |
+          mvn -B -U \
+            -Pci-cd \
+            release:prepare \
+            release:perform \
+            javadoc:jar \
+            source:jar \
+            -s settings.xml \
+            -Dgpg.passphrase=${{ secrets.MAVEN_GPG_PASSPHRASE }} \
+            -DreleaseVersion=${{ github.event.inputs.releaseVersion }} \
+            -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }} \
+            deploy
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          AUTO_RELEASE_AFTER_CLOSE: ${{ env.auto_release }}
+      - name: Artifact Name
+        shell: bash
+        run: |
+          echo "artifact_name=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> "$GITHUB_ENV"
+      - name: Define Jar Name
+        shell: bash
+        run: |
+          echo "{{ env.artifact_name }}"
+          ls -al ./target/
+          mv ./target/*.*:${{ env.artifact_name }}.jar ./target/${{ env.artifact_name }}.jar
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.artifact_name }}-${{ env.sha_short }}
+          path: ./target/${{ env.artifact_name }}.jar
+      - name: Workflow Release Notes
+        uses: peter-evans/repository-dispatch@v2
+        if: ${{ github.event.inputs.releaseVersion }} != "" && ${{ github.event.inputs.developmentVersion }} != ""
+        with:
+          event-type: release-notes
+          client-payload: '{"auto_release": "${{ env.auto_release }}", "artifact": "${{ env.artifact_name }}-${{ env.sha_short }}"}'

@@ -11,7 +11,7 @@
 
     <groupId>it.ozimov</groupId>
     <artifactId>spring-boot-email-build</artifactId>
-    <version>0.6.5-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Spring Boot Email Build</name>
@@ -29,6 +29,7 @@
         <connection>scm:git:git@github.com:ozimov/spring-boot-email-tools.git</connection>
         <developerConnection>scm:git:git@github.com:ozimov/spring-boot-email-tools.git</developerConnection>
         <url>https://github.com/ozimov/spring-boot-email-tools</url>
+        <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <system>GitHub Issue Tracking</system>
@@ -49,9 +50,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <developers>
@@ -84,7 +85,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>21.0</version>
+            <version>32.1.3-jre</version>
         </dependency>
 
         <!--  Boilerplate code killer  -->
@@ -151,30 +152,6 @@
             <version>1.5.3</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>3.3.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.2.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
-        </dependency>
     </dependencies>
 
     <prerequisites>
@@ -201,7 +178,6 @@
             </resource>
         </resources>
         <plugins>
-            <!-- MAVEN SUREFIRE +  FAILSAFE -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -239,74 +215,85 @@
                     </excludes>
                 </configuration>
             </plugin>
-
-            <!--Deploy plugins -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <generateBackupPoms>false</generateBackupPoms>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-plugin</artifactId>
-                <version>1.9.5</version>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <pushChanges>false</pushChanges>
-                    <tag>${project.version}</tag>
+                    <additionalOptions>
+                        <additionalOption>-Xdoclint:none</additionalOption>
+                    </additionalOptions>
                 </configuration>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.5.0</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
-
     <profiles>
         <profile>
-            <id>disable-java8-doclint</id>
-            <activation>
-                <jdk>[1.8,)</jdk>
-            </activation>
+            <id>ci-cd</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.4</version>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.13</version>
+                        <extensions>true</extensions>
                         <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>${env.AUTO_RELEASE_AFTER_CLOSE}</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin -->
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.3.0</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.3</version>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5.3</version>
+                        <configuration>
+                            <tagNameFormat>@{project.version}</tagNameFormat>
+                            <localCheckout>true</localCheckout>
+                            <pushChanges>false</pushChanges>
+                        </configuration>
                         <executions>
                             <execution>
-                                <id>attach-javadocs</id>
+                                <id>default</id>
                                 <goals>
-                                    <goal>jar</goal>
+                                    <goal>perform</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -314,7 +301,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -322,19 +308,14 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -359,21 +340,4 @@
             </plugin>
         </plugins>
     </reporting>
-    <!--DISCLAIMER: use as-->
-    <!--mvn versions:display-dependency-updates-->
-
-<!--    <repositories>-->
-<!--        <repository>-->
-<!--            <id>spring-releases</id>-->
-<!--            <url>https://repo.spring.io/libs-release</url>-->
-<!--        </repository>-->
-<!--    </repositories>-->
-
-<!--    <pluginRepositories>-->
-<!--        <pluginRepository>-->
-<!--            <id>spring-releases</id>-->
-<!--            <url>https://repo.spring.io/libs-release</url>-->
-<!--        </pluginRepository>-->
-<!--    </pluginRepositories>-->
-
 </project>
