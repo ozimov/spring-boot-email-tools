@@ -7,12 +7,12 @@
     <parent>
         <groupId>it.ozimov</groupId>
         <artifactId>spring-boot-email-template-engines</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>spring-boot-thymeleaf-email</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Spring Boot Email Thymeleaf</name>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>spring-boot-email-core</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <!-- Templating engine -->
         <dependency>
